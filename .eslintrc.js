@@ -2,7 +2,7 @@ module.exports = {
   env: {
     browser: true,
     es6: true,
-    node: true
+    node: true,
   },
   extends: [
     'eslint:recommended',
@@ -12,21 +12,21 @@ module.exports = {
     'prettier',
     'plugin:import/errors',
     'plugin:import/warnings',
-    'plugin:import/typescript'
+    'plugin:import/typescript',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.json',
-    sourceType: 'module'
+    sourceType: 'module',
   },
   plugins: ['@typescript-eslint', 'import'],
   settings: {
     'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx']
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
     'import/resolver': {
-      typescript: {}
-    }
+      typescript: {},
+    },
   },
   rules: {
     '@typescript-eslint/array-type': 'error',
@@ -36,22 +36,24 @@ module.exports = {
     '@typescript-eslint/explicit-member-accessibility': [
       'error',
       {
-        accessibility: 'explicit'
-      }
+        accessibility: 'explicit',
+      },
     ],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-parameter-properties': 'off',
     '@typescript-eslint/no-shadow': [
       'error',
       {
-        hoist: 'all'
-      }
+        hoist: 'all',
+        ignoreTypeValueShadow: true,
+      },
     ],
     '@typescript-eslint/no-unused-expressions': 'error',
     '@typescript-eslint/no-use-before-define': ['error', { functions: false }],
     '@typescript-eslint/prefer-for-of': 'error',
     '@typescript-eslint/space-within-parens': ['off', 'never'],
     '@typescript-eslint/unified-signatures': 'error',
+    '@typescript-eslint/no-redundant-type-constituents': 'off',
     'arrow-parens': ['off', 'as-needed'],
     camelcase: 'error',
     complexity: 'off',
@@ -85,5 +87,5 @@ module.exports = {
     radix: 'error',
     'import/order': ['error'],
     'spaced-comment': 'error',
-  }
+  },
 };
