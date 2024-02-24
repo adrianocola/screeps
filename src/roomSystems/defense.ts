@@ -34,7 +34,7 @@ const systemDefense: RoomSystem = {
     const demandId = workerDefender.name;
 
     if (enemies.length) {
-      spawnSystem.spawn(room, demandId, workerDefender.name, 1, {
+      spawnSystem.spawn(room, demandId, workerDefender.name, 1, 20, {
         memory: {
           role: 'worker',
           worker: {

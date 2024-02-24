@@ -305,6 +305,7 @@ interface SpawnDemandItem {
   quantity: number;
   workerType: CREEP_TYPE;
   at: number; // tick it was last demanded
+  priority: number; // lower is higher priority
   opts?: SystemSpawnOptions;
 }
 
@@ -313,7 +314,14 @@ interface SystemBuild extends RoomSystem {
 }
 
 interface SystemSpawn extends RoomSystem {
-  spawn: (room: Room, id: string, workerType: CREEP_TYPE, quantity: number, opts?: SystemSpawnOptions) => void;
+  spawn: (
+    room: Room,
+    id: string,
+    workerType: CREEP_TYPE,
+    quantity: number,
+    priority?: number,
+    opts?: SystemSpawnOptions,
+  ) => void;
   removeSpawn: (room: Room, id: string) => void;
   doSpawn: (room: Room, spawn: StructureSpawn, item: SpawnDemandItem, energyAvailable: number) => number | undefined;
 }

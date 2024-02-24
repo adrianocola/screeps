@@ -26,7 +26,7 @@ const collectFromMineral = (
 
   const demandId = `${workerCollector.name}-M`;
   if (miners) {
-    systemSpawn.spawn(room, demandId, workerCollector.name, 1, {
+    systemSpawn.spawn(room, demandId, workerCollector.name, 1, 61, {
       maxSections: 6,
       optimizeForRoads: mineralData.paved,
       memory: {
@@ -76,7 +76,7 @@ const systemCollect: RoomSystem = {
       const desired = Math.max(1, Math.floor(harvestedInTime / (maxSections * CARRY_CAPACITY)));
 
       const demandId = `${workerCollector.name}-S${sourceData.index}`;
-      systemSpawn.spawn(room, demandId, workerCollector.name, desired, {
+      systemSpawn.spawn(room, demandId, workerCollector.name, desired, 31, {
         urgent: true,
         optimizeForRoads: sourceData.paved,
         memory: {

@@ -91,7 +91,7 @@ const systemBuild: SystemBuild = {
 
     const desiredBuilders = getDesiredNumberOfBuilders(room);
 
-    spawnSystem.spawn(room, workerBuilder.name, workerBuilder.name, desiredBuilders, {
+    spawnSystem.spawn(room, workerBuilder.name, workerBuilder.name, desiredBuilders, 120, {
       memory: {
         role: 'worker',
         worker: {

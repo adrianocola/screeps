@@ -3,9 +3,9 @@ import { getRandomSourceId } from 'utils/room';
 
 import basicCreepType from 'creepTypes/basic';
 
-const createBasic = (room: Room, sourceId: string, nameSuffix: string | number, quantity: number) => {
+const createBasic = (room: Room, sourceId: string, nameSuffix: string | number, quantity: number, priority: number) => {
   const demandId = `${basicCreepType.name}-${nameSuffix}`;
-  spawnSystem.spawn(room, `${basicCreepType.name}-${nameSuffix}`, basicCreepType.name, quantity, {
+  spawnSystem.spawn(room, `${basicCreepType.name}-${nameSuffix}`, basicCreepType.name, quantity, priority, {
     urgent: true,
     memory: {
       role: 'worker',
@@ -31,7 +31,7 @@ const systemBackup: RoomSystem = {
     if (!allCreeps.length && !room.memory.state?.features.basic) {
       const randomSourceId = getRandomSourceId(room);
       if (randomSourceId) {
-        return createBasic(room, randomSourceId, 'backup', 1);
+        return createBasic(room, randomSourceId, 'backup', 1, 0);
       }
     }
 
@@ -47,7 +47,7 @@ const systemBackup: RoomSystem = {
 
       const desiredInitials = Math.min(sourceData.slotsAvailable, 4) + extraCreepsPerSource;
 
-      createBasic(room, sourceId, sourceData.index, desiredInitials);
+      createBasic(room, sourceId, sourceData.index, desiredInitials, 5);
     }
   },
 };

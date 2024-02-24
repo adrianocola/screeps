@@ -27,7 +27,7 @@ const systemDistribute: RoomSystem = {
     const level = room.controller?.level || 1;
     const maxSections = MAX_PARTS_PER_LEVEL[level];
 
-    spawnSystem.spawn(room, workerDistributor.name, workerDistributor.name, 1, {
+    spawnSystem.spawn(room, workerDistributor.name, workerDistributor.name, 1, 7, {
       urgent: true,
       maxSections,
       memory: {

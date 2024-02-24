@@ -42,7 +42,7 @@ const systemUpgrade: RoomSystem = {
 
     // Make sure to spawn an emergency upgrader if the controller is about to downgrade
     if (!room.controller.upgradeBlocked && room.controller.ticksToDowngrade < CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY) {
-      spawnSystem.spawn(room, upgraderEmergency.name, upgraderEmergency.name, 1, {
+      spawnSystem.spawn(room, upgraderEmergency.name, upgraderEmergency.name, 1, 2, {
         urgent: true,
         maxSections: 3,
         sectionParts: {
@@ -77,7 +77,7 @@ const systemUpgrade: RoomSystem = {
     const memoryController = room.memory.state?.controller;
     const containerId = memoryController?.linkId ?? memoryController?.containerId;
 
-    spawnSystem.spawn(room, workerUpgrader.name, workerUpgrader.name, desired, {
+    spawnSystem.spawn(room, workerUpgrader.name, workerUpgrader.name, desired, 140, {
       optimizeForRoads: memoryController?.paved,
       maxSections: roomLevel === 8 ? 5 : 12, // because lvl8 controllers are limited to 15 per tick,
       sectionParts: {

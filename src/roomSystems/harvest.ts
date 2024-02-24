@@ -20,7 +20,7 @@ const systemHarvest: RoomSystem = {
       if (sourceData.sourceKeeper || !sourceLinkOrContainer) continue;
 
       const demandId = `${workerHarvester.name}-S${sourceData.index}`;
-      spawnSystem.spawn(room, demandId, workerHarvester.name, sourceData.harvestersDesired, {
+      spawnSystem.spawn(room, demandId, workerHarvester.name, sourceData.harvestersDesired, 30, {
         urgent: true,
         maxSections: sourceData.harvestersMaxSections,
         memory: {

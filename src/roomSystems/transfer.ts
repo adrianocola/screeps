@@ -13,7 +13,7 @@ const systemDistribute: RoomSystem = {
   run(room: Room) {
     const storageData = room.memory.state?.storage;
 
-    spawnSystem.spawn(room, workerTransferer.name, workerTransferer.name, 1, {
+    spawnSystem.spawn(room, workerTransferer.name, workerTransferer.name, 1, 6, {
       urgent: true,
       fixedDir: true,
       memory: {

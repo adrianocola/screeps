@@ -45,7 +45,7 @@ const systemMine: RoomSystem = {
     const level = room.controller?.level || 1;
     const maxSections = MAX_PARTS_PER_LEVEL[level] || 12;
 
-    spawnSystem.spawn(room, DEMAND_ID, harvesterCreepType.name, 1, {
+    spawnSystem.spawn(room, DEMAND_ID, harvesterCreepType.name, 1, 60, {
       optimizeForRoads: mineralData.paved,
       maxSections,
       memory: {

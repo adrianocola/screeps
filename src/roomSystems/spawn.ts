@@ -3,6 +3,8 @@ import { SPAWN_MAX_DEMAND_TICKS } from 'consts';
 import CreepTypes from 'creepTypes';
 import { bodyFixedCost, bodySectionCost, buildBodyPartsArray, maxBodySections } from 'utils/worker';
 
+const sortByPriority = (a: SpawnDemandItem, b: SpawnDemandItem) => a.priority - b.priority;
+
 // TODO permitir especificar qual spawn deve ser usado
 const systemSpawn: SystemSpawn = {
   interval: TICKS.TICK_10,
@@ -11,10 +13,10 @@ const systemSpawn: SystemSpawn = {
     [ROOM_FEATURE.CONTROLLED]: true,
     [ROOM_FEATURE.SPAWN]: true,
   },
-  spawn(room, id, workerType, quantity: number, opts) {
+  spawn(room, id, workerType, quantity: number, priority = 100, opts?) {
     if (!room.memory.spawn) room.memory.spawn = { demand: {} };
 
-    room.memory.spawn.demand[id] = { id, quantity, workerType, opts, at: Game.time };
+    room.memory.spawn.demand[id] = { id, quantity, workerType, priority, opts, at: Game.time };
   },
   removeSpawn(room, id) {
     delete room.memory.spawn?.demand[id];
@@ -111,27 +113,18 @@ const systemSpawn: SystemSpawn = {
 
     if (!spawnDemand.length) return;
 
-    const urgent: SpawnDemandItem[] = [];
-    const regular: SpawnDemandItem[] = [];
-    spawnDemand.forEach(item => {
-      if (item.opts?.urgent) {
-        urgent.push(item);
-      } else {
-        regular.push(item);
-      }
-    });
-    const sortedQueue: SpawnDemandItem[] = [...urgent, ...regular];
+    const sortedQueue = spawnDemand.sort(sortByPriority);
     console.log(
       'SPAWN DEMAND ',
       room.name,
-      sortedQueue.map(qi => qi.id),
+      sortedQueue.map(qi => `${qi.id}:${qi.priority}:${qi.quantity}`),
     );
 
     let energyAvailable = room.energyAvailable;
     const resolvedItems: Record<string, boolean> = {};
 
     for (const spawn of availableSpawns) {
-      if (energyAvailable < 150) break;
+      if (energyAvailable < 300) break;
 
       for (const item of sortedQueue) {
         if (resolvedItems[item.id]) continue;
