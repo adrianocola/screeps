@@ -1,7 +1,10 @@
 import spawnSystem from './spawn';
 import { getBaseSpawnContainer } from 'utils/blueprint';
 import workerUpgrader from 'creepTypes/upgrader';
+import upgraderEmergency from 'creepTypes/upgraderEmergency';
 import { getLevelRate } from 'utils/controller';
+import { CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY } from 'consts';
+import { getMainEnergySourceId } from 'utils/room';
 
 const getDesiredNumberOfUpgraders = (room: Room): number => {
   let levelRate = 0.5;
@@ -37,28 +40,29 @@ const systemUpgrade: RoomSystem = {
   run(room: Room) {
     if (!room.controller || !room.controller.my || !room.memory.state?.baseSpawnId) return;
 
-    // if (room.controller.ticksToDowngrade < CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY) {
-    //   spawnSystem.spawn(room, `${workerUpgrader.name}-emergency`, workerUpgrader.name, 1, {
-    //     urgent: true,
-    //     maxSections: 3,
-    //     sectionParts: {
-    //       [WORK]: 1,
-    //       [CARRY]: 1,
-    //       [MOVE]: 2,
-    //     },
-    //     fixedParts: [],
-    //     memory: {
-    //       role: 'worker',
-    //       worker: {
-    //         type: workerUpgrader.name,
-    //         demandId: workerUpgrader.name,
-    //         roomName: room.name,
-    //         source: getBaseContainerId(room),
-    //         target: room.controller.id,
-    //       },
-    //     },
-    //   });
-    // }
+    // Make sure to spawn an emergency upgrader if the controller is about to downgrade
+    if (!room.controller.upgradeBlocked && room.controller.ticksToDowngrade < CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY) {
+      spawnSystem.spawn(room, upgraderEmergency.name, upgraderEmergency.name, 1, {
+        urgent: true,
+        maxSections: 3,
+        sectionParts: {
+          [WORK]: 1,
+          [CARRY]: 1,
+          [MOVE]: 2,
+        },
+        fixedParts: [],
+        memory: {
+          role: 'worker',
+          worker: {
+            type: upgraderEmergency.name,
+            demandId: upgraderEmergency.name,
+            roomName: room.name,
+            source: getMainEnergySourceId(room),
+            target: room.controller.id,
+          },
+        },
+      });
+    }
 
     if (!room.memory.state.features[ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK]) return;
 

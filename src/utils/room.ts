@@ -59,9 +59,14 @@ export const getRoomClosestEmptyExtension = (room: Room, half: 1 | 2): Structure
   return undefined;
 };
 
-export const getRoomClosestEmptyTower = (room: Room): StructureTower | undefined => {
-  const foundTowerData = room.memory.state?.towers.find(towerDate => {
-    const tower = getObjectById(towerDate.id as Id<StructureTower>);
+export const getRoomClosestEmptyTower = (
+  room: Room,
+  ignoreTowerId?: Id<StructureTower>,
+): StructureTower | undefined => {
+  const foundTowerData = room.memory.state?.towers.find(towerData => {
+    if (towerData.id === ignoreTowerId) return undefined;
+
+    const tower = getObjectById(towerData.id as Id<StructureTower>);
     return tower && tower.store.getFreeCapacity(RESOURCE_ENERGY) > 150;
   });
   if (!foundTowerData) return undefined;

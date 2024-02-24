@@ -24,7 +24,7 @@ const Blueprints: Blueprint[] = [
     // L1 L2 L3 TO __
     // FA R1 R2 LI __
     // S2 TE ST S1 __
-    // __ __ __ __ C1
+    // R3 R4 R5 R6 C1
     schema: [
       [
         { id: BLUEPRINT_STRUCTURE.LAB1, controller: 7, priority: 11, structure: STRUCTURE_LAB },
@@ -48,10 +48,10 @@ const Blueprints: Blueprint[] = [
         undefined,
       ],
       [
-        undefined,
-        undefined,
-        undefined,
-        undefined,
+        { id: BLUEPRINT_STRUCTURE.ROAD3, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
+        { id: BLUEPRINT_STRUCTURE.ROAD4, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
+        { id: BLUEPRINT_STRUCTURE.ROAD5, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
+        { id: BLUEPRINT_STRUCTURE.ROAD6, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
         { id: BLUEPRINT_STRUCTURE.CONTAINER3, controller: 3, priority: 6, structure: STRUCTURE_CONTAINER },
       ],
     ],
@@ -60,7 +60,7 @@ const Blueprints: Blueprint[] = [
     id: BLUEPRINT_ID.TOWERS,
     width: 3,
     height: 3,
-    entrance: { x: 2, y: 1 },
+    entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 5,
     startFrom: BLUEPRINT_ID.BASE,
@@ -144,14 +144,14 @@ const Blueprints: Blueprint[] = [
     minRange: 1,
     maxRange: 1,
     maxCount: 5,
-    controller: 5,
+    controller: 6,
     startFrom: BLUEPRINT_ID.CONTAINER_SOURCE_1,
     closeTo: [
       { what: BLUEPRINT_ID.CONTAINER_SOURCE_1, range: 1 },
       { what: BLUEPRINT_ID.BASE, range: 1, weight: 1 },
     ],
     ignoreNearKeyPoints: true,
-    schema: [[{ id: BLUEPRINT_STRUCTURE.LINK1, controller: 5, priority: 5, structure: STRUCTURE_LINK }]],
+    schema: [[{ id: BLUEPRINT_STRUCTURE.LINK1, controller: 6, priority: 5, structure: STRUCTURE_LINK }]],
   },
   {
     id: BLUEPRINT_ID.LINK_SOURCE_2,
@@ -160,14 +160,14 @@ const Blueprints: Blueprint[] = [
     minRange: 1,
     maxRange: 1,
     maxCount: 5,
-    controller: 6,
+    controller: 7,
     startFrom: BLUEPRINT_ID.CONTAINER_SOURCE_2,
     closeTo: [
       { what: BLUEPRINT_ID.CONTAINER_SOURCE_2, range: 1 },
       { what: BLUEPRINT_ID.BASE, range: 1, weight: 1 },
     ],
     ignoreNearKeyPoints: true,
-    schema: [[{ id: BLUEPRINT_STRUCTURE.LINK2, controller: 6, priority: 5, structure: STRUCTURE_LINK }]],
+    schema: [[{ id: BLUEPRINT_STRUCTURE.LINK2, controller: 7, priority: 5, structure: STRUCTURE_LINK }]],
   },
   {
     id: BLUEPRINT_ID.LINK_CONTROLLER,
@@ -176,14 +176,14 @@ const Blueprints: Blueprint[] = [
     minRange: 1,
     maxRange: 1,
     maxCount: 5,
-    controller: 7,
+    controller: 5,
     startFrom: BLUEPRINT_ID.CONTAINER_CONTROLLER,
     closeTo: [
       { what: BLUEPRINT_ID.CONTAINER_CONTROLLER, range: 1 },
       { what: BLUEPRINT_ID.BASE, range: 1, weight: 1 },
     ],
     ignoreNearKeyPoints: true,
-    schema: [[{ id: BLUEPRINT_STRUCTURE.LINK4, controller: 7, priority: 7, structure: STRUCTURE_LINK }]],
+    schema: [[{ id: BLUEPRINT_STRUCTURE.LINK4, controller: 5, priority: 4, structure: STRUCTURE_LINK }]],
   },
   {
     id: BLUEPRINT_ID.EXTRACTOR,

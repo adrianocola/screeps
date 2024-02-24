@@ -136,6 +136,10 @@ declare const enum BLUEPRINT_STRUCTURE {
   TOWER6 = 'TO6',
   ROAD1 = 'RO1',
   ROAD2 = 'RO2',
+  ROAD3 = 'RO3',
+  ROAD4 = 'RO4',
+  ROAD5 = 'RO5',
+  ROAD6 = 'RO6',
 }
 
 declare const enum CREEP_TYPE {
@@ -150,6 +154,7 @@ declare const enum CREEP_TYPE {
   HARVESTER_WALKER = 'harvesterWalker',
   TRANSFERER = 'transferer',
   UPGRADER = 'upgrader',
+  UPGRADER_EMERGENCY = 'upgraderEmergency',
 }
 
 declare const enum DIRECTION_ROTATION {
@@ -234,11 +239,15 @@ declare const enum TICKS {
 declare const enum TRANSFERER_TASKS {
   FILL_SPAWN1 = 'fillSpawn1',
   FILL_SPAWN2 = 'fillSpawn2',
+  FILL_TOWER1 = 'fillTower1',
   FILL_TERMINAL_ENERGY = 'fillTerminalEnergy',
   FILL_TERMINAL_RESOURCE = 'fillTerminalResource',
   FREE_TERMINAL_ENERGY = 'freeTerminalEnergy',
   FREE_TERMINAL_RESOURCE = 'freeTerminalResource',
-  TRANSFER_LINK = 'transferLink',
+  WITHDRAW_LINK = 'withdrawLink',
+  TRANSFER_LINK_CONTROLLER = 'transferLinkController',
+  TRANSFER_LINK_TOWERS = 'transferLinkTowers',
+  WAIT = 'wait',
 }
 
 /**

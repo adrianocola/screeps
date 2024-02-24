@@ -38,7 +38,6 @@ export const moveTo = (
   //     stuckCount,
   //   };
   // }
-
   return creep.moveTo(target, opts);
 };
 

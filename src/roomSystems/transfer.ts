@@ -1,17 +1,6 @@
 import spawnSystem from './spawn';
 import workerTransferer from 'creepTypes/transferer';
 
-const MAX_PARTS_PER_LEVEL: { [index: number]: number } = {
-  1: 6,
-  2: 6,
-  3: 6,
-  4: 6,
-  5: 6,
-  6: 10,
-  7: 16,
-  8: 16,
-};
-
 const systemDistribute: RoomSystem = {
   interval: TICKS.TICK_20,
   name: ROOM_SYSTEMS.TRANSFER,
@@ -24,12 +13,9 @@ const systemDistribute: RoomSystem = {
   run(room: Room) {
     const storageData = room.memory.state?.storage;
 
-    const maxSections = MAX_PARTS_PER_LEVEL[room.controller?.level || 1] || 6;
-
     spawnSystem.spawn(room, workerTransferer.name, workerTransferer.name, 1, {
       urgent: true,
       fixedDir: true,
-      maxSections,
       memory: {
         role: 'worker',
         worker: {

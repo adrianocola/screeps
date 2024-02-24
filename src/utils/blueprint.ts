@@ -1,4 +1,27 @@
 import { getObjectById } from 'utils/game';
+import Blueprints from 'blueprints/Blueprints';
+import { checkIsOppositeBaseDirection, getDirectionRotation, oppositePos, rotatePos } from 'utils/directions';
+
+export const getBlueprintEntrance = (room: Room, blueprintId: BLUEPRINT_ID) => {
+  const memoryBlueprint = room.memory.blueprint?.schemas[blueprintId];
+  if (!memoryBlueprint) return;
+
+  const blueprint = Blueprints.find(({ id }) => id === blueprintId);
+  if (!blueprint || !blueprint.entrance || !blueprint.dir) return;
+
+  let entrance: Pos = blueprint.entrance;
+  if (checkIsOppositeBaseDirection(blueprint.dir, memoryBlueprint.dir)) {
+    entrance = oppositePos(entrance, blueprint.width, blueprint.height);
+  } else {
+    const rotation = getDirectionRotation(blueprint.dir ?? RIGHT, memoryBlueprint.dir);
+    entrance = rotatePos(entrance, blueprint.width, blueprint.height, rotation);
+  }
+
+  return {
+    x: memoryBlueprint.pos.x + entrance.x,
+    y: memoryBlueprint.pos.y + entrance.y,
+  };
+};
 
 export const getBlueprintDirection = (room: Room, blueprint: BLUEPRINT_ID) => {
   return room.memory.blueprint?.schemas[blueprint]?.dir ?? RIGHT;
@@ -107,6 +130,15 @@ export const getStorageLink = (room: Room) => {
   if (!linkId) return;
 
   return getObjectById(linkId);
+};
+
+export const getBaseTower = (room: Room) => {
+  const towerId: Id<StructureTower> = room.memory.blueprint?.structures[
+    BLUEPRINT_STRUCTURE.TOWER1
+  ] as Id<StructureTower>;
+  if (!towerId) return;
+
+  return getObjectById(towerId);
 };
 
 export const getTowersLink = (room: Room) => {

@@ -9,6 +9,7 @@ import harvester from './harvester';
 import harvesterWalker from './harvesterWalker';
 import transferer from './transferer';
 import upgrader from './upgrader';
+import upgraderEmergency from './upgraderEmergency';
 
 // execution order ⬇️
 const CreepTypes: Record<CREEP_TYPE, CreepType> = {
@@ -21,6 +22,7 @@ const CreepTypes: Record<CREEP_TYPE, CreepType> = {
   [CREEP_TYPE.DISTRIBUTOR]: distributor,
   [CREEP_TYPE.BUILDER]: builder,
   [CREEP_TYPE.UPGRADER]: upgrader,
+  [CREEP_TYPE.UPGRADER_EMERGENCY]: upgraderEmergency,
   [CREEP_TYPE.FIXER]: fixer,
   [CREEP_TYPE.CUSTOM]: custom,
 };

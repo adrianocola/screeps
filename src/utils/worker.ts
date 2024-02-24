@@ -99,7 +99,7 @@ export const getSource = (creep: Creep, killIfNotDefined = true) => {
 
   if (!source) {
     if (killIfNotDefined) suicide(creep, `source not found (${creep.memory.worker?.source})`);
-    return null;
+    return undefined;
   }
 
   return source;

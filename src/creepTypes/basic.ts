@@ -1,7 +1,6 @@
 import { getObjectById } from 'utils/game';
 import { build, harvest, moveTo, repair, transfer, upgradeController } from 'utils/creep';
 import { getSource } from 'utils/worker';
-import { CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY, CONTROLLER_TICKS_TO_DOWNGRADE_SAFE } from 'consts';
 
 /**
  * Does a little bit of everything to get the colony started (or in case of emergency)
@@ -40,20 +39,6 @@ const basicCreepType: CreepType = {
         }
       }
     } else {
-      // if the controller is about to downgrade, upgrade it a little bit
-      if (room.controller && !room.controller.upgradeBlocked) {
-        if (
-          room.controller.ticksToDowngrade < CONTROLLER_TICKS_TO_DOWNGRADE_SAFE &&
-          creep.pos.inRangeTo(room.controller, 3)
-        ) {
-          upgradeController(creep, room.controller, 2);
-          return;
-        } else if (room.controller.ticksToDowngrade < CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY) {
-          upgradeController(creep, room.controller, 2);
-          return;
-        }
-      }
-
       const spawnsOrExtensions = room.find(FIND_MY_STRUCTURES, {
         filter: structure => {
           return (

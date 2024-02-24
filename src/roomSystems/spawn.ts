@@ -99,7 +99,7 @@ const systemSpawn: SystemSpawn = {
       } else if (creepDemand.quantity) {
         if (aliveCreeps.length < creepDemand.quantity) {
           spawnDemand.push(creepDemand);
-        } else if (aliveCreeps.length === creepDemand.quantity && !creepDemand.opts?.fixedDir) {
+        } else if (aliveCreeps.length === creepDemand.quantity) {
           const ticksToSpawn = aliveCreeps[0].body.length * CREEP_SPAWN_TIME;
           const someWillDieSoon = aliveCreeps.some(c => !c.spawning && (c.ticksToLive || 0) <= ticksToSpawn);
           if (someWillDieSoon) {
