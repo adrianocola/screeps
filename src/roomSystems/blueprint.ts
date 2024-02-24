@@ -10,7 +10,11 @@ export const isPosEmptyForSpawning = (room: Room, pos: Pos) => {
   const foundAtList = room.lookAt(pos.x, pos.y);
   for (const found of foundAtList) {
     if (found.type === LOOK_STRUCTURES) {
-      if (found.structure?.structureType === STRUCTURE_ROAD || found.structure?.structureType === STRUCTURE_CONTAINER) {
+      if (
+        found.structure?.structureType === STRUCTURE_ROAD ||
+        found.structure?.structureType === STRUCTURE_CONTAINER ||
+        (found.structure?.structureType === STRUCTURE_RAMPART && (found.structure as StructureRampart)?.my)
+      ) {
         continue;
       }
       return false;
@@ -128,13 +132,27 @@ const systemBlueprint: RoomSystem = {
         row.forEach((item, x) => {
           if (!item || level < item.controller || !memoryBlueprint) return;
 
-          if (memoryBlueprint.structures[item.id]) {
+          const builtStructureId = memoryBlueprint.structures[item.id];
+          const supersededStructure = item.supersededBy
+            ? getObjectById(memoryBlueprint.structures[item.supersededBy] as Id<Structure>)
+            : undefined;
+
+          if (!builtStructureId && supersededStructure) return;
+
+          // check is the structure continues to exist (its ID is already in memory)
+          if (builtStructureId) {
             const structure = getObjectById(memoryBlueprint.structures[item.id] as Id<Structure>);
+
             if (structure) {
+              if (structure.structureType === STRUCTURE_SPAWN) {
+                setSpawnDirections(structure as StructureSpawn);
+              }
+              if (supersededStructure) {
+                structure.destroy();
+                delete memoryBlueprint.structures[item.id];
+                return;
+              }
               if (structure.structureType === item.structure) {
-                if (structure.structureType === STRUCTURE_SPAWN) {
-                  setSpawnDirections(structure as StructureSpawn);
-                }
                 return;
               }
 
@@ -143,8 +161,8 @@ const systemBlueprint: RoomSystem = {
             }
           }
 
+          // check if the structure was build or if there is some other structure in its place
           const itemPos = { x: memorySchema.pos.x + x, y: memorySchema.pos.y + y };
-
           const structures = room.lookForAt(LOOK_STRUCTURES, itemPos.x, itemPos.y);
           for (const structure of structures) {
             if (structure.structureType === item.structure) {
@@ -158,6 +176,7 @@ const systemBlueprint: RoomSystem = {
             }
           }
 
+          // create the construction site (if it doesn't exist)
           const constructionSites = room.lookForAt(LOOK_CONSTRUCTION_SITES, itemPos.x, itemPos.y);
           for (const constructionSite of constructionSites) {
             if (constructionSite.structureType === item.structure) {

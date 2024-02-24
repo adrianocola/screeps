@@ -52,7 +52,13 @@ const Blueprints: Blueprint[] = [
         { id: BLUEPRINT_STRUCTURE.ROAD4, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
         { id: BLUEPRINT_STRUCTURE.ROAD5, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
         { id: BLUEPRINT_STRUCTURE.ROAD6, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
-        { id: BLUEPRINT_STRUCTURE.CONTAINER3, controller: 3, priority: 6, structure: STRUCTURE_CONTAINER },
+        {
+          id: BLUEPRINT_STRUCTURE.CONTAINER3,
+          controller: 3,
+          priority: 6,
+          structure: STRUCTURE_CONTAINER,
+          supersededBy: BLUEPRINT_STRUCTURE.LINK3,
+        },
       ],
     ],
   },
@@ -101,7 +107,17 @@ const Blueprints: Blueprint[] = [
     ],
     ignoreNearKeyPoints: true,
     ignorePaths: true,
-    schema: [[{ id: BLUEPRINT_STRUCTURE.CONTAINER1, controller: 3, priority: 7, structure: STRUCTURE_CONTAINER }]],
+    schema: [
+      [
+        {
+          id: BLUEPRINT_STRUCTURE.CONTAINER1,
+          controller: 3,
+          priority: 7,
+          structure: STRUCTURE_CONTAINER,
+          supersededBy: BLUEPRINT_STRUCTURE.LINK1,
+        },
+      ],
+    ],
   },
   {
     id: BLUEPRINT_ID.CONTAINER_SOURCE_2,
@@ -118,7 +134,17 @@ const Blueprints: Blueprint[] = [
     ],
     ignoreNearKeyPoints: true,
     ignorePaths: true,
-    schema: [[{ id: BLUEPRINT_STRUCTURE.CONTAINER2, controller: 3, priority: 8, structure: STRUCTURE_CONTAINER }]],
+    schema: [
+      [
+        {
+          id: BLUEPRINT_STRUCTURE.CONTAINER2,
+          controller: 3,
+          priority: 8,
+          structure: STRUCTURE_CONTAINER,
+          supersededBy: BLUEPRINT_STRUCTURE.LINK2,
+        },
+      ],
+    ],
   },
   {
     id: BLUEPRINT_ID.CONTAINER_CONTROLLER,
@@ -135,7 +161,17 @@ const Blueprints: Blueprint[] = [
     ],
     ignoreNearKeyPoints: true,
     ignorePaths: true,
-    schema: [[{ id: BLUEPRINT_STRUCTURE.CONTAINER4, controller: 3, priority: 9, structure: STRUCTURE_CONTAINER }]],
+    schema: [
+      [
+        {
+          id: BLUEPRINT_STRUCTURE.CONTAINER4,
+          controller: 3,
+          priority: 9,
+          structure: STRUCTURE_CONTAINER,
+          supersededBy: BLUEPRINT_STRUCTURE.LINK4,
+        },
+      ],
+    ],
   },
   {
     id: BLUEPRINT_ID.LINK_SOURCE_1,

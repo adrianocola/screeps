@@ -329,6 +329,7 @@ interface SchemaItem {
   structure: BuildableStructureConstant;
   controller: number;
   priority: number;
+  supersededBy?: BLUEPRINT_STRUCTURE; // if this structure is built, this one should be destroyed (useful for containers)
 }
 
 interface CloseTo {
