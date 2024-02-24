@@ -2,22 +2,6 @@ import { forEach, sample } from 'lodash';
 import { getBaseSpawnContainer } from 'utils/blueprint';
 import { getObjectById } from 'utils/game';
 
-const POSITION_DIFF_MAP: { [K in DirectionConstant]: { x: number; y: number } } = {
-  [TOP]: { x: 0, y: -1 },
-  [TOP_RIGHT]: { x: 1, y: -1 },
-  [RIGHT]: { x: 1, y: 0 },
-  [BOTTOM_RIGHT]: { x: 1, y: 1 },
-  [BOTTOM]: { x: 0, y: 1 },
-  [BOTTOM_LEFT]: { x: -1, y: 1 },
-  [LEFT]: { x: -1, y: 0 },
-  [TOP_LEFT]: { x: -1, y: -1 },
-};
-
-export const getRelativePosition = (pos: RoomPosition, direction: DirectionConstant, amount: number = 1) => {
-  const diff = POSITION_DIFF_MAP[direction];
-  return new RoomPosition(pos.x + diff.x * amount, pos.y + diff.y * amount, pos.roomName);
-};
-
 export const getRandomSourceId = (room: Room): string | undefined => {
   const availableSourcesIds: string[] = [];
   forEach(room.memory.state?.sources || {}, (source, sourceId) => {

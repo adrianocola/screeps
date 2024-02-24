@@ -3,31 +3,78 @@ import BlueprintScanner from 'blueprints/BlueprintScanner';
 import Blueprints from 'blueprints/Blueprints';
 import { getObjectById, getRootSpawn } from 'utils/game';
 import { getBlueprintDirection } from 'utils/blueprint';
-import { rotateDirection } from 'utils/directions';
+import { getOppositeBaseDirection, getRelativePosition, rotateDirection } from 'utils/directions';
 
+// check is room pos is empty (not wall, blocking building or blueprint planned structure)
+export const isPosEmptyForSpawning = (room: Room, pos: Pos) => {
+  const foundAtList = room.lookAt(pos.x, pos.y);
+  for (const found of foundAtList) {
+    if (found.type === LOOK_STRUCTURES) {
+      if (found.structure?.structureType === STRUCTURE_ROAD || found.structure?.structureType === STRUCTURE_CONTAINER) {
+        continue;
+      }
+      return false;
+    } else if (found.type === LOOK_TERRAIN) {
+      if (found.terrain === 'wall') return false;
+    }
+  }
+
+  if (!room.memory.blueprint) return true;
+
+  for (const blueprint of Blueprints) {
+    const memoryBlueprint = room.memory.blueprint.schemas[blueprint.id];
+    if (!memoryBlueprint) continue;
+
+    // first check if the blueprint and pos can even overlap before doing more complex checks
+    const biggerSize = Math.max(blueprint.width, blueprint.height);
+    if (memoryBlueprint.pos.x + biggerSize < pos.x || memoryBlueprint.pos.x - biggerSize > pos.x) continue;
+    if (memoryBlueprint.pos.y + biggerSize < pos.y || memoryBlueprint.pos.y - biggerSize > pos.y) continue;
+
+    const blueprintOriented = BlueprintScanner.blueprintToDirection(blueprint, memoryBlueprint.dir);
+    for (let x = 0; x < blueprintOriented.width; x++) {
+      for (let y = 0; y < blueprintOriented.height; y++) {
+        const item = blueprintOriented.schema[y][x];
+        if (item) {
+          const itemPos = { x: memoryBlueprint.pos.x + x, y: memoryBlueprint.pos.y + y };
+          if (item.structure === STRUCTURE_ROAD || item.structure === STRUCTURE_CONTAINER) continue;
+          if (pos.x === itemPos.x && pos.y === itemPos.y) return false;
+        }
+      }
+    }
+  }
+
+  return true;
+};
+
+export const checkSpawnDir = (spawn: StructureSpawn, dir: DirectionConstant): DirectionConstant | undefined => {
+  const pos = getRelativePosition(spawn.pos, dir);
+  return isPosEmptyForSpawning(spawn.room, pos) ? dir : undefined;
+};
+
+const checkAllSpawnDirs = (spawn: StructureSpawn, dir: DirectionConstant, rotate: DIRECTION_ROTATION) =>
+  [
+    checkSpawnDir(spawn, rotateDirection(dir, rotate, 3)),
+    checkSpawnDir(spawn, rotateDirection(dir, rotate, 4)),
+    checkSpawnDir(spawn, rotateDirection(dir, rotate, 2)),
+    checkSpawnDir(spawn, rotateDirection(dir, rotate, 1)),
+    checkSpawnDir(spawn, rotateDirection(dir, rotate, 5)),
+  ].filter(Boolean) as DirectionConstant[];
+
+// Set spawn directions based on the blueprint schema (each spawn have different positions)
 const setSpawnDirections = (spawn: StructureSpawn) => {
   if (spawn.memory.dirs) return;
-  if (spawn.id === spawn.room.memory.blueprint?.structures[BLUEPRINT_STRUCTURE.SPAWN3]) return;
 
   const blueprintDir = getBlueprintDirection(spawn.room, BLUEPRINT_ID.BASE);
   if (spawn.id === spawn.room.memory.blueprint?.structures[BLUEPRINT_STRUCTURE.SPAWN1]) {
-    spawn.memory.dirs = [
-      rotateDirection(blueprintDir, DIRECTION_ROTATION.ROTATE_COUNTER_CLOCKWISE, 1),
-      blueprintDir,
-      rotateDirection(blueprintDir, DIRECTION_ROTATION.ROTATE_CLOCKWISE, 1),
-      rotateDirection(blueprintDir, DIRECTION_ROTATION.ROTATE_CLOCKWISE, 2),
-      rotateDirection(blueprintDir, DIRECTION_ROTATION.ROTATE_CLOCKWISE, 3),
-    ];
+    const oppositeDir = getOppositeBaseDirection(blueprintDir);
+    spawn.memory.dirs = checkAllSpawnDirs(spawn, oppositeDir, DIRECTION_ROTATION.ROTATE_COUNTER_CLOCKWISE);
     spawn.memory.fixedDirs = [rotateDirection(blueprintDir, DIRECTION_ROTATION.ROTATE_COUNTER_CLOCKWISE, 3)];
   } else if (spawn.id === spawn.room.memory.blueprint?.structures[BLUEPRINT_STRUCTURE.SPAWN2]) {
-    spawn.memory.dirs = [
-      rotateDirection(blueprintDir, DIRECTION_ROTATION.ROTATE_CLOCKWISE, 1),
-      rotateDirection(blueprintDir, DIRECTION_ROTATION.ROTATE_CLOCKWISE, 2),
-      rotateDirection(blueprintDir, DIRECTION_ROTATION.ROTATE_CLOCKWISE, 3),
-      rotateDirection(blueprintDir, DIRECTION_ROTATION.ROTATE_CLOCKWISE, 4),
-      rotateDirection(blueprintDir, DIRECTION_ROTATION.ROTATE_CLOCKWISE, 5),
-    ];
+    spawn.memory.dirs = checkAllSpawnDirs(spawn, blueprintDir, DIRECTION_ROTATION.ROTATE_CLOCKWISE);
     spawn.memory.fixedDirs = [rotateDirection(blueprintDir, DIRECTION_ROTATION.ROTATE_COUNTER_CLOCKWISE, 1)];
+  } else if (spawn.id === spawn.room.memory.blueprint?.structures[BLUEPRINT_STRUCTURE.SPAWN3]) {
+    const oppositeDir = getOppositeBaseDirection(blueprintDir);
+    spawn.memory.dirs = checkAllSpawnDirs(spawn, oppositeDir, DIRECTION_ROTATION.ROTATE_CLOCKWISE);
   }
 };
 

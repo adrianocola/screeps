@@ -1,8 +1,8 @@
 import roomSystems from './roomSystems';
 import { getRootSpawn } from 'utils/game';
-import { ErrorMapper } from 'utils/ErrorMapper';
+// import { ErrorMapper } from 'utils/ErrorMapper';
 
-export const loop = ErrorMapper.wrapLoop(() => {
+export const loop = () => {
   if (!Memory.rootSpawn) {
     console.log('Set the property "rootSpawn" with the root Spawn name in the Memory to start');
     return;
@@ -21,7 +21,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
   roomSystems();
   // console.log(Game.cpu.getUsed());
-});
+};
 
 //
 // FAZER LÓGICA MELHORADA DE SAFE MODE / DEFENSE!!!
@@ -35,8 +35,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
 // CONTINUAR AQUI!
 //  - A partir do lvl3, fazer roads entre todos blueprints com entrances (principalmente por causa dos swamps)
 //  - Permitir forçar um scan em situações específicas (construção terminada, feito upgrade do controller, após ataque inimigo, saiu do safe mode, etc)
-//  - Revisar lógica de spawn e upgrader-emergency (tá criando mais do que um). Não lembro como funciona demanda de spawn
-//  - Alterar lógica de direções possíveis para um spawn. Olhar lugares em volta (tipo wall e outras contruções e também o blueprint), para decidir os lugares possíveis ( ver blueprint da sala W42S55, Spawn3, pra entender)
 //  - Alterar blueprint para deletar estruturas quando necessário (se tiver outra estrutura criada). (Importante para deletar containers que ficam inúteis depois que links são criados)
 //  - Métodos getSource e getTarget estão sempre retornando uma structure do tipo Source. Corrigir isso pro tipo correto (ou nem usar mais esses métodos)
 //  - Definir prioridades de creeps que o spawn deve criar (defense > basic > harvest1 > collector1 > distributor > harvester2 > collector2 > builder > upgrader)
