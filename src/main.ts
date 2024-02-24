@@ -35,7 +35,6 @@ export const loop = () => {
 // CONTINUAR AQUI!
 //  - A partir do lvl3, fazer roads entre todos blueprints com entrances (principalmente por causa dos swamps)
 //  - Permitir forçar um scan em situações específicas (construção terminada, feito upgrade do controller, após ataque inimigo, saiu do safe mode, etc)
-//  - Alterar blueprint para deletar estruturas quando necessário (se tiver outra estrutura criada). (Importante para deletar containers que ficam inúteis depois que links são criados)
 //  - Métodos getSource e getTarget estão sempre retornando uma structure do tipo Source. Corrigir isso pro tipo correto (ou nem usar mais esses métodos)
 //  - Definir prioridades de creeps que o spawn deve criar (defense > basic > harvest1 > collector1 > distributor > harvester2 > collector2 > builder > upgrader)
 //  - Melhorar estratégia de urgent do spawn. Avaliar se realmente precisa fazer o creep com qualquer energia que tiver ou se pode esperar um pouco (alguns ticks)

@@ -232,7 +232,7 @@ const Blueprints: Blueprint[] = [
     startFrom: { what: FIND_MINERALS, index: 0 },
     ignoreNearKeyPoints: true,
     ignorePaths: true,
-    schema: [[{ id: BLUEPRINT_STRUCTURE.EXTRACTOR, controller: 6, priority: 9, structure: STRUCTURE_EXTRACTOR }]],
+    schema: [[{ id: BLUEPRINT_STRUCTURE.EXTRACTOR, controller: 6, priority: 8, structure: STRUCTURE_EXTRACTOR }]],
   },
   {
     id: BLUEPRINT_ID.CONTAINER_EXTRACTOR,
@@ -249,7 +249,7 @@ const Blueprints: Blueprint[] = [
     ],
     ignoreNearKeyPoints: true,
     ignorePaths: true,
-    schema: [[{ id: BLUEPRINT_STRUCTURE.CONTAINER5, controller: 6, priority: 8, structure: STRUCTURE_CONTAINER }]],
+    schema: [[{ id: BLUEPRINT_STRUCTURE.CONTAINER5, controller: 6, priority: 9, structure: STRUCTURE_CONTAINER }]],
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_1,

@@ -183,6 +183,7 @@ declare const enum ROOM_SYSTEMS {
   FIX = 'fix',
   HARVEST = 'harvest',
   HEAL = 'heal',
+  MINE = 'mine',
   SCAN = 'scan',
   STRUCTURES = 'structures',
   SPAWN = 'spawn',

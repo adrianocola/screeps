@@ -8,6 +8,7 @@ import distribute from './distribute';
 import fix from './fix';
 import harvest from './harvest';
 import heal from './heal';
+import mine from './mine';
 import spawn from './spawn';
 import transfer from './transfer';
 import upgrade from './upgrade';
@@ -30,6 +31,7 @@ export const SYSTEMS: Partial<Record<ROOM_SYSTEMS, RoomSystem>> = {
   [ROOM_SYSTEMS.HARVEST]: harvest,
   [ROOM_SYSTEMS.HEAL]: heal,
   [ROOM_SYSTEMS.TRANSFER]: transfer,
+  [ROOM_SYSTEMS.MINE]: mine,
   [ROOM_SYSTEMS.UPGRADE]: upgrade,
   [ROOM_SYSTEMS.SCAN]: scan,
   [ROOM_SYSTEMS.SPAWN]: spawn, // must happen after all other systems might have requested something to spawn
