@@ -81,7 +81,10 @@ const systemBuild: SystemBuild = {
 
     room.memory.build.queue = sortQueue(validQueue);
 
-    if (!validQueue.length) return;
+    if (!validQueue.length) {
+      spawnSystem.removeSpawn(room, workerBuilder.name);
+      return;
+    }
 
     // down't spawn builders if spawn don't have a container
     if (!room.memory.state.features[ROOM_FEATURE.SPAWN_HAVE_CONTAINER]) return;

@@ -7,7 +7,6 @@ const upgraderEmergencyCreepType: CreepType = {
     if (!creep.room.controller) return;
 
     const source = getSource(creep) as StructureContainer | StructureStorage | undefined;
-
     if (!source) return;
 
     if (creep.store.getUsedCapacity() === 0) {

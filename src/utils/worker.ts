@@ -144,8 +144,3 @@ export const moveToRoom = (creep: Creep, roomName: string, returning: boolean = 
 
   return false;
 };
-
-export const moveToRoomWork = (creep: Creep): boolean => {
-  if (!creep.memory.worker?.workRoomName) return true;
-  return moveToRoom(creep, creep.memory.worker?.workRoomName, false);
-};

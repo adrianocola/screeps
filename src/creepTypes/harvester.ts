@@ -1,4 +1,4 @@
-import { harvest, transfer } from 'utils/creep';
+import { moveTo } from 'utils/creep';
 import { getSource, getTarget } from 'utils/worker';
 
 // 3000 / 300 / 2 = 5
@@ -18,38 +18,27 @@ const harvesterCreepType: CreepType = {
 
     if (!source || !target) return;
 
-    if (!creep.memory.worker?.working && creep.store.getUsedCapacity() === 0) {
-      if (creep.memory.worker) {
-        creep.memory.worker.working = true;
-      }
-    }
-    if (creep.memory.worker?.working && creep.store.getFreeCapacity() === 0) {
-      creep.memory.worker.working = false;
+    if (!creep.pos.isNearTo(source)) {
+      moveTo(creep, source, { range: 1 });
+      return;
     }
 
     const resource = creep.memory.worker?.resource || RESOURCE_ENERGY;
-    if (creep.memory.worker?.working) {
-      const targetHaveSpace = target.store.getFreeCapacity(resource) > 0;
+    const creepUsedCapacity = creep.store.getUsedCapacity();
+    const targetHaveSpace = target.store.getFreeCapacity() > 0;
+    const canHarvest =
+      source instanceof Source ? source.energy > 0 : !source.ticksToRegeneration && source.mineralAmount > 0;
 
-      let canHarvest = false;
-      if (source instanceof Source) canHarvest = source.energy > 0;
-      else if (source instanceof Mineral) canHarvest = !source.ticksToRegeneration && source.mineralAmount > 0;
-
-      const creepUsedCapacity = creep.store.getUsedCapacity(resource);
-      if (canHarvest) {
-        if (harvest(creep, source) === OK) {
-          if (creepUsedCapacity && targetHaveSpace && creepUsedCapacity / creep.store.getCapacity() >= 0.9) {
-            creep.transfer(target, resource); // try to transfer energy, if possible
-          }
+    if (canHarvest) {
+      if (creep.harvest(source) === OK) {
+        // try to transfer energy in the same tick it mined, if already have enough energy stored
+        if (creepUsedCapacity && targetHaveSpace && creepUsedCapacity / creep.store.getCapacity() >= 0.9) {
+          creep.transfer(target, resource);
         }
-      } else if (creepUsedCapacity && targetHaveSpace) {
-        creep.transfer(target, resource);
       }
-    } else {
-      transfer(creep, target, resource);
+    } else if (creepUsedCapacity && targetHaveSpace) {
+      creep.transfer(target, resource);
     }
-
-    return;
   },
 };
 

@@ -68,6 +68,11 @@ const systemUpgrade: RoomSystem = {
 
     const desired = getDesiredNumberOfUpgraders(room);
 
+    if (!desired) {
+      spawnSystem.removeSpawn(room, workerUpgrader.name);
+      return;
+    }
+
     const roomLevel = room.controller?.level || 0;
     const memoryController = room.memory.state?.controller;
     const containerId = memoryController?.linkId ?? memoryController?.containerId;

@@ -1,8 +1,3 @@
-import { size } from 'lodash';
-import spawnSystem from './spawn';
-import { getMainEnergySourceId } from 'utils/room';
-import spawnFixer from 'creepTypes/fixer';
-
 const MAX_RANK = Number.MAX_SAFE_INTEGER;
 
 const MAX_HITS_PER_LEVEL: { [index: number]: number } = {
@@ -48,9 +43,9 @@ const systemFix: RoomSystem = {
   requiredFeatures: {
     [ROOM_FEATURE.BASIC]: false,
     [ROOM_FEATURE.CONTROLLED]: true,
+    [ROOM_FEATURE.HAVE_TOWERS]: true,
   },
   run(room: Room) {
-    const haveTowers = !!room.memory.state?.towers && size(room.memory.state?.towers) > 0;
     const allStructures = room.find(FIND_STRUCTURES);
     const structuresDamaged = allStructures.reduce((result: FixQueueItem[], structure) => {
       const rank = getStructureRank(structure);
@@ -70,22 +65,6 @@ const systemFix: RoomSystem = {
     }
 
     room.memory.fix = { queue };
-
-    if (queue.length && !haveTowers && room.memory.state?.baseSpawnId) {
-      spawnSystem.spawn(room, spawnFixer.name, spawnFixer.name, 1, {
-        memory: {
-          role: 'worker',
-          worker: {
-            type: spawnFixer.name,
-            demandId: spawnFixer.name,
-            roomName: room.name,
-            source: getMainEnergySourceId(room),
-          },
-        },
-      });
-    } else {
-      spawnSystem.removeSpawn(room, spawnFixer.name);
-    }
   },
 };
 

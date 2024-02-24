@@ -20,7 +20,13 @@ const collectorCreepType: CreepType = {
     if (!creep.pos.isNearTo(source) && creep.store.getUsedCapacity() === 0) {
       moveTo(creep, source, { range: 1 });
     } else if (creep.store.getUsedCapacity()) {
-      transfer(creep, target, resource);
+      if (creep.pos.isNearTo(target)) {
+        if (target.store.getFreeCapacity() > 0) {
+          creep.transfer(target, resource);
+        }
+      } else {
+        moveTo(creep, target, { range: 1 });
+      }
     } else if (source.store.getUsedCapacity() >= creep.store.getCapacity()) {
       withdraw(creep, source, resource);
     }

@@ -39,7 +39,7 @@ const systemBackup: RoomSystem = {
 
     const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES).length;
     // add more creeps to compensate for movement and add even more if there are no construction sites
-    // (probably there is only upgrating controller left to do and we can speed up the process)
+    // (probably there is only upgrade controller left to do and we can speed up the process)
     const extraCreepsPerSource = constructionSites ? 1 : 2;
 
     for (const [sourceId, sourceData] of Object.entries(room.memory.state?.sources || {})) {

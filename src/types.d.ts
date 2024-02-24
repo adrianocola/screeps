@@ -149,9 +149,7 @@ declare const enum CREEP_TYPE {
   CUSTOM = 'custom',
   DEFENDER = 'defender',
   DISTRIBUTOR = 'distributor',
-  FIXER = 'fixer',
   HARVESTER = 'harvester',
-  HARVESTER_WALKER = 'harvesterWalker',
   TRANSFERER = 'transferer',
   UPGRADER = 'upgrader',
   UPGRADER_EMERGENCY = 'upgraderEmergency',
@@ -421,34 +419,17 @@ interface SpawnMemory {
 interface CreepMemoryWorker {
   type: CREEP_TYPE;
   demandId: string;
-  working?: boolean;
   roomName: string;
-  workRoomName?: string;
-  harvesterWalker?: {
-    harvested: boolean;
-    sourceIndex: number;
-  };
-  transferer?: {
-    inPos: boolean;
-    task?: TRANSFERER_TASKS;
-  };
-  distributor?: {
-    fromTheGround?: boolean;
-  };
+  task?: TRANSFERER_TASKS;
   source?: string; // structure id
   target?: string; // structure id
   resource?: ResourceConstant;
   roomsPath?: string[]; // choosen way/path of rooms to move between two rooms that are not adjacent (must include source and destination)
-  movement?: {
-    stuckCount: number;
-    lastPos: Pos;
-  };
 }
 
 interface CreepMemory {
   role: string;
   worker?: CreepMemoryWorker;
-  _move?: any; // screeps internal path reusing logic
 }
 
 interface RoomMemoryScanController {

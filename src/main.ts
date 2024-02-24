@@ -40,7 +40,6 @@ export const loop = () => {
 //  - Definir prioridades de creeps que o spawn deve criar (defense > basic > harvest1 > collector1 > distributor > harvester2 > collector2 > builder > upgrader)
 //  - Melhorar estratégia de urgent do spawn. Avaliar se realmente precisa fazer o creep com qualquer energia que tiver ou se pode esperar um pouco (alguns ticks)
 //  - Fazer lógica para fechar sala com walls/ramparts (melhores lugares para colocar, etc)
-//  - Fazer lógica para colocar roads (a partir do lvl4, entre storage x controller, storage x spawns)
 //  - Fazer lógica de defesa melhorada
 //     - Checar em menos ticks (atualmente é de 5 em 5)
 //     - Se torres não estiverem dando conta de matar rapidamente os inimigos, ativar safe mode

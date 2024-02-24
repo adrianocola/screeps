@@ -54,7 +54,7 @@ export const harvest = (
 
     return creep.harvest(target);
   } else {
-    moveTo(creep, target, { ignoreCreeps: creep.pos.inRangeTo(target, 3) });
+    moveTo(creep, target);
     return ERR_NOT_IN_RANGE;
   }
 };
