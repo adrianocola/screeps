@@ -11,8 +11,6 @@ const systemDistribute: RoomSystem = {
     [ROOM_FEATURE.STORAGE_HAVE_LINK]: true,
   },
   run(room: Room) {
-    const storageData = room.memory.state?.storage;
-
     spawnSystem.spawn(room, workerTransferer.name, workerTransferer.name, 1, 6, {
       urgent: true,
       fixedDir: true,
@@ -22,7 +20,6 @@ const systemDistribute: RoomSystem = {
           type: workerTransferer.name,
           demandId: workerTransferer.name,
           roomName: room.name,
-          source: storageData?.linkId,
         },
       },
     });

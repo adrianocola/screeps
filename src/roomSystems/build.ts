@@ -2,7 +2,6 @@ import spawnSystem from './spawn';
 import { getBaseSpawnContainer } from 'utils/blueprint';
 import { dateFromObjectId, getObjectById } from 'utils/game';
 import { getLevelRate } from 'utils/controller';
-import { getMainEnergySourceId } from 'utils/room';
 import workerBuilder from 'creepTypes/builder';
 
 const comparator = (a: BuildQueueItem, b: BuildQueueItem) => {
@@ -98,7 +97,6 @@ const systemBuild: SystemBuild = {
           type: workerBuilder.name,
           demandId: workerBuilder.name,
           roomName: room.name,
-          source: getMainEnergySourceId(room),
         },
       },
     });

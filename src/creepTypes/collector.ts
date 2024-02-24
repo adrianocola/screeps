@@ -1,6 +1,6 @@
-import { moveTo, transfer, withdraw } from 'utils/creep';
-import { getSource } from 'utils/worker';
-import { getMainEnergySource } from 'utils/room';
+import { moveTo, withdraw } from 'utils/creep';
+import { getMainResourceHolder } from 'utils/room';
+import { getMineralContainer, getSourceContainer } from 'utils/blueprint';
 
 const collectorCreepType: CreepType = {
   name: CREEP_TYPE.COLLECTOR,
@@ -10,25 +10,29 @@ const collectorCreepType: CreepType = {
     [MOVE]: 1,
   },
   run(creep) {
-    const source = getSource(creep) as StructureContainer;
-    const target = getMainEnergySource(creep.room);
-
-    if (!source || !target) return;
-
     const resource = creep.memory.worker?.resource || RESOURCE_ENERGY;
+    const energyOrMineralContainer =
+      resource === RESOURCE_ENERGY
+        ? getSourceContainer(creep.room, creep.memory.worker?.sourceIndex)
+        : getMineralContainer(creep.room);
 
-    if (!creep.pos.isNearTo(source) && creep.store.getUsedCapacity() === 0) {
-      moveTo(creep, source, { range: 1 });
+    const resourceHolder =
+      resource === RESOURCE_ENERGY ? getMainResourceHolder(creep.room) : creep.room.terminal || creep.room.storage;
+
+    if (!energyOrMineralContainer || !resourceHolder) return;
+
+    if (!creep.pos.isNearTo(energyOrMineralContainer) && creep.store.getUsedCapacity() === 0) {
+      moveTo(creep, energyOrMineralContainer, { range: 1 });
     } else if (creep.store.getUsedCapacity()) {
-      if (creep.pos.isNearTo(target)) {
-        if (target.store.getFreeCapacity() > 0) {
-          creep.transfer(target, resource);
+      if (creep.pos.isNearTo(resourceHolder)) {
+        if (resourceHolder.store.getFreeCapacity() > 0) {
+          creep.transfer(resourceHolder, resource);
         }
       } else {
-        moveTo(creep, target, { range: 1 });
+        moveTo(creep, resourceHolder, { range: 1 });
       }
-    } else if (source.store.getUsedCapacity() >= creep.store.getCapacity()) {
-      withdraw(creep, source, resource);
+    } else if (energyOrMineralContainer.store.getUsedCapacity() >= creep.store.getCapacity()) {
+      withdraw(creep, energyOrMineralContainer, resource);
     }
   },
 };

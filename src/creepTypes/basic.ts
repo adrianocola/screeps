@@ -1,6 +1,5 @@
 import { getObjectById } from 'utils/game';
-import { build, harvest, moveTo, repair, transfer, upgradeController } from 'utils/creep';
-import { getSource } from 'utils/worker';
+import { build, moveTo, repair, transfer, upgradeController } from 'utils/creep';
 
 /**
  * Does a little bit of everything to get the colony started (or in case of emergency)
@@ -16,7 +15,7 @@ const basicCreepType: CreepType = {
   run(creep) {
     creep.notifyWhenAttacked(false);
 
-    const source = getSource(creep, false) as Source;
+    const source = getObjectById(creep.memory.worker?.sourceId);
     if (!source) return;
 
     if (creep.pos.isNearTo(source)) {

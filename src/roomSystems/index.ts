@@ -45,6 +45,10 @@ const getCreepsGroupedByRoomAndRole = () => {
   const roomCreeps: { [index: string]: { [index: string]: Creep[] } } = {};
 
   Object.values(Game.creeps).forEach(creep => {
+    if (!(creep.name in Game.creeps)) {
+      delete Memory.creeps[creep.name];
+    }
+
     const roomName = creep.memory?.worker?.roomName;
     const jobName = creep.memory?.worker?.type;
     if (!roomName || !jobName) return;

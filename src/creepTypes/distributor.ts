@@ -1,5 +1,5 @@
 import {
-  getMainEnergySource,
+  getMainResourceHolder,
   getRoomClosestEmptyExtension,
   getRoomClosestEmptyTower,
   getRoomEmptySpawn,
@@ -17,14 +17,14 @@ const distributorCreepType: CreepType = {
   run(creep) {
     if (!creep.memory.worker) return;
 
-    const source = getMainEnergySource(creep.room);
-    if (!source) return;
+    const mainResourceHolder = getMainResourceHolder(creep.room);
+    if (!mainResourceHolder) return;
 
     const ticksToLive = creep.ticksToLive || 0;
     // if almost dying, run to the source and transfer all energy
     if (ticksToLive < 20) {
       if (creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-        transfer(creep, source, RESOURCE_ENERGY);
+        transfer(creep, mainResourceHolder, RESOURCE_ENERGY);
       } else {
         creep.suicide();
       }
@@ -37,13 +37,13 @@ const distributorCreepType: CreepType = {
     }
 
     if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
-      withdraw(creep, source, RESOURCE_ENERGY);
+      withdraw(creep, mainResourceHolder, RESOURCE_ENERGY);
       return;
     }
 
     // if next to the main source and have some space, grab some energy (can continue moving)
-    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) !== 0 && creep.pos.isNearTo(source.pos)) {
-      creep.withdraw(source, RESOURCE_ENERGY);
+    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) !== 0 && creep.pos.isNearTo(mainResourceHolder.pos)) {
+      creep.withdraw(mainResourceHolder, RESOURCE_ENERGY);
     }
 
     let target: StructureExtension | StructureLink | StructureContainer | StructureTower | StructureSpawn | undefined;
@@ -66,7 +66,7 @@ const distributorCreepType: CreepType = {
     if (target && target.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
       transfer(creep, target, RESOURCE_ENERGY);
     } else if (creep.store.getFreeCapacity(RESOURCE_ENERGY) !== 0) {
-      withdraw(creep, source, RESOURCE_ENERGY);
+      withdraw(creep, mainResourceHolder, RESOURCE_ENERGY);
     } else {
       // try not stand in the way of other creeps
       const ext1Entrance = getBlueprintEntrance(creep.room, BLUEPRINT_ID.EXT_PACK_1);

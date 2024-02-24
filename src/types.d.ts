@@ -430,8 +430,9 @@ interface CreepMemoryWorker {
   demandId: string;
   roomName: string;
   task?: TRANSFERER_TASKS;
-  source?: string; // structure id
-  target?: string; // structure id
+  sourceIndex?: number;
+  sourceId?: Id<Source>; // source id (used for harvesters and basics)
+  mineralId?: Id<Mineral>; // mineral id (used for miners/harvesters)
   resource?: ResourceConstant;
   roomsPath?: string[]; // choosen way/path of rooms to move between two rooms that are not adjacent (must include source and destination)
 }
@@ -451,10 +452,10 @@ interface RoomMemoryScanController {
 }
 
 interface RoomMemoryScanMineral {
-  containerId?: string;
+  containerId?: Id<StructureContainer>;
   exitsDistances: ExitMap<number>;
-  extractorId?: string;
-  mineralId: string;
+  extractorId?: Id<StructureExtractor>;
+  mineralId: Id<Mineral>;
   paved: boolean;
   storageDistance: number;
   sourceKeeper: boolean;
@@ -502,7 +503,7 @@ interface RoomMemoryState {
   factoryId?: Id<StructureFactory>;
   observerId?: Id<StructureObserver>;
   mineral?: RoomMemoryScanMineral;
-  sources: { [index: string]: RoomMemoryScanSource };
+  sources: Record<string, RoomMemoryScanSource>;
   baseSpawnId?: Id<StructureSpawn>;
   features: Record<ROOM_FEATURE, boolean>;
   ownership: ROOM_OWNERSHIP;
@@ -518,7 +519,7 @@ interface RoomMemoryBlueprintSchema {
 interface RoomMemoryBlueprint {
   version: number;
   schemas: Partial<Record<BLUEPRINT_ID, RoomMemoryBlueprintSchema>>;
-  structures: Partial<Record<BLUEPRINT_STRUCTURE, string>>;
+  structures: Partial<Record<BLUEPRINT_STRUCTURE, Id<Structure>>>;
 }
 
 interface RoomMemoryVisuals {

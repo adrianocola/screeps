@@ -1,14 +1,5 @@
-import { forEach, sample } from 'lodash';
 import { getBaseSpawnContainer } from 'utils/blueprint';
 import { getObjectById } from 'utils/game';
-
-export const getRandomSourceId = (room: Room): string | undefined => {
-  const availableSourcesIds: string[] = [];
-  forEach(room.memory.state?.sources || {}, (source, sourceId) => {
-    if (sourceId && !source.sourceKeeper) availableSourcesIds.push(sourceId);
-  });
-  return sample(availableSourcesIds);
-};
 
 export const getRoomSpawn = (room: Room): StructureSpawn | undefined => {
   if (!room.memory?.state?.baseSpawnId) return undefined;
@@ -102,11 +93,11 @@ export const getNeighborRoomMemory = (currentRoomName: string, exit: ExitConstan
   return getRoomMemory(neighborRoomName);
 };
 
-export const getMainEnergySource = (room: Room) => {
+export const getMainResourceHolder = (room: Room) => {
   if (room.storage) return room.storage;
 
   return getBaseSpawnContainer(room);
 };
 
-export const getMainEnergySourceId = (room: Room): Id<StructureStorage> | Id<StructureContainer> | undefined =>
-  getMainEnergySource(room)?.id;
+export const getMainResourceHolderId = (room: Room): Id<StructureStorage> | Id<StructureContainer> | undefined =>
+  getMainResourceHolder(room)?.id;

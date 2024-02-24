@@ -134,7 +134,7 @@ const systemBlueprint: RoomSystem = {
 
           const builtStructureId = memoryBlueprint.structures[item.id];
           const supersededStructure = item.supersededBy
-            ? getObjectById(memoryBlueprint.structures[item.supersededBy] as Id<Structure>)
+            ? getObjectById(memoryBlueprint.structures[item.supersededBy])
             : undefined;
 
           if (!builtStructureId && supersededStructure) return;

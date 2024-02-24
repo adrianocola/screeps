@@ -11,14 +11,6 @@ export const loop = () => {
     Memory.username = getRootSpawn().owner.username;
   }
 
-  // TODO only do this evey X ticks
-  // Automatically delete memory of missing creeps
-  for (const name in Memory.creeps) {
-    if (!(name in Game.creeps)) {
-      delete Memory.creeps[name];
-    }
-  }
-
   roomSystems();
   // console.log(Game.cpu.getUsed());
 };
@@ -35,9 +27,10 @@ export const loop = () => {
 // CONTINUAR AQUI!
 //  - A partir do lvl3, fazer roads entre todos blueprints com entrances (principalmente por causa dos swamps)
 //  - Permitir forçar um scan em situações específicas (construção terminada, feito upgrade do controller, após ataque inimigo, saiu do safe mode, etc)
-//  - Métodos getSource e getTarget estão sempre retornando uma structure do tipo Source. Corrigir isso pro tipo correto (ou nem usar mais esses métodos)
-//  - Definir prioridades de creeps que o spawn deve criar (defense > basic > harvest1 > collector1 > distributor > harvester2 > collector2 > builder > upgrader)
-//  - Melhorar estratégia de urgent do spawn. Avaliar se realmente precisa fazer o creep com qualquer energia que tiver ou se pode esperar um pouco (alguns ticks)
+//  - Remover lodash do projeto
+//  - Builders não estão respeitando prioridade definidas pelos blueprints
+//  - Deixar lógica do BlueprintScanner rodar por um pouco mais de tempo, tentar fazer um mapa mais "fechado"
+//  - Ver pq ErrorMapper (source map) não está funcionando
 //  - Fazer lógica para fechar sala com walls/ramparts (melhores lugares para colocar, etc)
 //  - Fazer lógica de defesa melhorada
 //     - Checar em menos ticks (atualmente é de 5 em 5)

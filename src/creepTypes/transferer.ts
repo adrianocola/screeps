@@ -34,52 +34,64 @@ const transfererCreepType: CreepType = {
     const controllerLink = getControllerLink(creep.room);
     const towersLink = getTowersLink(creep.room);
 
+    const havePlentyEnergy = storageUsed > 1000;
+
     // define task
     if (creep.memory.worker && !creep.memory.worker?.task) {
-      if (storageUsed > 1000) {
-        if (baseSpawn1 && baseSpawn1.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-          creep.memory.worker.task = TRANSFERER_TASKS.FILL_SPAWN1;
-        } else if (baseTower && baseTower.store.getUsedCapacity(RESOURCE_ENERGY) < MIN_BASE_TOWER_ENERGY) {
-          creep.memory.worker.task = TRANSFERER_TASKS.FILL_TOWER1;
-        } else if (baseSpawn2 && baseSpawn2.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-          creep.memory.worker.task = TRANSFERER_TASKS.FILL_SPAWN2;
-        } else if (towersLink && towersLink.store.getUsedCapacity(RESOURCE_ENERGY) < MIN_TOWERS_LINK_ENERGY) {
-          creep.memory.worker.task = TRANSFERER_TASKS.TRANSFER_LINK_TOWERS;
-        } else if (
-          controllerLink &&
-          controllerLink.store.getUsedCapacity(RESOURCE_ENERGY) < MIN_CONTROLLER_LINK_ENERGY
-        ) {
-          creep.memory.worker.task = TRANSFERER_TASKS.TRANSFER_LINK_CONTROLLER;
-        }
+      if (havePlentyEnergy && baseSpawn1 && baseSpawn1.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+        creep.memory.worker.task = TRANSFERER_TASKS.FILL_SPAWN1;
+      } else if (
+        havePlentyEnergy &&
+        baseTower &&
+        baseTower.store.getUsedCapacity(RESOURCE_ENERGY) < MIN_BASE_TOWER_ENERGY
+      ) {
+        creep.memory.worker.task = TRANSFERER_TASKS.FILL_TOWER1;
+      } else if (havePlentyEnergy && baseSpawn2 && baseSpawn2.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+        creep.memory.worker.task = TRANSFERER_TASKS.FILL_SPAWN2;
+      } else if (
+        havePlentyEnergy &&
+        towersLink &&
+        towersLink.store.getUsedCapacity(RESOURCE_ENERGY) < MIN_TOWERS_LINK_ENERGY
+      ) {
+        creep.memory.worker.task = TRANSFERER_TASKS.TRANSFER_LINK_TOWERS;
+      } else if (
+        havePlentyEnergy &&
+        controllerLink &&
+        controllerLink.store.getUsedCapacity(RESOURCE_ENERGY) < MIN_CONTROLLER_LINK_ENERGY
+      ) {
+        creep.memory.worker.task = TRANSFERER_TASKS.TRANSFER_LINK_CONTROLLER;
+      } else if (linkEnergy / LINK_CAPACITY >= 0.75) {
+        creep.memory.worker.task = TRANSFERER_TASKS.WITHDRAW_LINK;
+      } else if (
+        terminal &&
+        terminal.store.getUsedCapacity(RESOURCE_ENERGY) < MIN_TERMINAL_ENERGY &&
+        storageUsed > 50000
+      ) {
+        creep.memory.worker.task = TRANSFERER_TASKS.FILL_TERMINAL_ENERGY;
+      } else if (terminal && terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 1.5 * MIN_TERMINAL_ENERGY) {
+        creep.memory.worker.task = TRANSFERER_TASKS.FREE_TERMINAL_ENERGY;
+      } else if (roomResource && terminal && terminal.store.getUsedCapacity(roomResource) > MAX_TERMINAL_RESOURCE) {
+        creep.memory.worker.task = TRANSFERER_TASKS.FREE_TERMINAL_RESOURCE;
+      } else if (
+        roomResource &&
+        terminal &&
+        storage.store.getUsedCapacity(roomResource) > 0 &&
+        terminal.store.getUsedCapacity(roomResource) < MARKET_RAW_RESOURCE_SELL_POINT &&
+        storageUsed > 0
+      ) {
+        creep.memory.worker.task = TRANSFERER_TASKS.FILL_TERMINAL_RESOURCE;
       } else {
-        if (linkEnergy / LINK_CAPACITY >= 0.8) {
-          creep.memory.worker.task = TRANSFERER_TASKS.WITHDRAW_LINK;
-        } else if (
-          terminal &&
-          terminal.store.getUsedCapacity(RESOURCE_ENERGY) < MIN_TERMINAL_ENERGY &&
-          storageUsed > 50000
-        ) {
-          creep.memory.worker.task = TRANSFERER_TASKS.FILL_TERMINAL_ENERGY;
-        } else if (terminal && terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 1.5 * MIN_TERMINAL_ENERGY) {
-          creep.memory.worker.task = TRANSFERER_TASKS.FREE_TERMINAL_ENERGY;
-        } else if (terminal && terminal.store.getUsedCapacity(roomResource) > MAX_TERMINAL_RESOURCE) {
-          creep.memory.worker.task = TRANSFERER_TASKS.FREE_TERMINAL_RESOURCE;
-        } else if (
-          terminal &&
-          terminal.store.getUsedCapacity(roomResource) < MARKET_RAW_RESOURCE_SELL_POINT &&
-          storageUsed > 0
-        ) {
-          creep.memory.worker.task = TRANSFERER_TASKS.FILL_TERMINAL_RESOURCE;
-        } else {
-          creep.memory.worker.task = TRANSFERER_TASKS.WITHDRAW_LINK;
-        }
+        creep.memory.worker.task = TRANSFERER_TASKS.WITHDRAW_LINK;
       }
     }
 
     // execute task
     switch (creep.memory.worker.task) {
       case TRANSFERER_TASKS.WITHDRAW_LINK: {
-        if (creep.store.getFreeCapacity(RESOURCE_ENERGY) !== 0) {
+        if (
+          creep.store.getFreeCapacity(RESOURCE_ENERGY) !== 0 &&
+          storageLink.store.getUsedCapacity(RESOURCE_ENERGY) > 0
+        ) {
           withdraw(creep, storageLink, RESOURCE_ENERGY);
         } else {
           transfer(creep, storage, RESOURCE_ENERGY);
@@ -150,7 +162,7 @@ const transfererCreepType: CreepType = {
 
       case TRANSFERER_TASKS.FILL_TERMINAL_RESOURCE: {
         if (roomResource) {
-          if (creep.store.getFreeCapacity(RESOURCE_ENERGY) !== 0) {
+          if (creep.store.getFreeCapacity(roomResource) !== 0) {
             withdraw(creep, storage, roomResource);
           } else if (terminal) {
             transfer(creep, terminal, roomResource);

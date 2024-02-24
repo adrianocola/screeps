@@ -1,8 +1,6 @@
 import { moveTo } from 'utils/creep';
-import { getSource, getTarget } from 'utils/worker';
-
-// 3000 / 300 / 2 = 5
-const WORK_PARTS_HARVEST_SINGLE_SOURCE = Math.ceil(SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME / HARVEST_POWER);
+import { getObjectById } from 'utils/game';
+import { getMineralContainer, getSourceLinkOrContainer } from 'utils/blueprint';
 
 const harvesterCreepType: CreepType = {
   name: CREEP_TYPE.HARVESTER,
@@ -11,33 +9,39 @@ const harvesterCreepType: CreepType = {
     [MOVE]: 1,
   },
   fixedParts: [CARRY, CARRY],
-  maxSections: WORK_PARTS_HARVEST_SINGLE_SOURCE + 1,
   run(creep) {
-    const source = getSource(creep) as Source | Mineral;
-    const target = getTarget(creep) as StructureContainer;
+    const resourceHolder = creep.memory.worker?.mineralId
+      ? getMineralContainer(creep.room)
+      : getSourceLinkOrContainer(creep.room, creep.memory.worker?.sourceIndex);
+    const sourceOrMineral = creep.memory.worker?.mineralId
+      ? getObjectById(creep.memory.worker?.mineralId)
+      : getObjectById(creep.memory.worker?.sourceId);
 
-    if (!source || !target) return;
+    if (!sourceOrMineral || !resourceHolder) return;
 
-    if (!creep.pos.isNearTo(source)) {
-      moveTo(creep, source, { range: 1 });
+    if (!creep.pos.isNearTo(sourceOrMineral)) {
+      moveTo(creep, sourceOrMineral, { range: 1 });
       return;
     }
 
     const resource = creep.memory.worker?.resource || RESOURCE_ENERGY;
     const creepUsedCapacity = creep.store.getUsedCapacity();
-    const targetHaveSpace = target.store.getFreeCapacity() > 0;
+    const resourceHolderFreeCapacity = resourceHolder.store.getFreeCapacity(resource) ?? 0;
+    const resourceHolderHaveSpace = resourceHolderFreeCapacity > 0;
     const canHarvest =
-      source instanceof Source ? source.energy > 0 : !source.ticksToRegeneration && source.mineralAmount > 0;
+      sourceOrMineral instanceof Source
+        ? sourceOrMineral.energy > 0
+        : !sourceOrMineral.ticksToRegeneration && sourceOrMineral.mineralAmount > 0;
 
     if (canHarvest) {
-      if (creep.harvest(source) === OK) {
+      if (creep.harvest(sourceOrMineral) === OK) {
         // try to transfer energy in the same tick it mined, if already have enough energy stored
-        if (creepUsedCapacity && targetHaveSpace && creepUsedCapacity / creep.store.getCapacity() >= 0.9) {
-          creep.transfer(target, resource);
+        if (creepUsedCapacity && resourceHolderHaveSpace && creepUsedCapacity / creep.store.getCapacity() >= 0.9) {
+          creep.transfer(resourceHolder, resource);
         }
       }
-    } else if (creepUsedCapacity && targetHaveSpace) {
-      creep.transfer(target, resource);
+    } else if (creepUsedCapacity && resourceHolderHaveSpace) {
+      creep.transfer(resourceHolder, resource);
     }
   },
 };

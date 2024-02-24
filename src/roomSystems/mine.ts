@@ -10,8 +10,8 @@ const MAX_PARTS_PER_LEVEL: { [index: number]: number } = {
   3: 0,
   4: 0,
   5: 0,
-  6: 12,
-  7: 16,
+  6: 24,
+  7: 24,
   8: 24,
 };
 
@@ -29,7 +29,7 @@ const systemMine: RoomSystem = {
 
     if (mineralData.sourceKeeper || !mineralData.containerId || !mineralData.extractorId) return;
 
-    const mineral = Game.getObjectById<Mineral>(mineralData.mineralId as Id<Mineral>);
+    const mineral = Game.getObjectById<Mineral>(mineralData.mineralId);
     const terminalFreeCapacity = room.terminal?.store.getFreeCapacity();
     const storageUsedCapacity = room.storage?.store.getUsedCapacity(mineralData.type) || 0;
     if (
@@ -54,8 +54,7 @@ const systemMine: RoomSystem = {
           type: harvesterCreepType.name,
           demandId: DEMAND_ID,
           roomName: room.name,
-          source: mineralData.mineralId,
-          target: mineralData.containerId,
+          mineralId: mineralData.mineralId,
           resource: mineralData.type,
         },
       },

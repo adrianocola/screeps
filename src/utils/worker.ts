@@ -1,6 +1,3 @@
-import { suicide } from './creep';
-import { getObjectById } from 'utils/game';
-
 const BODY_PARTS_PRIORITY: BodyPartsMap<number> = {
   [TOUGH]: 1,
   [CARRY]: 2,
@@ -85,38 +82,6 @@ export const buildBodyPartsArray = (
   }
 
   return partsArray.sort(bodyPartsSorter);
-};
-
-const getById = (id: Id<Source | Structure>) => {
-  return getObjectById<Source | Structure>(id);
-};
-
-export const getSource = (creep: Creep, killIfNotDefined = true) => {
-  let source;
-  if (creep.memory.worker?.source) {
-    source = getById(creep.memory.worker?.source as Id<Source>);
-  }
-
-  if (!source) {
-    if (killIfNotDefined) suicide(creep, `source not found (${creep.memory.worker?.source})`);
-    return undefined;
-  }
-
-  return source;
-};
-
-export const getTarget = (creep: Creep, killIfNotDefined = true) => {
-  let target;
-  if (creep.memory.worker?.target) {
-    target = getById(creep.memory.worker?.target as Id<Source>);
-  }
-
-  if (!target) {
-    if (killIfNotDefined) suicide(creep, `target not found (${creep.memory.worker?.target})`);
-    return null;
-  }
-
-  return target;
 };
 
 export const getRoom = (creep: Creep): Room => {

@@ -1,5 +1,5 @@
 import { getExitsDistances, getIsPathPaved, getRawPath } from './scanUtils';
-import { getMainEnergySourceId } from 'utils/room';
+import { getMainResourceHolderId } from 'utils/room';
 import { getObjectById } from 'utils/game';
 import { getControllerContainer, getControllerLink } from 'utils/blueprint';
 
@@ -9,7 +9,7 @@ export default (room: Room) => {
     let paved = false;
     let storageDistance = -1;
 
-    const spawnContainerId = getMainEnergySourceId(room);
+    const spawnContainerId = getMainResourceHolderId(room);
     if (spawnContainerId) {
       const spawnContainer = getObjectById<StructureContainer | StructureStorage>(spawnContainerId);
       if (spawnContainer) {

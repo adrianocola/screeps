@@ -1,7 +1,7 @@
 import { getObjectById } from 'utils/game';
 import { build, withdraw } from 'utils/creep';
 import { getRoom } from 'utils/worker';
-import { getMainEnergySource } from 'utils/room';
+import { getMainResourceHolder } from 'utils/room';
 
 const getFirstConstructionSiteAvailable = (creep: Creep) => {
   const room = getRoom(creep);
@@ -29,9 +29,9 @@ const builderCreepType: CreepType = {
     if (!target) return;
 
     if (creep.store.getUsedCapacity() === 0) {
-      const source = getMainEnergySource(creep.room);
-      if (source) {
-        withdraw(creep, source, RESOURCE_ENERGY);
+      const mainResourceHolder = getMainResourceHolder(creep.room);
+      if (mainResourceHolder) {
+        withdraw(creep, mainResourceHolder, RESOURCE_ENERGY);
       }
     } else {
       build(creep, target);

@@ -1,5 +1,4 @@
 import spawnSystem from './spawn';
-import { getRandomSourceId } from 'utils/room';
 
 import basicCreepType from 'creepTypes/basic';
 
@@ -11,9 +10,9 @@ const createBasic = (room: Room, sourceId: string, nameSuffix: string | number, 
       role: 'worker',
       worker: {
         type: basicCreepType.name,
+        sourceId: sourceId as Id<Source>,
         demandId,
         roomName: room.name,
-        source: sourceId,
       },
     },
   });
@@ -23,26 +22,18 @@ const systemBackup: RoomSystem = {
   interval: TICKS.TICK_20,
   name: ROOM_SYSTEMS.BACKUP,
   requiredFeatures: {
+    [ROOM_FEATURE.BASIC]: true,
     [ROOM_FEATURE.CONTROLLED]: true,
   },
   run(room: Room) {
-    // SAFE MEASURE IF ALL CREEPS IN THE ROOM DIE
-    const allCreeps = room.find(FIND_MY_CREEPS);
-    if (!allCreeps.length && !room.memory.state?.features.basic) {
-      const randomSourceId = getRandomSourceId(room);
-      if (randomSourceId) {
-        return createBasic(room, randomSourceId, 'backup', 1, 0);
-      }
-    }
-
-    if (!room.memory.state?.features[ROOM_FEATURE.BASIC]) return;
-
     const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES).length;
     // add more creeps to compensate for movement and add even more if there are no construction sites
     // (probably there is only upgrade controller left to do and we can speed up the process)
     const extraCreepsPerSource = constructionSites ? 1 : 2;
+    const sources = room.memory.state?.sources || {};
 
-    for (const [sourceId, sourceData] of Object.entries(room.memory.state?.sources || {})) {
+    for (const sourceId in sources) {
+      const sourceData = sources[sourceId];
       if (sourceData.sourceKeeper) continue;
 
       const desiredInitials = Math.min(sourceData.slotsAvailable, 4) + extraCreepsPerSource;

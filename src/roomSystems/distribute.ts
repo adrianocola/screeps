@@ -1,5 +1,4 @@
 import spawnSystem from './spawn';
-import { getMainEnergySourceId } from 'utils/room';
 import workerDistributor from 'creepTypes/distributor';
 
 const MAX_PARTS_PER_LEVEL: { [index: number]: number } = {
@@ -36,7 +35,6 @@ const systemDistribute: RoomSystem = {
           type: workerDistributor.name,
           demandId: workerDistributor.name,
           roomName: room.name,
-          source: getMainEnergySourceId(room),
         },
       },
     });

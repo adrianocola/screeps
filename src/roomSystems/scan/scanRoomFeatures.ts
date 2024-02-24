@@ -1,5 +1,5 @@
 import { size } from 'lodash';
-import { getMainEnergySource } from 'utils/room';
+import { getMainResourceHolder } from 'utils/room';
 
 const checkControllerHaveContainerOrLink = (controller?: RoomMemoryScanController) =>
   !!controller?.containerId || !!controller?.linkId;
@@ -17,7 +17,7 @@ const checkAllSourcesHaveLink = (sources: { [index: string]: RoomMemoryScanSourc
 const checkAllSourcesHaveContainerOrLink = (sources: { [index: string]: RoomMemoryScanSource }): boolean =>
   Object.values(sources).every(source => source.sourceKeeper || source.sourceContainerId || source.sourceLinkId);
 
-const checkSpawnHaveContainer = (room: Room): boolean => !!getMainEnergySource(room);
+const checkSpawnHaveContainer = (room: Room): boolean => !!getMainResourceHolder(room);
 
 const checkStorageHaveLink = (room: Room): boolean => {
   if (!room.storage) return false;

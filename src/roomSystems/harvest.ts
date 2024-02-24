@@ -1,6 +1,5 @@
 import spawnSystem from './spawn';
 import workerHarvester from 'creepTypes/harvester';
-import { getSourceLinkOrContainer } from 'utils/blueprint';
 
 const systemHarvest: RoomSystem = {
   interval: TICKS.TICK_10,
@@ -11,13 +10,11 @@ const systemHarvest: RoomSystem = {
     [ROOM_FEATURE.SOURCES_HAVE_CONTAINER_OR_LINK]: true,
   },
   run(room: Room) {
-    const entries = Object.entries(room.memory.state?.sources || {});
-    for (let i = 0; i < entries.length; i++) {
-      // for (const [sourceId, sourceData] of Object.entries(room.memory.state?.sources || {})) {
-      const [sourceId, sourceData] = entries[i];
+    const sourcesData = room.memory.state?.sources || {};
+    for (const sourceId in sourcesData) {
+      const sourceData = sourcesData[sourceId];
 
-      const sourceLinkOrContainer = getSourceLinkOrContainer(room, i);
-      if (sourceData.sourceKeeper || !sourceLinkOrContainer) continue;
+      if (sourceData.sourceKeeper) continue;
 
       const demandId = `${workerHarvester.name}-S${sourceData.index}`;
       spawnSystem.spawn(room, demandId, workerHarvester.name, sourceData.harvestersDesired, 30, {
@@ -29,9 +26,8 @@ const systemHarvest: RoomSystem = {
             type: workerHarvester.name,
             demandId,
             roomName: room.name,
-            source: sourceId,
-            target: sourceLinkOrContainer?.id,
-            resource: RESOURCE_ENERGY,
+            sourceId: sourceId as Id<Source>,
+            sourceIndex: sourceData.index,
           },
         },
       });

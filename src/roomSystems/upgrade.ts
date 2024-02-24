@@ -4,7 +4,6 @@ import workerUpgrader from 'creepTypes/upgrader';
 import upgraderEmergency from 'creepTypes/upgraderEmergency';
 import { getLevelRate } from 'utils/controller';
 import { CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY } from 'consts';
-import { getMainEnergySourceId } from 'utils/room';
 
 const getDesiredNumberOfUpgraders = (room: Room): number => {
   let levelRate = 0.5;
@@ -57,8 +56,6 @@ const systemUpgrade: RoomSystem = {
             type: upgraderEmergency.name,
             demandId: upgraderEmergency.name,
             roomName: room.name,
-            source: getMainEnergySourceId(room),
-            target: room.controller.id,
           },
         },
       });
@@ -75,7 +72,6 @@ const systemUpgrade: RoomSystem = {
 
     const roomLevel = room.controller?.level || 0;
     const memoryController = room.memory.state?.controller;
-    const containerId = memoryController?.linkId ?? memoryController?.containerId;
 
     spawnSystem.spawn(room, workerUpgrader.name, workerUpgrader.name, desired, 140, {
       optimizeForRoads: memoryController?.paved,
@@ -91,8 +87,6 @@ const systemUpgrade: RoomSystem = {
           type: workerUpgrader.name,
           demandId: workerUpgrader.name,
           roomName: room.name,
-          source: containerId,
-          target: room.controller.id,
         },
       },
     });
