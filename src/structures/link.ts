@@ -17,14 +17,23 @@ const structureLink: SystemStructure<StructureLink> = {
       case link.room.memory.blueprint?.structures[BLUEPRINT_STRUCTURE.LINK1]:
       case link.room.memory.blueprint?.structures[BLUEPRINT_STRUCTURE.LINK2]: {
         if (linkUsedCapacity / LINK_CAPACITY >= 0.75) {
+          const storageEnergy = link.room.storage?.store.getUsedCapacity(RESOURCE_ENERGY) ?? 0;
           const controllerLink = getControllerLink(link.room);
-          if (controllerLink && controllerLink.store.getUsedCapacity(RESOURCE_ENERGY) < MID_CONTROLLER_LINK_ENERGY) {
+          if (
+            storageEnergy > 5000 &&
+            controllerLink &&
+            controllerLink.store.getUsedCapacity(RESOURCE_ENERGY) < MID_CONTROLLER_LINK_ENERGY
+          ) {
             link.transferEnergy(controllerLink);
             return;
           }
 
           const towersLink = getTowersLink(link.room);
-          if (towersLink && towersLink.store.getUsedCapacity(RESOURCE_ENERGY) < MID_TOWERS_LINK_ENERGY) {
+          if (
+            storageEnergy > 5000 &&
+            towersLink &&
+            towersLink.store.getUsedCapacity(RESOURCE_ENERGY) < MID_TOWERS_LINK_ENERGY
+          ) {
             link.transferEnergy(towersLink);
             return;
           }

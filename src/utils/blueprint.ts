@@ -1,12 +1,12 @@
 import { getObjectById } from 'utils/game';
-import Blueprints from 'blueprints/Blueprints';
+import { BlueprintsMap } from 'blueprints/Blueprints';
 import { checkIsOppositeBaseDirection, getDirectionRotation, oppositePos, rotatePos } from 'utils/directions';
 
 export const getBlueprintEntrance = (room: Room, blueprintId: BLUEPRINT_ID) => {
   const memoryBlueprint = room.memory.blueprint?.schemas[blueprintId];
   if (!memoryBlueprint) return;
 
-  const blueprint = Blueprints.find(({ id }) => id === blueprintId);
+  const blueprint = BlueprintsMap[blueprintId];
   if (!blueprint || !blueprint.entrance || !blueprint.dir) return;
 
   let entrance: Pos = blueprint.entrance;

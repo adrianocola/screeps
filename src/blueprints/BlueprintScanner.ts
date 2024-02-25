@@ -1,4 +1,4 @@
-import Blueprints from './Blueprints';
+import Blueprints, { BlueprintsMap } from './Blueprints';
 import {
   checkIsOppositeBaseDirection,
   checkIsValidBuildablePos,
@@ -308,7 +308,7 @@ class BlueprintScanner {
   };
 
   private scanBaseBlueprint(rootSpawn?: StructureSpawn) {
-    const baseBlueprint = Blueprints.find(b => b.base);
+    const baseBlueprint = BlueprintsMap[BLUEPRINT_ID.BASE];
     if (!baseBlueprint) throw new Error('No base blueprint found');
 
     if (rootSpawn) {

@@ -1,4 +1,3 @@
-import { groupBy } from 'lodash';
 import Structures from 'structures';
 
 const systemStructures: RoomSystem = {
@@ -10,7 +9,15 @@ const systemStructures: RoomSystem = {
   },
   run: (room: Room) => {
     const allStructures = room.find(FIND_MY_STRUCTURES);
-    const groupedStructuresByType = groupBy(allStructures, 'structureType');
+    const groupedStructuresByType = allStructures.reduce(
+      (acc, structure) => {
+        const group = acc[structure.structureType] || [];
+        group.push(structure);
+        acc[structure.structureType] = group;
+        return acc;
+      },
+      {} as Record<string, Structure[]>,
+    );
 
     for (const structureType in Structures) {
       const systemStructure = Structures[structureType as StructureConstant];

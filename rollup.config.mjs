@@ -9,7 +9,7 @@ import screeps from "rollup-plugin-screeps";
 
 const dest = process.env.DEST;
 if (!dest) {
-  throw new Error('No destination specified - code will be compiled but not uploaded');
+  console.log('No destination specified - code will be compiled but not uploaded');
 }
 
 if (!fs.existsSync('./screeps.json')) {
@@ -26,9 +26,8 @@ export default {
   output: {
     file: 'dist/main.js',
     format: 'cjs',
-    sourcemap: true
+    sourcemap: true,
   },
-
   plugins: [
     clear({ targets: ['dist'] }),
     resolve({ rootDir: 'src' }),

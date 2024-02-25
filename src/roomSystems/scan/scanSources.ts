@@ -1,4 +1,3 @@
-import { size } from 'lodash';
 import { getExitsDistances, getIsPathPaved, getRawPath, rawPathDistance } from './scanUtils';
 import { getSourceContainer, getSourceLink } from 'utils/blueprint';
 import { getRelativePosition } from 'utils/directions';
@@ -109,7 +108,7 @@ export default (room: Room, spawn?: StructureSpawn) => {
 
     const sourceKeeper = sourceKeeperLairs.length > 0;
 
-    const slotsAvailable = TOP_LEFT - size(slots);
+    const slotsAvailable = TOP_LEFT - Object.keys(slots).length;
     const harvestersDesired = getDesiredNumberOfHarvesters(room, slotsAvailable);
 
     sources[source.id] = {

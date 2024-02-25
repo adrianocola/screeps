@@ -47,7 +47,7 @@ const systemFix: RoomSystem = {
   },
   run(room: Room) {
     const allStructures = room.find(FIND_STRUCTURES);
-    const structuresDamaged = allStructures.reduce((result: FixQueueItem[], structure) => {
+    const structuresDamaged = allStructures.reduce((result, structure) => {
       const rank = getStructureRank(structure);
       if (rank !== MAX_RANK) {
         result.push({
@@ -57,7 +57,7 @@ const systemFix: RoomSystem = {
         });
       }
       return result;
-    }, []);
+    }, [] as FixQueueItem[]);
 
     let queue: FixQueueItem[] = [];
     if (structuresDamaged.length) {

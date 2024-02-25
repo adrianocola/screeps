@@ -1,4 +1,3 @@
-import { orderBy } from 'lodash';
 import spawnSystem from './spawn';
 import { countBodyParts } from 'utils/creepBody';
 import workerDefender from 'creepTypes/defender';
@@ -13,7 +12,8 @@ const systemDefense: RoomSystem = {
     const enemies = room.find(FIND_HOSTILE_CREEPS);
 
     if (enemies.length) {
-      room.memory.defense = { queue: orderBy(enemies, e => countBodyParts(e, HEAL), 'desc').map(c => c.id) };
+      const enemiesHealPartsSorted = enemies.map(e => countBodyParts(e, HEAL)).sort((a, b) => b - a);
+      room.memory.defense = { queue: enemiesHealPartsSorted.map((c, i) => enemies[i].id) };
       // if (
       //   !room.controller?.safeMode &&
       //   room.controller?.safeModeAvailable &&

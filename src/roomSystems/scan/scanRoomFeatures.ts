@@ -1,4 +1,3 @@
-import { size } from 'lodash';
 import { getMainResourceHolder } from 'utils/room';
 
 const checkControllerHaveContainerOrLink = (controller?: RoomMemoryScanController) =>
@@ -43,12 +42,13 @@ export default (
   const allSourcesHaveContainerOrLink = checkAllSourcesHaveContainerOrLink(sources);
   const spawnHaveContainer = checkSpawnHaveContainer(room);
   const storageHaveLink = checkStorageHaveLink(room);
+  const towers = structures[STRUCTURE_TOWER] ?? [];
 
   return {
     [ROOM_FEATURE.BASIC]: !allSourcesHaveContainerOrLink || (!spawnHaveContainer && !room.storage),
     [ROOM_FEATURE.CONTROLLED]: !!room.controller?.my,
     [ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK]: controllerHaveContainerOrLink,
-    [ROOM_FEATURE.HAVE_TOWERS]: size(structures[STRUCTURE_TOWER]) > 0,
+    [ROOM_FEATURE.HAVE_TOWERS]: towers.length > 0,
     [ROOM_FEATURE.MINERALS_HAVE_CONTAINER]: allMineralsHaveContainer,
     [ROOM_FEATURE.MINERALS_HAVE_EXTRACTOR]: allMineralsHaveExtractor,
     [ROOM_FEATURE.SAFE_MODE_ACTIVE]: !!room.controller?.safeMode,

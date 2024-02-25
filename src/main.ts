@@ -1,8 +1,8 @@
 import roomSystems from './roomSystems';
 import { getRootSpawn } from 'utils/game';
-// import { ErrorMapper } from 'utils/ErrorMapper';
+import { ErrorMapper } from 'utils/ErrorMapper';
 
-export const loop = () => {
+export const loop = ErrorMapper.wrapLoop(() => {
   if (!Memory.rootSpawn) {
     console.log('Set the property "rootSpawn" with the root Spawn name in the Memory to start');
     return;
@@ -11,9 +11,17 @@ export const loop = () => {
     Memory.username = getRootSpawn().owner.username;
   }
 
+  // TODO make this run only every X ticks
+  // Automatically delete memory of missing creeps
+  for (const name in Memory.creeps) {
+    if (!(name in Game.creeps)) {
+      delete Memory.creeps[name];
+    }
+  }
+
   roomSystems();
   // console.log(Game.cpu.getUsed());
-};
+});
 
 //
 // FAZER LÓGICA MELHORADA DE SAFE MODE / DEFENSE!!!
@@ -27,10 +35,8 @@ export const loop = () => {
 // CONTINUAR AQUI!
 //  - A partir do lvl3, fazer roads entre todos blueprints com entrances (principalmente por causa dos swamps)
 //  - Permitir forçar um scan em situações específicas (construção terminada, feito upgrade do controller, após ataque inimigo, saiu do safe mode, etc)
-//  - Remover lodash do projeto
 //  - Builders não estão respeitando prioridade definidas pelos blueprints
 //  - Deixar lógica do BlueprintScanner rodar por um pouco mais de tempo, tentar fazer um mapa mais "fechado"
-//  - Ver pq ErrorMapper (source map) não está funcionando
 //  - Fazer lógica para fechar sala com walls/ramparts (melhores lugares para colocar, etc)
 //  - Fazer lógica de defesa melhorada
 //     - Checar em menos ticks (atualmente é de 5 em 5)

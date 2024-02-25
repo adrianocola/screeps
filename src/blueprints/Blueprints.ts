@@ -517,4 +517,12 @@ const Blueprints: Blueprint[] = [
   },
 ];
 
+export const BlueprintsMap = Blueprints.reduce(
+  (acc, blueprint) => {
+    acc[blueprint.id] = blueprint;
+    return acc;
+  },
+  {} as Record<string, Blueprint>,
+);
+
 export default Blueprints;

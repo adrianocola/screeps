@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import { SPAWN_MAX_DEMAND_TICKS } from 'consts';
 import CreepTypes from 'creepTypes';
 import { bodyFixedCost, bodySectionCost, buildBodyPartsArray, maxBodySections } from 'utils/worker';
@@ -75,7 +74,7 @@ const systemSpawn: SystemSpawn = {
     if (!room.memory.spawn) return;
 
     const demand = room.memory.spawn?.demand || {};
-    if (isEmpty(demand) || room.energyAvailable < 100) return;
+    if (!Object.keys(demand).length || room.energyAvailable < 100) return;
 
     const availableSpawns = room.find(FIND_MY_SPAWNS, { filter: s => !s.spawning });
     if (!availableSpawns.length) return;
