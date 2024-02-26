@@ -18,6 +18,7 @@ class BlueprintScanner {
   private room: Room;
   private buildingCostMatrix: CostMatrix;
   private buildingsAndPathsCostMatrix: CostMatrix;
+  private pathFindingCostMatrix: CostMatrix;
   private terrain: RoomTerrain;
   private results: Record<string, BlueprintScanResult>;
 
@@ -26,6 +27,7 @@ class BlueprintScanner {
     this.room = Game.rooms[roomName];
     this.buildingCostMatrix = new PathFinder.CostMatrix();
     this.buildingsAndPathsCostMatrix = new PathFinder.CostMatrix();
+    this.pathFindingCostMatrix = new PathFinder.CostMatrix();
     this.terrain = new Room.Terrain(roomName);
     this.results = {};
 
@@ -89,6 +91,77 @@ class BlueprintScanner {
     return BlueprintScanner.rotateBlueprint(blueprint, getDirectionRotation(blueprint.dir, direction));
   }
 
+  public static getBlueprintCosts(
+    room: Room,
+    pos: Pos,
+    blueprint: Blueprint,
+    costMatrix: CostMatrix,
+    onlyPaved = false,
+    getBlueprintResultEntrance: (room: Room, blueprintId: BLUEPRINT_ID) => RoomPosition | undefined,
+  ) {
+    if (!blueprint.closeTo) return [];
+
+    const costs: BlueprintCost[] = [];
+
+    const entrancePos = new RoomPosition(
+      pos.x + (blueprint.entrance?.x ?? 0),
+      pos.y + (blueprint.entrance?.y ?? 0),
+      room.name,
+    );
+
+    const roomCallback = () => costMatrix;
+
+    const searchOptions = { roomCallback, maxRooms: 1, plainCost: 2, swampCost: 10 };
+
+    for (const closeTo of blueprint.closeTo) {
+      if (onlyPaved && !closeTo.paved) continue;
+      if (closeTo.what === STRUCTURE_CONTROLLER && room.controller) {
+        const result = PathFinder.search(
+          entrancePos,
+          { pos: room.controller.pos, range: closeTo.range ?? 1 },
+          searchOptions,
+        );
+        if (result.incomplete) return [];
+        costs.push({ value: result.cost, weight: closeTo.weight ?? 1, path: result.path });
+      } else if (closeTo.what === FIND_SOURCES || closeTo.what === FIND_MINERALS) {
+        let findings = room.find(closeTo.what);
+        if (closeTo.index !== undefined) {
+          findings = [findings[closeTo.index]];
+        }
+        for (const item of findings) {
+          const result = PathFinder.search(entrancePos, { pos: item.pos, range: closeTo.range ?? 1 }, searchOptions);
+          if (result.incomplete) return [];
+          costs.push({ value: result.cost, weight: closeTo.weight ?? 1, path: result.path });
+        }
+      } else if (typeof closeTo.what === 'string') {
+        const otherEntrance = getBlueprintResultEntrance(room, closeTo.what as BLUEPRINT_ID);
+        if (otherEntrance) {
+          const result = PathFinder.search(
+            entrancePos,
+            { pos: otherEntrance, range: closeTo.range ?? 1 },
+            searchOptions,
+          );
+          if (result.incomplete) return [];
+          costs.push({ value: result.cost, weight: closeTo.weight ?? 1, path: result.path });
+        }
+      } else {
+        let findings = room.find(closeTo.what);
+        if (findings.length) {
+          if (closeTo.index !== undefined) {
+            findings = [findings[closeTo.index]];
+          }
+          for (const item of findings) {
+            const result = PathFinder.search(entrancePos, { pos: item, range: closeTo.range ?? 1 }, searchOptions);
+            if (result.incomplete) return [];
+            costs.push({ value: result.cost, weight: closeTo.weight ?? 1, path: result.path });
+          }
+        }
+      }
+    }
+
+    return costs;
+  }
+
   private isNearKeyPoint(pos: Pos, ignoreNearKeyPoints?: boolean) {
     if (ignoreNearKeyPoints) return false;
 
@@ -117,77 +190,28 @@ class BlueprintScanner {
     return true;
   }
 
-  private getBlueprintCosts(pos: Pos, blueprint: Blueprint) {
+  private calcBlueprintCosts = (pos: Pos, blueprint: Blueprint) => {
     if (!blueprint.closeTo) return [];
 
-    const costs: BlueprintCost[] = [];
-
-    const entrancePos = new RoomPosition(
-      pos.x + (blueprint.entrance?.x ?? 0),
-      pos.y + (blueprint.entrance?.y ?? 0),
-      this.roomName,
-    );
-
-    const costMatrix = this.buildingCostMatrix.clone();
+    const pathsCostMatrix = this.pathFindingCostMatrix.clone();
 
     blueprint.schema.forEach((row, y) => {
       row.forEach((item, x) => {
         if (item) {
-          costMatrix.set(pos.x + x, pos.y + y, 0xff);
+          pathsCostMatrix.set(pos.x + x, pos.y + y, 0xff);
         }
       });
     });
 
-    const roomCallback = () => costMatrix;
-
-    const searchOptions = { roomCallback, maxRooms: 1 };
-
-    for (const closeTo of blueprint.closeTo) {
-      if (closeTo.what === STRUCTURE_CONTROLLER && this.room.controller) {
-        const result = PathFinder.search(
-          entrancePos,
-          { pos: this.room.controller.pos, range: closeTo.range ?? 1 },
-          searchOptions,
-        );
-        if (result.incomplete) return [];
-        costs.push({ value: result.cost, weight: closeTo.weight ?? 1, path: result.path });
-      } else if (closeTo.what === FIND_SOURCES || closeTo.what === FIND_MINERALS) {
-        let findings = this.room.find(closeTo.what);
-        if (closeTo.index !== undefined) {
-          findings = [findings[closeTo.index]];
-        }
-        for (const item of findings) {
-          const result = PathFinder.search(entrancePos, { pos: item.pos, range: closeTo.range ?? 1 }, searchOptions);
-          if (result.incomplete) return [];
-          costs.push({ value: result.cost, weight: closeTo.weight ?? 1, path: result.path });
-        }
-      } else if (typeof closeTo.what === 'string') {
-        const blueprintResult = this.results[closeTo.what];
-        const goalPos = new RoomPosition(
-          blueprintResult.x + (blueprintResult.blueprint.entrance?.x ?? 0),
-          blueprintResult.y + (blueprintResult.blueprint.entrance?.y ?? 0),
-          this.roomName,
-        );
-        const result = PathFinder.search(entrancePos, { pos: goalPos, range: closeTo.range ?? 1 }, searchOptions);
-        if (result.incomplete) return [];
-        costs.push({ value: result.cost, weight: closeTo.weight ?? 1, path: result.path });
-      } else {
-        let findings = this.room.find(closeTo.what);
-        if (findings.length) {
-          if (closeTo.index !== undefined) {
-            findings = [findings[closeTo.index]];
-          }
-          for (const item of findings) {
-            const result = PathFinder.search(entrancePos, { pos: item, range: closeTo.range ?? 1 }, searchOptions);
-            if (result.incomplete) return [];
-            costs.push({ value: result.cost, weight: closeTo.weight ?? 1, path: result.path });
-          }
-        }
-      }
-    }
-
-    return costs;
-  }
+    return BlueprintScanner.getBlueprintCosts(
+      this.room,
+      pos,
+      blueprint,
+      pathsCostMatrix,
+      false,
+      this.getResultEntrance,
+    );
+  };
 
   private getBlueprintTotalCosts(costs: BlueprintCost[]) {
     return costs.reduce((acc, cost) => acc + cost.value * cost.weight, 0) / costs.length;
@@ -228,10 +252,23 @@ class BlueprintScanner {
     } while (!found && range <= maxRange);
   }
 
+  private getResultEntrance = (room: Room, blueprintId: BLUEPRINT_ID) => {
+    const result = this.results[blueprintId];
+    if (result) {
+      return new RoomPosition(
+        result.x + (result.blueprint.entrance?.x ?? 0),
+        result.y + (result.blueprint.entrance?.y ?? 0),
+        room.name,
+      );
+    }
+
+    return undefined;
+  };
+
   private getPossibleBlueprintPositions(pos: Pos, blueprint: Blueprint) {
     const minRange = blueprint.minRange ?? 2;
     const maxRange = blueprint.maxRange ?? 50;
-    const maxCount = blueprint.maxCount ?? 100;
+    const maxCount = blueprint.maxCount ?? 200;
     const possiblePositions: BlueprintScanResult[] = [];
     const costMatrix = blueprint.ignorePaths ? this.buildingCostMatrix : this.buildingsAndPathsCostMatrix;
     const directions = blueprint.dir ? BASE_DIRECTIONS : [RIGHT];
@@ -244,7 +281,7 @@ class BlueprintScanner {
       directions.forEach(dir => {
         const dirBlueprint = BlueprintScanner.blueprintToDirection(blueprint, dir);
         if (is1x1 || this.checkIfBlueprintFit(testPos, dirBlueprint, costMatrix)) {
-          const costs = this.getBlueprintCosts(testPos, dirBlueprint);
+          const costs = this.calcBlueprintCosts(testPos, dirBlueprint);
           if (!dirBlueprint.ignoreNearKeyPoints && !costs.length) return;
           const totalCost = this.getBlueprintTotalCosts(costs);
           possiblePositions.push({
@@ -317,7 +354,7 @@ class BlueprintScanner {
 
       const initialPos = { x: rootSpawn.pos.x - spawn1Pos.x, y: rootSpawn.pos.y - spawn1Pos.y };
 
-      const costs = this.getBlueprintCosts(initialPos, baseBlueprint);
+      const costs = this.calcBlueprintCosts(initialPos, baseBlueprint);
       return this.scanRegularBlueprint(baseBlueprint, {
         ...initialPos,
         totalCost: this.getBlueprintTotalCosts(costs),
@@ -360,6 +397,7 @@ class BlueprintScanner {
       if (struct.structureType === STRUCTURE_WALL || struct.structureType === STRUCTURE_RAMPART) {
         this.buildingCostMatrix.set(struct.pos.x, struct.pos.y, 0xff);
         this.buildingsAndPathsCostMatrix.set(struct.pos.x, struct.pos.y, 0xff);
+        this.pathFindingCostMatrix.set(struct.pos.x, struct.pos.y, 0xff);
       }
     }
   };
@@ -371,12 +409,14 @@ class BlueprintScanner {
           this.buildingCostMatrix.set(blueprintResult.x + x, blueprintResult.y + y, 0xff);
         }
         this.buildingsAndPathsCostMatrix.set(blueprintResult.x + x, blueprintResult.y + y, 0xff);
+        this.pathFindingCostMatrix.set(blueprintResult.x + x, blueprintResult.y + y, 0xff);
       });
     });
 
     blueprintResult.costs.forEach(cost => {
       cost.path.forEach(pos => {
         this.buildingsAndPathsCostMatrix.set(pos.x, pos.y, 0xff);
+        this.pathFindingCostMatrix.set(pos.x, pos.y, 1);
       });
     });
   };

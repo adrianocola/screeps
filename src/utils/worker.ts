@@ -9,10 +9,12 @@ const BODY_PARTS_PRIORITY: BodyPartsMap<number> = {
   [HEAL]: 8,
 };
 
+export const moveRoadWeight = (weight: number) => Math.ceil(weight / 2);
+
 export const maxBodySections = (worker: CreepType, optimizeForRoads: boolean = false) => {
   let sectionWeight: number = 0;
   for (const [bodyPart, weight = 1] of Object.entries(worker.sectionParts || {})) {
-    sectionWeight += bodyPart === MOVE && optimizeForRoads ? 1 : weight;
+    sectionWeight += bodyPart === MOVE && optimizeForRoads ? moveRoadWeight(weight) : weight;
   }
   const fixedWeight = worker.fixedParts?.length || 0;
   let maxSections = Math.floor(MAX_CREEP_SIZE / sectionWeight);
@@ -27,7 +29,7 @@ export const maxBodySections = (worker: CreepType, optimizeForRoads: boolean = f
 export const bodySectionCost = (sectionWeightMap: BodyPartsMap<number>, optimizeForRoads = false) => {
   let cost: number = 0;
   for (const [bodyPart, weight = 1] of Object.entries(sectionWeightMap)) {
-    const finalWeight = bodyPart === MOVE && optimizeForRoads ? 1 : weight;
+    const finalWeight = bodyPart === MOVE && optimizeForRoads ? moveRoadWeight(weight) : weight;
     cost += BODYPART_COST[bodyPart as BodyPartConstant] * finalWeight;
   }
 

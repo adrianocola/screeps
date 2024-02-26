@@ -1,6 +1,6 @@
 import { getExitsDistances, getIsPathPaved, getRawPath, rawPathDistance } from './scanUtils';
-import { getSourceContainer, getSourceLink } from 'utils/blueprint';
-import { getRelativePosition } from 'utils/directions';
+import { getBaseEntrancePos, getSourceContainer, getSourceLink } from 'utils/blueprint';
+import { getPosIndex, getRelativePosition } from 'utils/directions';
 import { ALL_DIRECTIONS, SOURCE_KEEPER } from 'consts';
 
 export const OBJECT_WEIGHT: { [K in SLOT_TYPE]: number } = {
@@ -110,6 +110,13 @@ export default (room: Room, spawn?: StructureSpawn) => {
 
     const slotsAvailable = TOP_LEFT - Object.keys(slots).length;
     const harvestersDesired = getDesiredNumberOfHarvesters(room, slotsAvailable);
+    const baseEntrancePos = getBaseEntrancePos(room);
+
+    console.log(
+      'SOURCE',
+      i,
+      baseEntrancePos ? getRawPath(baseEntrancePos, source.pos, 1).map(getPosIndex) : 'NO BASE ENTRANCE',
+    );
 
     sources[source.id] = {
       exitsDistances: getExitsDistances(source.pos),
@@ -122,8 +129,7 @@ export default (room: Room, spawn?: StructureSpawn) => {
       controllerDistance: rawPathDistance(source.pos, room.controller),
       spawnDistance: rawPathDistance(source.pos, spawn),
       storageDistance: rawPathDistance(source.pos, room.storage),
-      paved:
-        room.storage && sourceContainer ? getIsPathPaved(room, getRawPath(room.storage.pos, sourceContainer)) : false,
+      paved: baseEntrancePos ? getIsPathPaved(room, getRawPath(baseEntrancePos, source.pos, 1)) : false,
       sourceContainerId: sourceContainer?.id,
       harvestersDesired,
       harvestersMaxSections: getMaxSectionsPerHarvesters(harvestersDesired),

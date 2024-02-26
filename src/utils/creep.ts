@@ -1,4 +1,4 @@
-import { getRoomSpawn } from 'utils/room';
+import { getRoomSpawn, roomPathFinderOptions } from 'utils/room';
 
 export const suicide = (creep: Creep, message?: string) => {
   if (message) console.log(`${creep.name}: ${message}`);
@@ -221,8 +221,9 @@ export const rangedAttackMove = (
 };
 
 export const fleeFrom = (creep: Creep, pos: RoomPosition, range: number = 3) => {
-  if (creep.pos.inRangeTo(pos, range - 1)) {
-    const fleeResult = PathFinder.search(creep.pos, { pos, range }, { flee: true });
+  if (range === 1 ? creep.pos.isEqualTo(pos) : creep.pos.inRangeTo(pos, range - 1)) {
+    const fleeResult = PathFinder.search(creep.pos, { pos, range }, { ...roomPathFinderOptions, flee: true });
+    console.log('fleeResult', fleeResult.path.length, fleeResult.path);
     return creep.moveByPath(fleeResult.path);
   }
 

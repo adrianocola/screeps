@@ -1,7 +1,5 @@
 import { getExitsDistances, getIsPathPaved, getRawPath } from './scanUtils';
-import { getMainResourceHolderId } from 'utils/room';
-import { getObjectById } from 'utils/game';
-import { getControllerContainer, getControllerLink } from 'utils/blueprint';
+import { getBaseEntrancePos, getControllerContainer, getControllerLink } from 'utils/blueprint';
 
 export default (room: Room) => {
   let controller: RoomMemoryScanController | undefined;
@@ -9,14 +7,11 @@ export default (room: Room) => {
     let paved = false;
     let storageDistance = -1;
 
-    const spawnContainerId = getMainResourceHolderId(room);
-    if (spawnContainerId) {
-      const spawnContainer = getObjectById<StructureContainer | StructureStorage>(spawnContainerId);
-      if (spawnContainer) {
-        const containerToControllerPath = getRawPath(spawnContainer.pos, room.controller);
-        paved = getIsPathPaved(room, containerToControllerPath);
-        storageDistance = containerToControllerPath.length;
-      }
+    const baseEntrancePos = getBaseEntrancePos(room);
+    if (baseEntrancePos) {
+      const containerToControllerPath = getRawPath(baseEntrancePos, room.controller, 1);
+      paved = getIsPathPaved(room, containerToControllerPath);
+      storageDistance = containerToControllerPath.length;
     }
 
     const container = getControllerContainer(room);

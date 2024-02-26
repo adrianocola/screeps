@@ -10,18 +10,16 @@ export const rawPathDistance = (pos: RoomPosition, target?: RoomPosition | _HasR
   return pos.findPathTo(target, { ignoreCreeps: true }).length;
 };
 
-export const getRawPath = (pos: RoomPosition, target?: RoomPosition | _HasRoomPosition): PathStep[] => {
+export const getRawPath = (pos: RoomPosition, target?: RoomPosition | _HasRoomPosition, range = 0): PathStep[] => {
   if (!target) return [];
 
-  return pos.findPathTo(target, { ignoreCreeps: true });
+  return pos.findPathTo(target, { ignoreCreeps: true, range });
 };
 
 export const getIsPathPaved = (room: Room, pathSteps: PathStep[] | RoomPosition[]): boolean => {
-  // stop 1 step before destination (destination space don't need to be paved)
-  for (let i = 0; i < pathSteps.length - 1; i += 1) {
-    const path = pathSteps[i];
-    const structures = room.lookForAt(LOOK_STRUCTURES, path.x, path.y);
-    if (!structures.some(s => s.structureType === STRUCTURE_ROAD)) return false;
+  for (const step of pathSteps) {
+    const structures = room.lookForAt(LOOK_STRUCTURES, step.x, step.y);
+    if (!structures.find(s => s.structureType === STRUCTURE_ROAD)) return false;
   }
 
   return true;

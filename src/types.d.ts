@@ -344,6 +344,7 @@ interface CloseTo {
   index?: number; // from the "what list" (ie: FIND_SOURCES), the index of the item
   range?: number; // how close to the "what" it should be
   weight?: number; // the weight of this close to (relative to the others)
+  paved?: boolean; // if the path to this should be paved
 }
 
 interface StartFrom {
@@ -367,6 +368,7 @@ interface Blueprint {
   ignoreNearKeyPoints?: boolean; // if being next to key points should be ignored when finding the structure location
   ignorePaths?: boolean; // if paths should be ignored when finding the structure location
   entrance?: Pos; // must be relative to the blueprint. Paths will be calculated from this point
+  label?: string; // 1 letter to show in the blueprint entrance
 }
 
 interface BlueprintCost {
@@ -517,8 +519,8 @@ interface RoomMemoryBlueprintSchema {
 }
 
 interface RoomMemoryBlueprint {
-  version: number;
-  schemas: Partial<Record<BLUEPRINT_ID, RoomMemoryBlueprintSchema>>;
+  v: number;
+  schemas?: Partial<Record<BLUEPRINT_ID, RoomMemoryBlueprintSchema>>;
   structures: Partial<Record<BLUEPRINT_STRUCTURE, Id<Structure>>>;
 }
 

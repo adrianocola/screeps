@@ -1,3 +1,5 @@
+import { getBlueprintRoadsToLevel } from 'utils/blueprint';
+
 export const STRUCTURES_COLORS: Partial<Record<BuildableStructureConstant, string>> = {
   [STRUCTURE_SPAWN]: 'red',
   [STRUCTURE_EXTENSION]: 'yellow',
@@ -61,22 +63,32 @@ class BlueprintVisualizer {
         blueprintResult.y + blueprintResult.blueprint.entrance.y,
         this.roomName,
       );
-      blueprintResult.costs.forEach(cost => {
-        this.visual.poly([entrancePos, ...cost.path], { lineStyle: 'dashed', stroke: color, opacity: 0.5 });
-      });
 
       this.visual.circle(entrancePos.x, entrancePos.y, {
         fill: 'white',
         radius: 0.3,
         opacity: 0.25,
       });
-    }
 
-    // this.visual.text(blueprintResult.blueprint.id, blueprintResult.x, blueprintResult.y, { color: 'white' });
+      if (blueprintResult.blueprint.label) {
+        this.visual.text(blueprintResult.blueprint.label, entrancePos.x, entrancePos.y + 0.25, {
+          color: 'black',
+          opacity: 0.5,
+        });
+      }
+    }
+  }
+
+  private drawRoads() {
+    const roadsList = getBlueprintRoadsToLevel(Game.rooms[this.roomName], 8);
+    roadsList.forEach(road => {
+      this.visual.poly(road, { lineStyle: 'dashed', stroke: 'gray', opacity: 0.2 });
+    });
   }
 
   public draw(blueprintResults: BlueprintScanResult[]) {
     blueprintResults.forEach(blueprintResult => this.drawBlueprintResult(blueprintResult));
+    this.drawRoads();
   }
 }
 

@@ -16,6 +16,7 @@ export const MAX_STORAGE_RESOURCE = STORAGE_CAPACITY / 2;
 export const MARKET_RAW_RESOURCE_SELL_POINT = 200000;
 export const MARKET_MAX_RESOURCE_SELL = 50000;
 export const CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY = 2000;
+export const BLUEPRINT_START_BUILDING_ROADAS_LEVEL = 3; // blueprint start building roads after this level
 
 export const BASE_DIRECTIONS: BaseDirectionConstant[] = [TOP, RIGHT, BOTTOM, LEFT];
 export const ALL_DIRECTIONS: DirectionConstant[] = [

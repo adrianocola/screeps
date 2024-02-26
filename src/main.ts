@@ -3,6 +3,7 @@ import { getRootSpawn } from 'utils/game';
 import { ErrorMapper } from 'utils/ErrorMapper';
 
 export const loop = ErrorMapper.wrapLoop(() => {
+  const start = Date.now();
   if (!Memory.rootSpawn) {
     console.log('Set the property "rootSpawn" with the root Spawn name in the Memory to start');
     return;
@@ -21,6 +22,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
   roomSystems();
   // console.log(Game.cpu.getUsed());
+
+  if (Game.rooms.sim) {
+    console.log('DURATION:', Date.now() - start);
+    if (!Game.rooms.sim.memory.visuals) Game.rooms.sim.memory.visuals = { blueprint: true };
+  }
 });
 
 //
@@ -35,8 +41,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 // CONTINUAR AQUI!
 //  - A partir do lvl3, fazer roads entre todos blueprints com entrances (principalmente por causa dos swamps)
 //  - Permitir forçar um scan em situações específicas (construção terminada, feito upgrade do controller, após ataque inimigo, saiu do safe mode, etc)
-//  - Builders não estão respeitando prioridade definidas pelos blueprints
-//  - Deixar lógica do BlueprintScanner rodar por um pouco mais de tempo, tentar fazer um mapa mais "fechado"
+//  - Deixar lógica do BlueprintScanner rodar por um pouco mais de tempo, tentar fazer um mapa mais otimizado e "fechado"
 //  - Fazer lógica para fechar sala com walls/ramparts (melhores lugares para colocar, etc)
 //  - Fazer lógica de defesa melhorada
 //     - Checar em menos ticks (atualmente é de 5 em 5)

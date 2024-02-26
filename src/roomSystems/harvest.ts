@@ -20,6 +20,7 @@ const systemHarvest: RoomSystem = {
       spawnSystem.spawn(room, demandId, workerHarvester.name, sourceData.harvestersDesired, 30, {
         urgent: true,
         maxSections: sourceData.harvestersMaxSections,
+        optimizeForRoads: sourceData.paved,
         memory: {
           role: 'worker',
           worker: {

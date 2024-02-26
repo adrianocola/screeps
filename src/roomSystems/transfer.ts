@@ -14,6 +14,7 @@ const systemDistribute: RoomSystem = {
     spawnSystem.spawn(room, workerTransferer.name, workerTransferer.name, 1, 6, {
       urgent: true,
       fixedDir: true,
+      optimizeForRoads: true,
       memory: {
         role: 'worker',
         worker: {

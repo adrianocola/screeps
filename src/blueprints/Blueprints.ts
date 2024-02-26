@@ -1,4 +1,6 @@
 // TODO permitir setar um level máximo para algumas estruturas (ajudaria pra deletar containers inúteis, depois que faz link)
+import { BLUEPRINT_START_BUILDING_ROADAS_LEVEL } from 'consts';
+
 const Blueprints: Blueprint[] = [
   {
     id: BLUEPRINT_ID.BASE,
@@ -7,15 +9,15 @@ const Blueprints: Blueprint[] = [
     height: 4,
     minRange: 0,
     maxRange: 50,
-    maxCount: 100,
+    maxCount: 200,
     entrance: { x: 4, y: 3 },
     dir: RIGHT,
     controller: 1,
     startFrom: { x: 24, y: 24 },
     closeTo: [
-      { what: STRUCTURE_CONTROLLER, range: 1, weight: 10 },
-      { what: FIND_SOURCES, range: 1, weight: 10 },
-      { what: FIND_MINERALS, range: 1, weight: 10 },
+      { what: STRUCTURE_CONTROLLER, range: 1, weight: 10, paved: true },
+      { what: FIND_SOURCES, range: 1, weight: 10, paved: true },
+      { what: FIND_MINERALS, range: 1, weight: 10, paved: true },
       { what: FIND_EXIT_TOP, range: 0, weight: 1, index: 0 },
       { what: FIND_EXIT_RIGHT, range: 0, weight: 1, index: 0 },
       { what: FIND_EXIT_BOTTOM, range: 0, weight: 1, index: 0 },
@@ -35,8 +37,8 @@ const Blueprints: Blueprint[] = [
       ],
       [
         { id: BLUEPRINT_STRUCTURE.FACTORY, controller: 7, priority: 10, structure: STRUCTURE_FACTORY },
-        { id: BLUEPRINT_STRUCTURE.ROAD1, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
-        { id: BLUEPRINT_STRUCTURE.ROAD2, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
+        { id: BLUEPRINT_STRUCTURE.ROAD1, controller: 7, priority: 2, structure: STRUCTURE_ROAD },
+        { id: BLUEPRINT_STRUCTURE.ROAD2, controller: 7, priority: 2, structure: STRUCTURE_ROAD },
         { id: BLUEPRINT_STRUCTURE.LINK3, controller: 5, priority: 4, structure: STRUCTURE_LINK },
         undefined,
       ],
@@ -48,10 +50,30 @@ const Blueprints: Blueprint[] = [
         undefined,
       ],
       [
-        { id: BLUEPRINT_STRUCTURE.ROAD3, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
-        { id: BLUEPRINT_STRUCTURE.ROAD4, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
-        { id: BLUEPRINT_STRUCTURE.ROAD5, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
-        { id: BLUEPRINT_STRUCTURE.ROAD6, controller: 7, priority: 1, structure: STRUCTURE_ROAD },
+        {
+          id: BLUEPRINT_STRUCTURE.ROAD3,
+          controller: BLUEPRINT_START_BUILDING_ROADAS_LEVEL,
+          priority: 2,
+          structure: STRUCTURE_ROAD,
+        },
+        {
+          id: BLUEPRINT_STRUCTURE.ROAD4,
+          controller: BLUEPRINT_START_BUILDING_ROADAS_LEVEL,
+          priority: 2,
+          structure: STRUCTURE_ROAD,
+        },
+        {
+          id: BLUEPRINT_STRUCTURE.ROAD5,
+          controller: BLUEPRINT_START_BUILDING_ROADAS_LEVEL,
+          priority: 2,
+          structure: STRUCTURE_ROAD,
+        },
+        {
+          id: BLUEPRINT_STRUCTURE.ROAD6,
+          controller: BLUEPRINT_START_BUILDING_ROADAS_LEVEL,
+          priority: 2,
+          structure: STRUCTURE_ROAD,
+        },
         {
           id: BLUEPRINT_STRUCTURE.CONTAINER3,
           controller: 3,
@@ -70,14 +92,14 @@ const Blueprints: Blueprint[] = [
     dir: RIGHT,
     controller: 5,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1, paved: true }],
     // TO LI S3
     // TO __ __
     // TO TO TO
     schema: [
       [
         { id: BLUEPRINT_STRUCTURE.TOWER2, controller: 5, priority: 1, structure: STRUCTURE_TOWER },
-        { id: BLUEPRINT_STRUCTURE.LINK5, controller: 8, priority: 1, structure: STRUCTURE_LINK },
+        { id: BLUEPRINT_STRUCTURE.LINK5, controller: 8, priority: 5, structure: STRUCTURE_LINK },
         { id: BLUEPRINT_STRUCTURE.SPAWN3, controller: 8, priority: 1, structure: STRUCTURE_SPAWN },
       ],
       [
@@ -219,7 +241,7 @@ const Blueprints: Blueprint[] = [
       { what: BLUEPRINT_ID.BASE, range: 1, weight: 1 },
     ],
     ignoreNearKeyPoints: true,
-    schema: [[{ id: BLUEPRINT_STRUCTURE.LINK4, controller: 5, priority: 4, structure: STRUCTURE_LINK }]],
+    schema: [[{ id: BLUEPRINT_STRUCTURE.LINK4, controller: 5, priority: 5, structure: STRUCTURE_LINK }]],
   },
   {
     id: BLUEPRINT_ID.EXTRACTOR,
@@ -253,79 +275,83 @@ const Blueprints: Blueprint[] = [
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_1,
+    label: '1',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 2,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1, paved: true }],
     // E E
     // E _
     // E E
     schema: [
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION1, controller: 2, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION2, controller: 2, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION1, controller: 2, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION2, controller: 2, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
-      [{ id: BLUEPRINT_STRUCTURE.EXTENSION3, controller: 2, priority: 2, structure: STRUCTURE_EXTENSION }, undefined],
+      [{ id: BLUEPRINT_STRUCTURE.EXTENSION3, controller: 2, priority: 3, structure: STRUCTURE_EXTENSION }, undefined],
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION4, controller: 2, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION5, controller: 2, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION4, controller: 2, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION5, controller: 2, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
     ],
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_2,
+    label: '2',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 3,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, weight: 10, range: 1, paved: true }],
     schema: [
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION6, controller: 3, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION7, controller: 3, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION6, controller: 3, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION7, controller: 3, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
-      [{ id: BLUEPRINT_STRUCTURE.EXTENSION8, controller: 3, priority: 2, structure: STRUCTURE_EXTENSION }, undefined],
+      [{ id: BLUEPRINT_STRUCTURE.EXTENSION8, controller: 3, priority: 3, structure: STRUCTURE_EXTENSION }, undefined],
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION9, controller: 3, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION10, controller: 3, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION9, controller: 3, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION10, controller: 3, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
     ],
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_3,
+    label: '3',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 4,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, weight: 10, range: 1, paved: true }],
     schema: [
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION11, controller: 4, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION12, controller: 4, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION11, controller: 4, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION12, controller: 4, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
-      [{ id: BLUEPRINT_STRUCTURE.EXTENSION13, controller: 4, priority: 2, structure: STRUCTURE_EXTENSION }, undefined],
+      [{ id: BLUEPRINT_STRUCTURE.EXTENSION13, controller: 4, priority: 3, structure: STRUCTURE_EXTENSION }, undefined],
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION14, controller: 4, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION15, controller: 4, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION14, controller: 4, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION15, controller: 4, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
     ],
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_4,
+    label: '4',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 4,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, weight: 10, range: 1, paved: true }],
     schema: [
       [
         { id: BLUEPRINT_STRUCTURE.EXTENSION16, controller: 4, priority: 3, structure: STRUCTURE_EXTENSION },
@@ -340,34 +366,36 @@ const Blueprints: Blueprint[] = [
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_5,
+    label: '5',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 5,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, weight: 10, range: 1, paved: true }],
     schema: [
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION21, controller: 5, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION22, controller: 5, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION21, controller: 5, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION22, controller: 5, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
-      [{ id: BLUEPRINT_STRUCTURE.EXTENSION23, controller: 5, priority: 2, structure: STRUCTURE_EXTENSION }, undefined],
+      [{ id: BLUEPRINT_STRUCTURE.EXTENSION23, controller: 5, priority: 3, structure: STRUCTURE_EXTENSION }, undefined],
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION24, controller: 5, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION25, controller: 5, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION24, controller: 5, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION25, controller: 5, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
     ],
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_6,
+    label: '6',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 5,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, weight: 10, range: 1, paved: true }],
     schema: [
       [
         { id: BLUEPRINT_STRUCTURE.EXTENSION26, controller: 5, priority: 3, structure: STRUCTURE_EXTENSION },
@@ -382,34 +410,36 @@ const Blueprints: Blueprint[] = [
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_7,
+    label: '7',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 6,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, weight: 10, range: 1, paved: true }],
     schema: [
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION31, controller: 6, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION32, controller: 6, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION31, controller: 6, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION32, controller: 6, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
-      [{ id: BLUEPRINT_STRUCTURE.EXTENSION33, controller: 6, priority: 2, structure: STRUCTURE_EXTENSION }, undefined],
+      [{ id: BLUEPRINT_STRUCTURE.EXTENSION33, controller: 6, priority: 3, structure: STRUCTURE_EXTENSION }, undefined],
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION34, controller: 6, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION35, controller: 6, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION34, controller: 6, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION35, controller: 6, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
     ],
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_8,
+    label: '8',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 6,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, weight: 10, range: 1, paved: true }],
     schema: [
       [
         { id: BLUEPRINT_STRUCTURE.EXTENSION36, controller: 6, priority: 3, structure: STRUCTURE_EXTENSION },
@@ -424,34 +454,36 @@ const Blueprints: Blueprint[] = [
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_9,
+    label: '9',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 7,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, weight: 10, range: 1, paved: true }],
     schema: [
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION41, controller: 7, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION42, controller: 7, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION41, controller: 7, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION42, controller: 7, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
-      [{ id: BLUEPRINT_STRUCTURE.EXTENSION43, controller: 7, priority: 2, structure: STRUCTURE_EXTENSION }, undefined],
+      [{ id: BLUEPRINT_STRUCTURE.EXTENSION43, controller: 7, priority: 3, structure: STRUCTURE_EXTENSION }, undefined],
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION44, controller: 7, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION45, controller: 7, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION44, controller: 7, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION45, controller: 7, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
     ],
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_10,
+    label: '10',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 7,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, weight: 10, range: 1, paved: true }],
     schema: [
       [
         { id: BLUEPRINT_STRUCTURE.EXTENSION46, controller: 7, priority: 3, structure: STRUCTURE_EXTENSION },
@@ -466,34 +498,36 @@ const Blueprints: Blueprint[] = [
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_11,
+    label: '11',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 8,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, weight: 10, range: 1, paved: true }],
     schema: [
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION51, controller: 8, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION52, controller: 8, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION51, controller: 8, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION52, controller: 8, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
-      [{ id: BLUEPRINT_STRUCTURE.EXTENSION53, controller: 8, priority: 2, structure: STRUCTURE_EXTENSION }, undefined],
+      [{ id: BLUEPRINT_STRUCTURE.EXTENSION53, controller: 8, priority: 3, structure: STRUCTURE_EXTENSION }, undefined],
       [
-        { id: BLUEPRINT_STRUCTURE.EXTENSION54, controller: 8, priority: 2, structure: STRUCTURE_EXTENSION },
-        { id: BLUEPRINT_STRUCTURE.EXTENSION55, controller: 8, priority: 2, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION54, controller: 8, priority: 3, structure: STRUCTURE_EXTENSION },
+        { id: BLUEPRINT_STRUCTURE.EXTENSION55, controller: 8, priority: 3, structure: STRUCTURE_EXTENSION },
       ],
     ],
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_12,
+    label: '12',
     width: 2,
     height: 3,
     entrance: { x: 1, y: 1 },
     dir: RIGHT,
     controller: 8,
     startFrom: BLUEPRINT_ID.BASE,
-    closeTo: [{ what: BLUEPRINT_ID.BASE, range: 1 }],
+    closeTo: [{ what: BLUEPRINT_ID.BASE, weight: 10, range: 1, paved: true }],
     schema: [
       [
         { id: BLUEPRINT_STRUCTURE.EXTENSION56, controller: 8, priority: 3, structure: STRUCTURE_EXTENSION },
