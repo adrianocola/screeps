@@ -29,6 +29,13 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 });
 
+// CRIAR LÓGICA PARA EXPANSÃO!
+//  - IMPORTANTE: criar variação do scan para expansão (não precisa de tudo, só de algumas coisas)
+//  - scout (passa por salas adjacentes, faz scan, pega score de expansão da sala)
+//  - cleaner (limpa estruturar inimigas, invader cores)
+//  - claimer (ataca controller reservado ou reserva. Depois que cleaner terminar, faz CLAIM)
+//  - X basic (mineram, constroem spawn, etc)
+
 //
 // FAZER LÓGICA MELHORADA DE SAFE MODE / DEFENSE!!!
 // - Considerar UNDER_ATTACK se encontrar creeps inimigas ( de outros players) na sala
