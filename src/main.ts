@@ -39,10 +39,13 @@ export const loop = ErrorMapper.wrapLoop(() => {
 // - Ativar só alguns sistemas se tiver inimigos
 
 // CONTINUAR AQUI!
-//  - A partir do lvl3, fazer roads entre todos blueprints com entrances (principalmente por causa dos swamps)
 //  - Permitir forçar um scan em situações específicas (construção terminada, feito upgrade do controller, após ataque inimigo, saiu do safe mode, etc)
 //  - Deixar lógica do BlueprintScanner rodar por um pouco mais de tempo, tentar fazer um mapa mais otimizado e "fechado"
 //  - Fazer lógica para fechar sala com walls/ramparts (melhores lugares para colocar, etc)
+//  - Usar energia das expansions mais pertas do Spawn central (uma ordem de EXT_PACK deve resolver)
+//  - Verificar o que acontece com o blueprint se não couber base em um sala (provavelmente zerar score da sala pra não ser escolhida pra expandir)
+//  - Verificar o que acontece com o blueprint scanner se não couber todas extension em uma sala (ex: W42S29) (provavelmente baixar bem score da sala pra não ser escolhida pra expandir)
+//  - Criar score da sala pra expansão (baseado em distância entre pontos de interesse, quantidade de saídas, custo pra proteger, etc)
 //  - Fazer lógica de defesa melhorada
 //     - Checar em menos ticks (atualmente é de 5 em 5)
 //     - Se torres não estiverem dando conta de matar rapidamente os inimigos, ativar safe mode

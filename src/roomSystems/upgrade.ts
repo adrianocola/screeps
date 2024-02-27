@@ -5,8 +5,8 @@ import upgraderEmergency from 'creepTypes/upgraderEmergency';
 import { getLevelRate } from 'utils/controller';
 import { CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY } from 'consts';
 
-const WORK_PARTS_WEIGHT = 3;
 const MAX_WORK_PARTS_LVL8 = 15;
+const WORK_PARTS_WEIGHT = 5;
 
 const getDesiredNumberOfUpgraders = (room: Room): number => {
   let levelRate = 0.5;
@@ -26,9 +26,7 @@ const getDesiredNumberOfUpgraders = (room: Room): number => {
   if (energyAvailable <= levelRate * 500) return 0;
   if (energyAvailable <= levelRate * 1000) return 1;
   if (energyAvailable <= levelRate * 2000) return 2;
-  if (energyAvailable <= levelRate * 4000) return 3;
-  if (energyAvailable <= levelRate * 8000) return 4;
-  return 5;
+  return 3;
 };
 
 const systemUpgrade: RoomSystem = {
@@ -52,7 +50,6 @@ const systemUpgrade: RoomSystem = {
           [CARRY]: 1,
           [MOVE]: 2,
         },
-        fixedParts: [],
         memory: {
           role: 'worker',
           worker: {
@@ -81,9 +78,9 @@ const systemUpgrade: RoomSystem = {
       maxSections: roomLevel === 8 ? Math.ceil(MAX_WORK_PARTS_LVL8 / WORK_PARTS_WEIGHT) : undefined, // because lvl8 controllers are limited to 15 per tick,
       sectionParts: {
         [WORK]: WORK_PARTS_WEIGHT,
-        [MOVE]: 1,
+        [MOVE]: 2,
       },
-      fixedParts: [CARRY, CARRY],
+      fixedParts: [CARRY, CARRY, CARRY, CARRY],
       memory: {
         role: 'worker',
         worker: {

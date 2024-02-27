@@ -7,11 +7,15 @@ import { getObjectById } from 'utils/game';
 const MINER_COLLECTOR_DEMAND_ID = `${workerCollector.name}-M`;
 
 const collectFromSources = (room: Room, sourcesData: Record<string, RoomMemoryScanSource> = {}) => {
-  if (!sourcesData) return;
+  if (!sourcesData || room.memory.state?.features[ROOM_FEATURE.SOURCES_HAVE_LINK]) return;
 
   for (const sourceId in sourcesData) {
     const sourceData = sourcesData[sourceId];
-    if (sourceData.sourceKeeper || !sourceData.sourceContainerId || sourceData.sourceLinkId) continue;
+    const demandId = `${workerCollector.name}-S${sourceData.index}`;
+    if (sourceData.sourceKeeper || !sourceData.sourceContainerId || sourceData.sourceLinkId) {
+      systemSpawn.removeSpawn(room, workerCollector.name);
+      continue;
+    }
 
     const distance = sourceData.storageDistance === -1 ? sourceData.spawnDistance : sourceData.storageDistance;
 
@@ -28,7 +32,6 @@ const collectFromSources = (room: Room, sourcesData: Record<string, RoomMemorySc
       (HARVEST_POWER * sourceData.harvestersDesired * sourceData.harvestersMaxSections * harvesterWorkSectionWeight);
     const desired = Math.max(1, Math.floor(harvestedInTime / (maxSections * CARRY_CAPACITY)));
 
-    const demandId = `${workerCollector.name}-S${sourceData.index}`;
     systemSpawn.spawn(room, demandId, workerCollector.name, desired, 31, {
       urgent: true,
       optimizeForRoads: sourceData.paved,

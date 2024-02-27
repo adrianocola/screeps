@@ -49,12 +49,14 @@ const systemBuild: SystemBuild = {
     if (!room.memory.build) room.memory.build = { queue: [], requests: [] };
 
     const queue = room.memory.build?.queue ?? [];
+    const existingConstructionSitesMap: Record<string, boolean> = {};
 
     // check if all construction site in the queue still exist
     const validQueue: BuildQueueItem[] = [];
     for (const item of queue) {
       const constructionSite = getObjectById(item.constructionSiteId as Id<ConstructionSite>);
       if (constructionSite) {
+        existingConstructionSitesMap[constructionSite.id] = true;
         validQueue.push(item);
       }
     }
@@ -65,6 +67,7 @@ const systemBuild: SystemBuild = {
         const requestConstructionSites = room.lookForAt(LOOK_CONSTRUCTION_SITES, request.pos.x, request.pos.y);
         if (requestConstructionSites.length) {
           const constructionSite = requestConstructionSites[0];
+          existingConstructionSitesMap[constructionSite.id] = true;
           validQueue.push({
             constructionSiteId: constructionSite.id,
             structureType: constructionSite.structureType,
@@ -76,6 +79,23 @@ const systemBuild: SystemBuild = {
       }
 
       room.memory.build.requests = existingRequests;
+    } else {
+      const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
+      for (const constructionSite of constructionSites) {
+        if (!existingConstructionSitesMap[constructionSite.id]) {
+          const buildings = room.lookForAt(LOOK_STRUCTURES, constructionSite.pos.x, constructionSite.pos.y);
+          const alreadyBuild = buildings.some(building => building.structureType === constructionSite.structureType);
+          if (alreadyBuild) {
+            constructionSite.remove();
+          } else {
+            validQueue.push({
+              constructionSiteId: constructionSite.id,
+              structureType: constructionSite.structureType,
+              priority: 100,
+            });
+          }
+        }
+      }
     }
 
     room.memory.build.queue = sortQueue(validQueue);

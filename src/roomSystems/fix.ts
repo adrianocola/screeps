@@ -31,7 +31,7 @@ const getStructureRank = (structure: Structure): number => {
   const maxHits = levelMaxHits > structure.hitsMax ? structure.hitsMax : levelMaxHits;
   const percentage = Math.ceil((structure.hits / maxHits) * 100);
 
-  if (percentage >= 90) return MAX_RANK;
+  if (percentage >= 80) return MAX_RANK;
 
   const priority = STRUCTURE_REPAIR_PRIORITY[structure.structureType] || 0;
   return percentage - priority;

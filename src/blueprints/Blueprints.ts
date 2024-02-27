@@ -37,8 +37,8 @@ const Blueprints: Blueprint[] = [
       ],
       [
         { id: BLUEPRINT_STRUCTURE.FACTORY, controller: 7, priority: 10, structure: STRUCTURE_FACTORY },
-        { id: BLUEPRINT_STRUCTURE.ROAD1, controller: 7, priority: 2, structure: STRUCTURE_ROAD },
-        { id: BLUEPRINT_STRUCTURE.ROAD2, controller: 7, priority: 2, structure: STRUCTURE_ROAD },
+        { id: BLUEPRINT_STRUCTURE.ROAD1, controller: 5, priority: 2, structure: STRUCTURE_ROAD },
+        { id: BLUEPRINT_STRUCTURE.ROAD2, controller: 5, priority: 2, structure: STRUCTURE_ROAD },
         { id: BLUEPRINT_STRUCTURE.LINK3, controller: 5, priority: 4, structure: STRUCTURE_LINK },
         undefined,
       ],

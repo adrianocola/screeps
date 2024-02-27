@@ -1,5 +1,6 @@
 import { getBaseSpawnContainer } from 'utils/blueprint';
 import { getObjectById } from 'utils/game';
+import { TOWER_RESERVED_ENERGY } from 'consts';
 
 export const getRoomCallback = (roomName: string): CostMatrix | boolean => {
   const room = Game.rooms[roomName];
@@ -73,7 +74,7 @@ export const getRoomClosestEmptyTower = (
     if (towerData.id === ignoreTowerId) return undefined;
 
     const tower = getObjectById(towerData.id as Id<StructureTower>);
-    return tower && tower.store.getFreeCapacity(RESOURCE_ENERGY) > 150;
+    return tower && tower.store.getUsedCapacity(RESOURCE_ENERGY) <= TOWER_RESERVED_ENERGY;
   });
   if (!foundTowerData) return undefined;
 

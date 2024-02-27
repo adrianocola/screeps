@@ -150,6 +150,7 @@ declare const enum CREEP_TYPE {
   DEFENDER = 'defender',
   DISTRIBUTOR = 'distributor',
   HARVESTER = 'harvester',
+  HARVESTER_WALKER = 'harvesterWalker',
   TRANSFERER = 'transferer',
   UPGRADER = 'upgrader',
   UPGRADER_EMERGENCY = 'upgraderEmergency',
@@ -208,6 +209,7 @@ declare const enum ROOM_FEATURE {
   BASIC = 'basic',
   CONTROLLED = 'controlled',
   CONTROLLER_HAVE_CONTAINER_OR_LINK = 'controllerHaveContainerOrLink',
+  CONTROLLER_HAVE_LINK = 'controllerHaveLink',
   HAVE_TOWERS = 'haveTowers',
   MINERALS_HAVE_CONTAINER = 'mineralsHaveContainer',
   MINERALS_HAVE_EXTRACTOR = 'mineralsHaveExtractor',
@@ -432,6 +434,7 @@ interface CreepMemoryWorker {
   demandId: string;
   roomName: string;
   task?: TRANSFERER_TASKS;
+  harvested?: boolean; // used to control if harvesterWalker already harvested this source
   sourceIndex?: number;
   sourceId?: Id<Source>; // source id (used for harvesters and basics)
   mineralId?: Id<Mineral>; // mineral id (used for miners/harvesters)

@@ -1,5 +1,7 @@
 import { getMainResourceHolder } from 'utils/room';
 
+const checkControllerHaveLink = (controller?: RoomMemoryScanController) => !!controller?.linkId;
+
 const checkControllerHaveContainerOrLink = (controller?: RoomMemoryScanController) =>
   !!controller?.containerId || !!controller?.linkId;
 
@@ -34,6 +36,7 @@ export default (
   mineral?: RoomMemoryScanMineral,
   spawn?: StructureSpawn,
 ): Record<ROOM_FEATURE, boolean> => {
+  const controllerHaveLink = checkControllerHaveLink(controller);
   const controllerHaveContainerOrLink = checkControllerHaveContainerOrLink(controller);
   const allMineralsHaveContainer = checkAllMineralsHaveContainer(mineral);
   const allMineralsHaveExtractor = checkAllMineralsHaveExtractor(mineral);
@@ -48,6 +51,7 @@ export default (
     [ROOM_FEATURE.BASIC]: !allSourcesHaveContainerOrLink || (!spawnHaveContainer && !room.storage),
     [ROOM_FEATURE.CONTROLLED]: !!room.controller?.my,
     [ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK]: controllerHaveContainerOrLink,
+    [ROOM_FEATURE.CONTROLLER_HAVE_LINK]: controllerHaveLink,
     [ROOM_FEATURE.HAVE_TOWERS]: towers.length > 0,
     [ROOM_FEATURE.MINERALS_HAVE_CONTAINER]: allMineralsHaveContainer,
     [ROOM_FEATURE.MINERALS_HAVE_EXTRACTOR]: allMineralsHaveExtractor,

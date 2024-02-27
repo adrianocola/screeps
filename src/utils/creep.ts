@@ -223,7 +223,6 @@ export const rangedAttackMove = (
 export const fleeFrom = (creep: Creep, pos: RoomPosition, range: number = 3) => {
   if (range === 1 ? creep.pos.isEqualTo(pos) : creep.pos.inRangeTo(pos, range - 1)) {
     const fleeResult = PathFinder.search(creep.pos, { pos, range }, { ...roomPathFinderOptions, flee: true });
-    console.log('fleeResult', fleeResult.path.length, fleeResult.path);
     return creep.moveByPath(fleeResult.path);
   }
 

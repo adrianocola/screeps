@@ -35,8 +35,13 @@ const harvesterCreepType: CreepType = {
 
     if (canHarvest) {
       if (creep.harvest(sourceOrMineral) === OK) {
+        const harvestPower = creep.getActiveBodyparts(WORK) * HARVEST_POWER;
         // try to transfer energy in the same tick it mined, if already have enough energy stored
-        if (creepUsedCapacity && resourceHolderHaveSpace && creepUsedCapacity / creep.store.getCapacity() >= 0.9) {
+        if (
+          creepUsedCapacity &&
+          resourceHolderHaveSpace &&
+          creep.store.getCapacity() - creepUsedCapacity <= harvestPower
+        ) {
           creep.transfer(resourceHolder, resource);
         }
       }

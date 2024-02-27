@@ -5,6 +5,7 @@ import custom from './custom';
 import defender from './defender';
 import distributor from './distributor';
 import harvester from './harvester';
+import harvesterWalker from './harvesterWalker';
 import transferer from './transferer';
 import upgrader from './upgrader';
 import upgraderEmergency from './upgraderEmergency';
@@ -14,6 +15,7 @@ const CreepTypes: Record<CREEP_TYPE, CreepType> = {
   [CREEP_TYPE.BASIC]: basic,
   [CREEP_TYPE.DEFENDER]: defender,
   [CREEP_TYPE.HARVESTER]: harvester,
+  [CREEP_TYPE.HARVESTER_WALKER]: harvesterWalker,
   [CREEP_TYPE.TRANSFERER]: transferer,
   [CREEP_TYPE.COLLECTOR]: collector,
   [CREEP_TYPE.DISTRIBUTOR]: distributor,

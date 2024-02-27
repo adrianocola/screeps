@@ -1,6 +1,5 @@
 import { getObjectById } from 'utils/game';
-
-const TOWER_RESERVED_ENERGY = 500; // energy reserved to attack/heal
+import { TOWER_RESERVED_ENERGY } from 'consts';
 
 const structureTower: SystemStructure<StructureTower> = {
   structureType: STRUCTURE_TOWER,

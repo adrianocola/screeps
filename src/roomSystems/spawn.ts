@@ -23,9 +23,9 @@ const systemSpawn: SystemSpawn = {
   doSpawn(room: Room, spawn: StructureSpawn, item: SpawnDemandItem, energyAvailable: number): number | undefined {
     const worker = CreepTypes[item.workerType];
     const opts: SystemSpawnOptions = item.opts ? { ...item.opts } : {};
-    const sectionParts = opts.sectionParts || worker.sectionParts;
-    const fixedParts = opts.fixedParts || worker.fixedParts;
-    const maxSections = opts.maxSections || worker.maxSections;
+    const sectionParts = opts.sectionParts ?? worker.sectionParts;
+    const fixedParts = opts.fixedParts ?? worker.fixedParts ?? [];
+    const maxSections = opts.maxSections ?? worker.maxSections ?? MAX_CREEP_SIZE;
 
     opts.directions = item.opts?.directions ?? (opts.fixedDir ? spawn.memory.fixedDirs : spawn.memory.dirs);
 
@@ -45,15 +45,15 @@ const systemSpawn: SystemSpawn = {
       return;
     }
     const energy = opts.urgent ? Math.max(SPAWN_ENERGY_START, energyAvailable) : room.energyCapacityAvailable;
-    let sections = sectionCost ? Math.floor(energy / sectionCost) : 0;
-    while (fixedCost && sections >= 2 && sections * sectionCost + fixedCost > energy) {
-      sections -= 1;
+    let sectionsAllowedByEnergy = sectionCost ? Math.floor(energy / sectionCost) : 0;
+    while (fixedCost && sectionsAllowedByEnergy >= 2 && sectionsAllowedByEnergy * sectionCost + fixedCost > energy) {
+      sectionsAllowedByEnergy -= 1;
     }
 
     const totalSections = maxSections
-      ? Math.min(sections, maxSections, maxBodySections(worker, opts.optimizeForRoads))
-      : sections;
-    const finalCost = sections * sectionCost + fixedCost;
+      ? Math.min(sectionsAllowedByEnergy, maxSections, maxBodySections(sectionParts, fixedParts, opts.optimizeForRoads))
+      : sectionsAllowedByEnergy;
+    const finalCost = totalSections * sectionCost + fixedCost;
     if ((sectionParts && totalSections === 0) || energy < finalCost) {
       console.log(
         `Not enough energy to spawn a single section of worker "${item.workerType}" (${finalCost}/${energy})`,

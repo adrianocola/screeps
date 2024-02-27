@@ -4,10 +4,10 @@ import { getMineralContainer, getSourceContainer } from 'utils/blueprint';
 
 const collectorCreepType: CreepType = {
   name: CREEP_TYPE.COLLECTOR,
-  maxSections: 8,
+  maxSections: 4,
   sectionParts: {
-    [CARRY]: 1,
-    [MOVE]: 1,
+    [CARRY]: 2,
+    [MOVE]: 2,
   },
   run(creep) {
     const resource = creep.memory.worker?.resource || RESOURCE_ENERGY;

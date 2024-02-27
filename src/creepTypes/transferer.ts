@@ -2,7 +2,7 @@ import { transfer, withdraw } from 'utils/creep';
 import {
   MARKET_RAW_RESOURCE_SELL_POINT,
   MAX_TERMINAL_RESOURCE,
-  MIN_BASE_TOWER_ENERGY,
+  TOWER_RESERVED_ENERGY,
   MIN_CONTROLLER_LINK_ENERGY,
   MIN_TERMINAL_ENERGY,
   MIN_TOWERS_LINK_ENERGY,
@@ -25,7 +25,7 @@ const transfererCreepType: CreepType = {
     const terminal = creep.room.terminal;
 
     const linkEnergy = storageLink.store.getUsedCapacity(RESOURCE_ENERGY);
-    const storageUsed = storage.store.getUsedCapacity(RESOURCE_ENERGY);
+    const storageUsedEnergy = storage.store.getUsedCapacity(RESOURCE_ENERGY);
     const roomResource = creep.room.memory.state?.mineral?.type;
 
     const baseSpawn1 = getSpawn1(creep.room);
@@ -34,7 +34,7 @@ const transfererCreepType: CreepType = {
     const controllerLink = getControllerLink(creep.room);
     const towersLink = getTowersLink(creep.room);
 
-    const havePlentyEnergy = storageUsed > 1000;
+    const havePlentyEnergy = storageUsedEnergy > 1000;
 
     // define task
     if (creep.memory.worker && !creep.memory.worker?.task) {
@@ -43,7 +43,7 @@ const transfererCreepType: CreepType = {
       } else if (
         havePlentyEnergy &&
         baseTower &&
-        baseTower.store.getUsedCapacity(RESOURCE_ENERGY) < MIN_BASE_TOWER_ENERGY
+        baseTower.store.getUsedCapacity(RESOURCE_ENERGY) <= TOWER_RESERVED_ENERGY
       ) {
         creep.memory.worker.task = TRANSFERER_TASKS.FILL_TOWER1;
       } else if (havePlentyEnergy && baseSpawn2 && baseSpawn2.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
@@ -65,7 +65,7 @@ const transfererCreepType: CreepType = {
       } else if (
         terminal &&
         terminal.store.getUsedCapacity(RESOURCE_ENERGY) < MIN_TERMINAL_ENERGY &&
-        storageUsed > 50000
+        storageUsedEnergy > 50000
       ) {
         creep.memory.worker.task = TRANSFERER_TASKS.FILL_TERMINAL_ENERGY;
       } else if (terminal && terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 1.5 * MIN_TERMINAL_ENERGY) {
@@ -77,7 +77,7 @@ const transfererCreepType: CreepType = {
         terminal &&
         storage.store.getUsedCapacity(roomResource) > 0 &&
         terminal.store.getUsedCapacity(roomResource) < MARKET_RAW_RESOURCE_SELL_POINT &&
-        storageUsed > 0
+        storageUsedEnergy > 0
       ) {
         creep.memory.worker.task = TRANSFERER_TASKS.FILL_TERMINAL_RESOURCE;
       } else {
@@ -162,7 +162,7 @@ const transfererCreepType: CreepType = {
 
       case TRANSFERER_TASKS.FILL_TERMINAL_RESOURCE: {
         if (roomResource) {
-          if (creep.store.getFreeCapacity(roomResource) !== 0) {
+          if (creep.store.getUsedCapacity(roomResource) === 0) {
             withdraw(creep, storage, roomResource);
           } else if (terminal) {
             transfer(creep, terminal, roomResource);

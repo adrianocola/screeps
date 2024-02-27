@@ -19,7 +19,8 @@ const upgraderCreepType: CreepType = {
     if (usedCapacity) {
       upgradeController(creep, creep.room.controller);
     }
-    if (usedCapacity / creep.store.getCapacity() < 0.1) {
+    const upgradePower = creep.getActiveBodyparts(WORK) * UPGRADE_CONTROLLER_POWER;
+    if (usedCapacity <= upgradePower) {
       withdraw(creep, source, RESOURCE_ENERGY);
     }
   },
