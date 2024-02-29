@@ -48,6 +48,10 @@ const systemMine: RoomSystem = {
     spawnSystem.spawn(room, DEMAND_ID, harvesterCreepType.name, 1, 60, {
       optimizeForRoads: mineralData.paved,
       maxSections,
+      sectionParts: {
+        [WORK]: 1,
+        [MOVE]: 1,
+      },
       memory: {
         role: 'worker',
         worker: {

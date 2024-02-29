@@ -1,6 +1,7 @@
 import spawnSystem from './spawn';
 import workerHarvester from 'creepTypes/harvester';
 import workerHarvesterWalker from 'creepTypes/harvesterWalker';
+import { getSourceContainer } from 'utils/blueprint';
 
 const calcNumberWorkPartsNeeded = (sources: Record<string, RoomMemoryScanSource>) => {
   const totalDistance = Object.values(sources).reduce((total, sourceData) => {
@@ -46,11 +47,18 @@ const spawnOneHarvesterPerSource = (room: Room) => {
 
     if (sourceData.sourceKeeper) continue;
 
+    const sourceContainer = getSourceContainer(room, sourceData.index);
     const demandId = `${workerHarvester.name}-S${sourceData.index}`;
     spawnSystem.spawn(room, demandId, workerHarvester.name, sourceData.harvestersDesired, 30, {
       urgent: true,
       maxSections: sourceData.harvestersMaxSections,
       optimizeForRoads: sourceData.paved,
+      sectionParts: {
+        [WORK]: 1,
+        [MOVE]: 1,
+      },
+      // if there is a container, no need to have CARRY parts (resources are harvested directly to the container)
+      fixedParts: sourceContainer ? undefined : [CARRY, CARRY],
       memory: {
         role: 'worker',
         worker: {

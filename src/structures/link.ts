@@ -16,36 +16,35 @@ const structureLink: SystemStructure<StructureLink> = {
       // Sources link
       case link.room.memory.blueprint?.structures[BLUEPRINT_STRUCTURE.LINK1]:
       case link.room.memory.blueprint?.structures[BLUEPRINT_STRUCTURE.LINK2]: {
-        if (linkUsedCapacity / LINK_CAPACITY >= 0.5) {
-          const storageEnergy = link.room.storage?.store.getUsedCapacity(RESOURCE_ENERGY) ?? 0;
+        const linkUsed = linkUsedCapacity / LINK_CAPACITY;
+        const storageEnergy = link.room.storage?.store.getUsedCapacity(RESOURCE_ENERGY) ?? 0;
+
+        if (linkUsed >= 0.25) {
           const controllerLink = getControllerLink(link.room);
           if (
-            storageEnergy > 5000 &&
+            storageEnergy > 5_000 &&
             controllerLink &&
-            controllerLink.store.getUsedCapacity(RESOURCE_ENERGY) < MID_CONTROLLER_LINK_ENERGY
+            controllerLink.store.getUsedCapacity(RESOURCE_ENERGY) <= MID_CONTROLLER_LINK_ENERGY
           ) {
             link.transferEnergy(controllerLink);
             return;
           }
-
+        }
+        if (linkUsed >= 0.5) {
           const towersLink = getTowersLink(link.room);
           if (
-            storageEnergy > 5000 &&
+            storageEnergy > 5_000 &&
             towersLink &&
-            towersLink.store.getUsedCapacity(RESOURCE_ENERGY) < MID_TOWERS_LINK_ENERGY
+            towersLink.store.getUsedCapacity(RESOURCE_ENERGY) <= MID_TOWERS_LINK_ENERGY
           ) {
             link.transferEnergy(towersLink);
             return;
           }
-
+        }
+        if (linkUsed >= 0.75) {
           const storageLink = getStorageLink(link.room);
-          if (
-            storageLink &&
-            storageLink.store.getFreeCapacity(RESOURCE_ENERGY) > 0 &&
-            linkUsedCapacity / LINK_CAPACITY >= 0.75
-          ) {
+          if (storageLink && storageLink.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
             link.transferEnergy(storageLink);
-            return;
           }
         }
         break;

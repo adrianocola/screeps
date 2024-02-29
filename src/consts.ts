@@ -18,9 +18,9 @@ export const BLUEPRINT_START_BUILDING_ROADAS_LEVEL = 3; // blueprint start build
 export const TOWER_RESERVED_ENERGY = 500; // energy towers reserve to attack/heal
 
 // LINKS
-export const MID_CONTROLLER_LINK_ENERGY = 500;
-export const MIN_CONTROLLER_LINK_ENERGY = 200;
-export const MIN_TOWERS_LINK_ENERGY = 200;
+export const MID_CONTROLLER_LINK_ENERGY = 400;
+export const MIN_CONTROLLER_LINK_ENERGY = 100;
+export const MIN_TOWERS_LINK_ENERGY = 100;
 export const MID_TOWERS_LINK_ENERGY = TOWER_RESERVED_ENERGY;
 
 export const BASE_DIRECTIONS: BaseDirectionConstant[] = [TOP, RIGHT, BOTTOM, LEFT];

@@ -1,4 +1,4 @@
-import { moveTo } from 'utils/creep';
+import { moveTo, suicide } from 'utils/creep';
 import { getObjectById } from 'utils/game';
 import { getMineralContainer, getMineralExtractor, getSourceLinkOrContainer } from 'utils/blueprint';
 
@@ -12,7 +12,7 @@ const harvest = (
 ) => {
   const creepUsedCapacity = creep.store.getUsedCapacity(resource);
 
-  if (creep.ticksToLive === 1 && creepUsedCapacity > 0) {
+  if (canTransfer && creep.ticksToLive === 1 && creepUsedCapacity > 0) {
     creep.transfer(resourceHolder, resource);
     return;
   }
@@ -39,19 +39,42 @@ const harvest = (
   }
 };
 
-const harvestEnergy = (creep: Creep) => {
-  const resourceHolder = getSourceLinkOrContainer(creep.room, creep.memory.worker?.sourceIndex);
-  const source = getObjectById(creep.memory.worker?.sourceId);
+const harvestEnergyWithContainer = (creep: Creep, source: Source, sourceContainer: StructureContainer) => {
+  if (!sourceContainer) {
+    suicide(creep, "Can't find my container");
+    return;
+  }
 
-  if (!source || !resourceHolder) return;
+  if (!creep.pos.isEqualTo(sourceContainer.pos)) {
+    moveTo(creep, sourceContainer);
+    return;
+  }
 
+  const canHarvest = source.energy > 0;
+  harvest(creep, source, sourceContainer, canHarvest, false, RESOURCE_ENERGY);
+};
+
+const harvestEnergyWithLink = (creep: Creep, source: Source, sourceLink: StructureLink) => {
   if (!creep.pos.isNearTo(source)) {
     moveTo(creep, source, { range: 1 });
     return;
   }
 
   const canHarvest = source.energy > 0;
-  harvest(creep, source, resourceHolder, canHarvest, true, RESOURCE_ENERGY);
+  harvest(creep, source, sourceLink, canHarvest, true, RESOURCE_ENERGY);
+};
+
+const harvestEnergy = (creep: Creep) => {
+  const source = getObjectById(creep.memory.worker?.sourceId);
+  const resourceHolder = getSourceLinkOrContainer(creep.room, creep.memory.worker?.sourceIndex);
+
+  if (!source || !resourceHolder) return;
+
+  if (resourceHolder?.structureType === STRUCTURE_LINK) {
+    harvestEnergyWithLink(creep, source, resourceHolder);
+  } else {
+    harvestEnergyWithContainer(creep, source, resourceHolder);
+  }
 };
 
 const harvestMineral = (creep: Creep) => {
@@ -61,25 +84,20 @@ const harvestMineral = (creep: Creep) => {
 
   if (!mineral || !resourceHolder || !extractor) return;
 
-  if (!creep.pos.isNearTo(mineral)) {
-    moveTo(creep, mineral, { range: 1 });
+  if (!creep.pos.isEqualTo(resourceHolder)) {
+    moveTo(creep, resourceHolder);
     return;
   }
 
   const resource = creep.memory.worker?.resource || RESOURCE_ENERGY;
   const canHarvest = !mineral.ticksToRegeneration && mineral.mineralAmount > 0 && !extractor.cooldown;
-  const canTransfer = extractor.cooldown === 0;
 
-  harvest(creep, mineral, resourceHolder, canHarvest, canTransfer, resource);
+  harvest(creep, mineral, resourceHolder, canHarvest, false, resource);
 };
 
+// OBS: some harvester don't have CARRY parts, they automatically drop the energy/mineral in the container they stand on
 const harvesterCreepType: CreepType = {
   name: CREEP_TYPE.HARVESTER,
-  sectionParts: {
-    [WORK]: 1,
-    [MOVE]: 1,
-  },
-  fixedParts: [CARRY, CARRY],
   run(creep) {
     if (!creep.memory.worker) return;
 

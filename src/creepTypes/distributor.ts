@@ -52,10 +52,6 @@ const collectMineralResource = (creep: Creep, mainResourceHolder: StructureStora
 
 const distributorCreepType: CreepType = {
   name: CREEP_TYPE.DISTRIBUTOR,
-  sectionParts: {
-    [CARRY]: 2,
-    [MOVE]: 2, // better to have MOVE as multiple of 2 because of road calculations
-  },
   run(creep) {
     if (!creep.memory.worker) return;
 
