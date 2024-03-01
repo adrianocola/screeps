@@ -9,6 +9,14 @@ const BODY_PARTS_PRIORITY: BodyPartsMap<number> = {
   [HEAL]: 8,
 };
 
+const MAX_SECTIONS_PER_HARVESTERS: { [index: number]: number } = {
+  1: 6,
+  2: 3,
+  3: 3,
+  4: 2,
+  5: 2,
+};
+
 export const moveRoadWeight = (weight: number) => Math.ceil(weight / 2);
 
 export const maxBodySections = (
@@ -114,4 +122,8 @@ export const moveToRoom = (creep: Creep, roomName: string, returning: boolean = 
   creep.moveTo(new RoomPosition(25, 25, nextRoom));
 
   return false;
+};
+
+export const getMaxSectionsPerHarvesters = (slots: number) => {
+  return MAX_SECTIONS_PER_HARVESTERS[slots] || 6;
 };

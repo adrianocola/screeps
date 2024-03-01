@@ -3,8 +3,6 @@ import scanMineral from './scanMineral';
 import scanRoomFeatures from './scanRoomFeatures';
 import scanRoomOwnership from './scanRoomOwnership';
 import scanSources from './scanSources';
-import scanStorage from './scanStorage';
-import scanTowers from './scanTowers';
 import { getBaseSpawn } from 'utils/blueprint';
 
 export const MAPPED_STRUCTURES: StructureMap<boolean> = {
@@ -26,28 +24,28 @@ const systeScan: RoomSystem = {
 
     const counts: StructureMap<number> = {};
 
-    const structures: StructureMap<Structure[]> = {};
-    const myStructuresFound = room.find<AnyOwnedStructure>(FIND_STRUCTURES);
-
-    myStructuresFound.forEach(structure => {
-      if (MAPPED_STRUCTURES[structure.structureType]) {
-        const list = structures[structure.structureType] || [];
-        list.push(structure);
-        structures[structure.structureType] = list;
-
-        counts[structure.structureType] = (counts[structure.structureType] || 0) + 1;
-      }
+    const scanPaths = room.memory.scanPaths;
+    const structuresMap: StructureMap<Structure[]> = {};
+    const structuresFound = room.find<AnyOwnedStructure>(FIND_STRUCTURES, {
+      filter: ({ structureType }) => MAPPED_STRUCTURES[structureType],
     });
 
-    const factories = (structures[STRUCTURE_FACTORY] || []) as StructureFactory[];
-    const observers = (structures[STRUCTURE_OBSERVER] || []) as StructureObserver[];
+    structuresFound.forEach(structure => {
+      const list = structuresMap[structure.structureType] || [];
+      list.push(structure);
+      structuresMap[structure.structureType] = list;
+
+      counts[structure.structureType] = (counts[structure.structureType] || 0) + 1;
+    });
+
+    const factories = (structuresMap[STRUCTURE_FACTORY] || []) as StructureFactory[];
+    const observers = (structuresMap[STRUCTURE_OBSERVER] || []) as StructureObserver[];
     const spawn = getBaseSpawn(room);
 
     // the order of these scan matter because of the link roles (last one registered have more priority)
-    const controller = scanController(room);
-    const storage = scanStorage(room);
-    const sources = scanSources(room, spawn);
-    const mineral = scanMineral(room);
+    const controller = scanController(room, scanPaths);
+    const sources = scanSources(room, spawn, scanPaths);
+    const mineral = scanMineral(room, scanPaths);
 
     room.memory.state = {
       tick: Game.time,
@@ -58,11 +56,10 @@ const systeScan: RoomSystem = {
       mineral,
       sources,
       baseSpawnId: spawn?.id,
-      features: scanRoomFeatures(room, sources, structures, controller, mineral, spawn),
-      storage,
+      features: scanRoomFeatures(room, sources, structuresMap, controller, mineral, spawn),
       ownership: scanRoomOwnership(room),
-      towers: scanTowers(room, structures),
     };
+    room.memory.scanPaths = false;
   },
 };
 

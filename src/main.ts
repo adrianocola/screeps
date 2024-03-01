@@ -21,16 +21,22 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 
   roomSystems();
-  // console.log(Game.cpu.getUsed());
 
   if (Game.rooms.sim) {
     console.log('DURATION:', Date.now() - start);
     if (!Game.rooms.sim.memory.visuals) Game.rooms.sim.memory.visuals = { blueprint: true };
+  } else {
+    console.log(Game.cpu.getUsed());
   }
 });
 
 // CRIAR LÓGICA PARA EXPANSÃO!
 //  - IMPORTANTE: criar variação do scan para expansão (não precisa de tudo, só de algumas coisas)
+//    - score de expansão da sala
+//    - se tem inimigos adjacentes
+//  - criar lógica central, que controla se deve expandir (tem GPL), salas boas, etc
+//  - sala tem que conseguir uma permissão pra expandir do controlador central
+//  - Forçar scan e blueprint quando controller for tomado
 //  - scout (passa por salas adjacentes, faz scan, pega score de expansão da sala)
 //  - cleaner (limpa estruturar inimigas, invader cores)
 //  - claimer (ataca controller reservado ou reserva. Depois que cleaner terminar, faz CLAIM)

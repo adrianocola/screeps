@@ -11,29 +11,29 @@
  * ENUMS
  */
 declare const enum BLUEPRINT_ID {
-  BASE = 'base',
-  TOWERS = 'towers',
-  EXTRACTOR = 'extractor',
-  CONTAINER_SOURCE_1 = 'containerSource1',
-  CONTAINER_SOURCE_2 = 'containerSource2',
-  CONTAINER_CONTROLLER = 'containerController',
-  CONTAINER_EXTRACTOR = 'containerExtractor',
-  LINK_SOURCE_1 = 'linkSource1',
-  LINK_SOURCE_2 = 'linkSource2',
-  LINK_CONTROLLER = 'linkController',
-  EXT_PACK_1 = 'extPack1',
-  EXT_PACK_2 = 'extPack2',
-  EXT_PACK_3 = 'extPack3',
-  EXT_PACK_4 = 'extPack4',
-  EXT_PACK_5 = 'extPack5',
-  EXT_PACK_6 = 'extPack6',
-  EXT_PACK_7 = 'extPack7',
-  EXT_PACK_8 = 'extPack8',
-  EXT_PACK_9 = 'extPack9',
-  EXT_PACK_10 = 'extPack10',
-  EXT_PACK_11 = 'extPack11',
-  EXT_PACK_12 = 'extPack12',
-  OBSERVER = 'observer',
+  BASE = 'b',
+  TOWERS = 't',
+  EXTRACTOR = 'e',
+  CONTAINER_SOURCE_1 = 'cs1',
+  CONTAINER_SOURCE_2 = 'cs2',
+  CONTAINER_CONTROLLER = 'cc',
+  CONTAINER_EXTRACTOR = 'ce',
+  LINK_SOURCE_1 = 'ls1',
+  LINK_SOURCE_2 = 'ls2',
+  LINK_CONTROLLER = 'lc',
+  EXT_PACK_1 = 'ep1',
+  EXT_PACK_2 = 'ep2',
+  EXT_PACK_3 = 'ep3',
+  EXT_PACK_4 = 'ep4',
+  EXT_PACK_5 = 'ep5',
+  EXT_PACK_6 = 'ep6',
+  EXT_PACK_7 = 'ep7',
+  EXT_PACK_8 = 'ep8',
+  EXT_PACK_9 = 'ep9',
+  EXT_PACK_10 = 'ep10',
+  EXT_PACK_11 = 'ep11',
+  EXT_PACK_12 = 'ep12',
+  OBSERVER = 'o',
 }
 
 declare const enum BLUEPRINT_STRUCTURE {
@@ -143,17 +143,17 @@ declare const enum BLUEPRINT_STRUCTURE {
 }
 
 declare const enum CREEP_TYPE {
-  BASIC = 'basic',
-  BUILDER = 'builder',
-  COLLECTOR = 'collector',
-  CUSTOM = 'custom',
-  DEFENDER = 'defender',
-  DISTRIBUTOR = 'distributor',
-  HARVESTER = 'harvester',
-  HARVESTER_WALKER = 'harvesterWalker',
-  TRANSFERER = 'transferer',
-  UPGRADER = 'upgrader',
-  UPGRADER_EMERGENCY = 'upgraderEmergency',
+  BASIC = 'bsc',
+  BUILDER = 'bld',
+  COLLECTOR = 'clt',
+  CUSTOM = 'cst',
+  DEFENDER = 'def',
+  DISTRIBUTOR = 'dst',
+  HARVESTER = 'hvt',
+  HARVESTER_WALKER = 'hvw',
+  TRANSFERER = 'trf',
+  UPGRADER = 'upg',
+  UPGRADER_EMERGENCY = 'upge',
 }
 
 declare const enum DIRECTION_ROTATION {
@@ -173,55 +173,55 @@ declare const enum SLOT_TYPE {
 }
 
 declare const enum ROOM_SYSTEMS {
-  BACKUP = 'backup',
-  BLUEPRINT = 'blueprint',
-  BUILD = 'build',
-  COLLECT = 'collect',
-  CREEPS = 'creeps',
-  CUSTOM = 'custom',
-  DEFENSE = 'defense',
-  DISTRIBUTE = 'distribute',
+  BACKUP = 'bkp',
+  BLUEPRINT = 'bpt',
+  BUILD = 'bld',
+  COLLECT = 'clt',
+  CREEPS = 'crp',
+  CUSTOM = 'cst',
+  DEFENSE = 'def',
+  DISTRIBUTE = 'dst',
   FIX = 'fix',
-  HARVEST = 'harvest',
+  HARVEST = 'hvt',
   HEAL = 'heal',
   MINE = 'mine',
   SCAN = 'scan',
-  STRUCTURES = 'structures',
-  SPAWN = 'spawn',
-  TRANSFER = 'transfer',
-  UPGRADE = 'upgrade',
-  VISUALS = 'visuals',
+  STRUCTURES = 'str',
+  SPAWN = 'spn',
+  TRANSFER = 'trf',
+  UPGRADE = 'upg',
+  VISUALS = 'vis',
 }
 
 declare const enum ROOM_OWNERSHIP {
-  ME_CONTROLLED = 'meContolled',
-  ME_RESERVED = 'meReserved',
-  INVADER_CONTROLLED = 'invaderController',
-  INVADER_RESERVED = 'invaderReserved',
-  PLAYER_CONTROLLED = 'playerControlled',
-  PLAYER_RESERVED = 'playerReserved',
-  NEUTRAL = 'neutral',
-  UNCONTROLLED = 'uncontrolled',
-  HIGHWAY = 'highway',
+  ME_CONTROLLED = 'mc',
+  ME_RESERVED = 'mr',
+  INVADER_CONTROLLED = 'ic',
+  INVADER_RESERVED = 'ir',
+  PLAYER_CONTROLLED = 'pc',
+  PLAYER_RESERVED = 'pr',
+  NEUTRAL = 'n',
+  UNCONTROLLED = 'u',
+  HIGHWAY = 'h',
 }
 
 declare const enum ROOM_FEATURE {
-  BASIC = 'basic',
-  CONTROLLED = 'controlled',
-  CONTROLLER_HAVE_CONTAINER_OR_LINK = 'controllerHaveContainerOrLink',
-  CONTROLLER_HAVE_LINK = 'controllerHaveLink',
-  HAVE_TOWERS = 'haveTowers',
-  MINERALS_HAVE_CONTAINER = 'mineralsHaveContainer',
-  MINERALS_HAVE_EXTRACTOR = 'mineralsHaveExtractor',
-  SAFE_MODE_ACTIVE = 'safeModeActive',
-  SPAWN = 'spawn',
-  SPAWN_HAVE_CONTAINER = 'spawnHaveContainer',
-  SOURCES_HAVE_CONTAINER = 'sourcesHaveContainer',
-  SOURCES_HAVE_LINK = 'sourcesHaveLink',
-  SOURCES_HAVE_CONTAINER_OR_LINK = 'sourcesHaveContainerOrLink',
-  STORAGE = 'storage',
-  STORAGE_HAVE_LINK = 'storageHaveLink',
-  TERMINAL = 'terminal',
+  BASIC = 'b',
+  CONTROLLED = 'c',
+  CONTROLLER_HAVE_CONTAINER_OR_LINK = 'chcol',
+  CONTROLLER_HAVE_LINK = 'chl',
+  HAVE_TOWERS = 'ht',
+  MINERALS_HAVE_CONTAINER = 'mhc',
+  MINERALS_HAVE_EXTRACTOR = 'mhe',
+  SAFE_MODE_ACTIVE = 'sma',
+  SPAWN = 's',
+  SPAWN_HAVE_CONTAINER = 'shc',
+  SOURCES_HAVE_CONTAINER = 'sohc',
+  SOURCES_HAVE_LINK = 'sohl',
+  SOURCES_HAVE_CONTAINER_OR_LINK = 'sohcol',
+  STORAGE = 'st',
+  STORAGE_HAVE_LINK = 'sthl',
+  TERMINAL = 't',
 }
 
 declare const enum TICKS {
@@ -238,17 +238,17 @@ declare const enum TICKS {
 }
 
 declare const enum TRANSFERER_TASKS {
-  FILL_SPAWN1 = 'fillSpawn1',
-  FILL_SPAWN2 = 'fillSpawn2',
-  FILL_TOWER1 = 'fillTower1',
-  FILL_TERMINAL_ENERGY = 'fillTerminalEnergy',
-  FILL_TERMINAL_RESOURCE = 'fillTerminalResource',
-  FREE_TERMINAL_ENERGY = 'freeTerminalEnergy',
-  FREE_TERMINAL_RESOURCE = 'freeTerminalResource',
-  WITHDRAW_LINK = 'withdrawLink',
-  TRANSFER_LINK_CONTROLLER = 'transferLinkController',
-  TRANSFER_LINK_TOWERS = 'transferLinkTowers',
-  WAIT = 'wait',
+  FILL_SPAWN1 = 'fs1',
+  FILL_SPAWN2 = 'fs2',
+  FILL_TOWER1 = 'ft1',
+  FILL_TERMINAL_ENERGY = 'fite',
+  FILL_TERMINAL_RESOURCE = 'fitr',
+  FREE_TERMINAL_ENERGY = 'frte',
+  FREE_TERMINAL_RESOURCE = 'frtr',
+  WITHDRAW_LINK = 'wl',
+  TRANSFER_LINK_CONTROLLER = 'tlc',
+  TRANSFER_LINK_TOWERS = 'tlt',
+  WAIT = 'w',
 }
 
 /**
@@ -464,7 +464,6 @@ interface RoomMemoryScanMineral {
   extractorId?: Id<StructureExtractor>;
   mineralId: Id<Mineral>;
   paved: boolean;
-  storageDistance: number;
   sourceKeeper: boolean;
   sourceKeeperId?: string;
   type: MineralConstant;
@@ -475,8 +474,6 @@ declare interface RoomMemoryScanSource {
   sourceKeeper: boolean;
   sourceKeeperId?: string;
   spawnDistance: number;
-  storageDistance: number;
-  controllerDistance: number;
   sourceContainerId?: Id<StructureContainer>;
   sourceLinkId?: Id<StructureLink>;
   paved: boolean;
@@ -484,23 +481,12 @@ declare interface RoomMemoryScanSource {
   slotsAvailable: number;
   exitsDistances: ExitMap<number>;
   harvestersDesired: number;
-  harvestersMaxSections: number;
   nextSourceDistance: number;
 }
 
 interface RoomMemoryScanSpawn {
   index: number;
   containerId?: string;
-}
-
-interface RoomMemoryScanStorage {
-  exitsDistances: ExitMap<number>;
-  linkId?: string;
-}
-
-interface RoomMemoryScanTower {
-  id: string;
-  storageDistance: number;
 }
 
 interface RoomMemoryState {
@@ -514,8 +500,6 @@ interface RoomMemoryState {
   baseSpawnId?: Id<StructureSpawn>;
   features: Record<ROOM_FEATURE, boolean>;
   ownership: ROOM_OWNERSHIP;
-  storage?: RoomMemoryScanStorage;
-  towers: RoomMemoryScanTower[];
 }
 
 interface RoomMemoryBlueprintSchema {
@@ -555,10 +539,11 @@ interface RoomMemoryHeal {
 }
 
 interface RoomMemory {
-  lastRuns: { [index: string]: number };
-  forceRun: Partial<Record<ROOM_SYSTEMS, boolean>>; // ignore the interval and force the system to run (still checks for requirements)
   duration: number;
+  lastRuns: { [index: string]: number };
   name: string;
+  forceRun?: Partial<Record<ROOM_SYSTEMS, boolean>>; // ignore the interval and force the system to run (still checks for requirements)
+  scanPaths?: boolean;
   defense?: RoomMemoryDefense;
   fix?: RoomMemoryFix;
   heal?: RoomMemoryHeal;

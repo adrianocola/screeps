@@ -1,9 +1,4 @@
-import {
-  getMainResourceHolder,
-  getRoomClosestEmptyExtension,
-  getRoomClosestEmptyTower,
-  getRoomEmptySpawn,
-} from 'utils/room';
+import { getMainResourceHolder, getRoomClosestEmptyExtension, getRoomEmptyTower, getRoomEmptySpawn } from 'utils/room';
 import { moveTo, signController, transfer, withdraw } from 'utils/creep';
 import { getBaseTower, getBlueprintEntrance, getControllerContainer, getMineralContainer } from 'utils/blueprint';
 
@@ -86,14 +81,14 @@ const distributorCreepType: CreepType = {
     const baseTowerId = storageHaveLink ? getBaseTower(creep.room)?.id : undefined;
 
     if (creep.room.energyAvailable === creep.room.energyCapacityAvailable) {
-      target = getRoomClosestEmptyTower(creep.room, baseTowerId);
+      target = getRoomEmptyTower(creep.room, baseTowerId);
       // if the controller has a link, no need to fill the container
       if (!controllerHaveLink && !target) target = getControllerContainer(creep.room);
     } else {
       // if there is a storage link, there is a transferer. It should be responsible for fillling the spawn
       if (!storageHaveLink) target = getRoomEmptySpawn(creep.room);
       if (!target) target = getRoomClosestEmptyExtension(creep.room, 1);
-      if (!target) target = getRoomClosestEmptyTower(creep.room, baseTowerId);
+      if (!target) target = getRoomEmptyTower(creep.room, baseTowerId);
       if (!target) target = getRoomClosestEmptyExtension(creep.room, 2);
     }
 

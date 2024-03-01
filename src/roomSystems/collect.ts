@@ -1,5 +1,5 @@
 import systemSpawn from './spawn';
-import { bodySectionCost } from 'utils/worker';
+import { bodySectionCost, getMaxSectionsPerHarvesters } from 'utils/worker';
 import workerCollector from 'creepTypes/collector';
 import workerHarvester from 'creepTypes/harvester';
 import { getObjectById } from 'utils/game';
@@ -17,7 +17,7 @@ const collectFromSources = (room: Room, sourcesData: Record<string, RoomMemorySc
       continue;
     }
 
-    const distance = sourceData.storageDistance === -1 ? sourceData.spawnDistance : sourceData.storageDistance;
+    const distance = sourceData.spawnDistance;
 
     const sectionCost = bodySectionCost(workerCollector.sectionParts || {}, sourceData.paved);
     const maxSections = Math.min(
@@ -26,10 +26,11 @@ const collectFromSources = (room: Room, sourcesData: Record<string, RoomMemorySc
     );
 
     const harvesterWorkSectionWeight = workerHarvester.sectionParts ? workerHarvester.sectionParts[WORK] || 1 : 1;
+    const harvestersMaxSections = getMaxSectionsPerHarvesters(sourceData.harvestersDesired);
     const harvestedInTime =
       2 *
       distance *
-      (HARVEST_POWER * sourceData.harvestersDesired * sourceData.harvestersMaxSections * harvesterWorkSectionWeight);
+      (HARVEST_POWER * sourceData.harvestersDesired * harvestersMaxSections * harvesterWorkSectionWeight);
     const desired = Math.max(1, Math.floor(harvestedInTime / (maxSections * CARRY_CAPACITY)));
 
     systemSpawn.spawn(room, demandId, workerCollector.name, desired, 31, {

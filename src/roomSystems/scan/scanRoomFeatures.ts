@@ -1,4 +1,5 @@
 import { getMainResourceHolder } from 'utils/room';
+import { getStorageLink } from 'utils/blueprint';
 
 const checkControllerHaveLink = (controller?: RoomMemoryScanController) => !!controller?.linkId;
 
@@ -22,10 +23,9 @@ const checkSpawnHaveContainer = (room: Room): boolean => !!getMainResourceHolder
 
 const checkStorageHaveLink = (room: Room): boolean => {
   if (!room.storage) return false;
-  const storageData = room.memory.state?.storage;
-  if (!storageData) return false;
+  const storageLink = getStorageLink(room);
 
-  return !!storageData.linkId;
+  return !!storageLink;
 };
 
 export default (

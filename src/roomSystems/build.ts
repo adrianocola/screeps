@@ -51,13 +51,16 @@ const systemBuild: SystemBuild = {
     const queue = room.memory.build?.queue ?? [];
     const existingConstructionSitesMap: Record<string, boolean> = {};
 
-    // check if all construction site in the queue still exist
+    // check if all construction sites in the queue still exist
     const validQueue: BuildQueueItem[] = [];
     for (const item of queue) {
       const constructionSite = getObjectById(item.constructionSiteId as Id<ConstructionSite>);
       if (constructionSite) {
         existingConstructionSitesMap[constructionSite.id] = true;
         validQueue.push(item);
+      } else {
+        // some structure was built, next scan should check if paths have changed
+        room.memory.scanPaths = true;
       }
     }
 

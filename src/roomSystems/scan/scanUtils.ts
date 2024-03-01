@@ -1,17 +1,11 @@
-export const rawRange = (pos: RoomPosition, target?: RoomPosition | _HasRoomPosition): number => {
-  if (!target) return -1;
-
-  return pos.getRangeTo(target);
-};
-
 export const rawPathDistance = (pos: RoomPosition, target?: RoomPosition | _HasRoomPosition): number => {
   if (!target) return -1;
 
   return pos.findPathTo(target, { ignoreCreeps: true }).length;
 };
 
-export const getRawPath = (pos: RoomPosition, target?: RoomPosition | _HasRoomPosition, range = 0): PathStep[] => {
-  if (!target) return [];
+export const getRawPath = (pos?: RoomPosition, target?: RoomPosition | _HasRoomPosition, range = 0): PathStep[] => {
+  if (!pos || !target) return [];
 
   return pos.findPathTo(target, { ignoreCreeps: true, range });
 };
@@ -23,33 +17,6 @@ export const getIsPathPaved = (room: Room, pathSteps: PathStep[] | RoomPosition[
   }
 
   return true;
-};
-
-export const findSingleStructureInRange = <T extends AnyStructure>(
-  pos: RoomPosition,
-  range: number,
-  structureType: StructureConstant,
-) => {
-  const structures = pos.findInRange(FIND_STRUCTURES, range, { filter: { structureType } });
-  return structures.length ? (structures[0] as T) : undefined;
-};
-
-export const findSingleStructureIdInRange = <T extends AnyStructure>(
-  pos: RoomPosition,
-  range: number,
-  structureType: StructureConstant,
-) => {
-  const structures = pos.findInRange(FIND_STRUCTURES, range, { filter: { structureType } });
-  return structures.length ? (structures[0].id as Id<T>) : undefined;
-};
-
-export const findStructuresIdInRange = (
-  pos: RoomPosition,
-  range: number,
-  structureType: StructureConstant,
-): string[] => {
-  const structures = pos.findInRange(FIND_STRUCTURES, range, { filter: { structureType } });
-  return structures.map(s => s.id) as string[];
 };
 
 export const getExitDistance = (pos: RoomPosition, exit: ExitConstant): number | undefined => {

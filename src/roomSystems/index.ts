@@ -19,8 +19,16 @@ import visuals from './visuals';
 
 import { SIMULATOR_ROOM } from 'consts';
 
+type SystemsMap = Partial<Record<ROOM_SYSTEMS, RoomSystem>>;
+interface CreepsMap {
+  [index: string]: Creep[];
+}
+interface CreepsRoomMap {
+  [index: string]: CreepsMap;
+}
+
 // execution order ⬇️
-export const SYSTEMS: Partial<Record<ROOM_SYSTEMS, RoomSystem>> = {
+export const ALL_SYSTEMS: SystemsMap = {
   [ROOM_SYSTEMS.BLUEPRINT]: blueprint,
   [ROOM_SYSTEMS.BACKUP]: backup,
   [ROOM_SYSTEMS.BUILD]: build,
@@ -41,8 +49,16 @@ export const SYSTEMS: Partial<Record<ROOM_SYSTEMS, RoomSystem>> = {
   [ROOM_SYSTEMS.VISUALS]: visuals, // must be last
 };
 
+const UNCONTROLLED_SYSTEMS = Object.entries(ALL_SYSTEMS).reduce((acc, [name, system]) => {
+  if (!system.requiredFeatures?.[ROOM_FEATURE.CONTROLLED]) {
+    acc[name as ROOM_SYSTEMS] = system;
+  }
+
+  return acc;
+}, {} as SystemsMap);
+
 const getCreepsGroupedByRoomAndRole = () => {
-  const roomCreeps: { [index: string]: { [index: string]: Creep[] } } = {};
+  const roomCreeps: CreepsRoomMap = {};
 
   Object.values(Game.creeps).forEach(creep => {
     const roomName = creep.memory?.worker?.roomName;
@@ -59,7 +75,71 @@ const getCreepsGroupedByRoomAndRole = () => {
   return roomCreeps;
 };
 
-// TODO create creeps replacements before the old one dies
+// {"event":2,"objectId":"65e0e8488793133931ce260a","data":{"type":"creep"}}
+const TYPE_TEXT = '"type":';
+const TYPE_CREEP = '"creep"';
+const shouldScanPaths = (room: Room) => {
+  if (room.memory.scanPaths || room.memory.scanPaths === undefined) return true;
+  if (Game.time - room.memory.lastRuns[ROOM_SYSTEMS.SCAN] >= 20_000) return true;
+  if (!room.controller?.my) return false;
+
+  // check in the event log if any structure in the room was destroyed
+  const rawEventLog = room.getEventLog(true) as unknown as string;
+  const destructionTypeIndex = rawEventLog.indexOf(TYPE_TEXT);
+  if (destructionTypeIndex >= 0) {
+    const type = rawEventLog.substring(
+      destructionTypeIndex + TYPE_TEXT.length,
+      destructionTypeIndex + TYPE_TEXT.length + TYPE_CREEP.length,
+    );
+    // if not a creep, it is a structure
+    if (type !== TYPE_CREEP) return true;
+  }
+
+  return false;
+};
+
+const executeRoomSystems = (room: Room, systems: SystemsMap, roomCreeps: CreepsMap) => {
+  const roomFeatures = room.memory.state?.features;
+  const roomOwnership = room.memory.state?.ownership;
+
+  const controllerLevel = room.controller?.level ?? 0;
+
+  for (const systemName in systems) {
+    const system = systems[systemName as ROOM_SYSTEMS];
+    if (!system) continue;
+
+    const lastRun = room.memory.lastRuns[systemName];
+    const forceRun = !!room.memory.forceRun?.[systemName as ROOM_SYSTEMS];
+    const isSimulatorRoom = room.name === SIMULATOR_ROOM;
+    if (
+      !forceRun &&
+      !isSimulatorRoom && // force run all systems in simulator room
+      (!roomFeatures || (lastRun && Game.time < lastRun + system.interval))
+    )
+      continue;
+
+    if (forceRun) {
+      if (!room.memory.forceRun) room.memory.forceRun = {};
+      room.memory.forceRun[systemName as ROOM_SYSTEMS] = false;
+    }
+
+    const haveControllerLevel = !system.controllerLevel || system.controllerLevel >= controllerLevel;
+
+    const haveRequiredFeatures =
+      !system.requiredFeatures ||
+      Object.entries(system.requiredFeatures).every(([feature, reqValue]) => {
+        return roomFeatures?.[feature as ROOM_FEATURE] === reqValue;
+      });
+
+    const haveRequiredOwnership =
+      !system.requiredOwnership || system.requiredOwnership.some(ownership => ownership === roomOwnership);
+
+    if (haveControllerLevel && haveRequiredFeatures && haveRequiredOwnership) {
+      system.run(room, roomCreeps);
+      room.memory.lastRuns[systemName] = Game.time;
+    }
+  }
+};
 
 const roomSystems = () => {
   const groupedCreeps = getCreepsGroupedByRoomAndRole();
@@ -70,52 +150,16 @@ const roomSystems = () => {
 
     if (!room.memory) room.memory = { lastRuns: {}, forceRun: {}, name: room.name, duration: 0 };
     if (!room.memory.lastRuns) room.memory.lastRuns = {};
-    if (!room.memory.forceRun) room.memory.forceRun = {};
     if (!room.memory.name) room.memory.name = room.name;
 
     const roomCreeps = groupedCreeps[roomId] || {};
 
     if (!room.memory.state) scan.run(room, roomCreeps); // force a initial scan
 
-    const roomFeatures = room.memory.state?.features;
-    const roomOwnership = room.memory.state?.ownership;
+    room.memory.scanPaths = shouldScanPaths(room);
 
-    const controllerLevel = room.controller?.level ?? 0;
-
-    for (const systemName in SYSTEMS) {
-      const system = SYSTEMS[systemName as ROOM_SYSTEMS];
-      if (!system) continue;
-
-      const lastRun = room.memory.lastRuns[systemName];
-      const forceRun = !!room.memory.forceRun[systemName as ROOM_SYSTEMS];
-      const isSimulatorRoom = room.name === SIMULATOR_ROOM;
-      if (
-        !forceRun &&
-        !isSimulatorRoom && // force run all systems in simulator room
-        (!roomFeatures || (lastRun && Game.time < lastRun + system.interval))
-      )
-        continue;
-
-      if (forceRun) {
-        room.memory.forceRun[systemName as ROOM_SYSTEMS] = false;
-      }
-
-      const haveControllerLevel = !system.controllerLevel || system.controllerLevel >= controllerLevel;
-
-      const haveRequiredFeatures =
-        !system.requiredFeatures ||
-        Object.entries(system.requiredFeatures).every(([feature, reqValue]) => {
-          return roomFeatures?.[feature as ROOM_FEATURE] === reqValue;
-        });
-
-      const haveRequiredOwnership =
-        !system.requiredOwnership || system.requiredOwnership.some(ownership => ownership === roomOwnership);
-
-      if (haveControllerLevel && haveRequiredFeatures && haveRequiredOwnership) {
-        system.run(room, roomCreeps);
-        room.memory.lastRuns[systemName] = Game.time;
-      }
-    }
+    const systems = room.controller?.my ? ALL_SYSTEMS : UNCONTROLLED_SYSTEMS;
+    executeRoomSystems(room, systems, roomCreeps);
 
     room.memory.duration = Game.cpu.getUsed() - start;
   }
