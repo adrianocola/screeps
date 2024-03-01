@@ -65,8 +65,8 @@ const harvestEnergyWithLink = (creep: Creep, source: Source, sourceLink: Structu
 };
 
 const harvestEnergy = (creep: Creep) => {
-  const source = getObjectById(creep.memory.worker?.sourceId);
-  const resourceHolder = getSourceLinkOrContainer(creep.room, creep.memory.worker?.sourceIndex);
+  const source = getObjectById(creep.memory.sourceId);
+  const resourceHolder = getSourceLinkOrContainer(creep.room, creep.memory.sourceIndex);
 
   if (!source || !resourceHolder) return;
 
@@ -79,7 +79,7 @@ const harvestEnergy = (creep: Creep) => {
 
 const harvestMineral = (creep: Creep) => {
   const resourceHolder = getMineralContainer(creep.room);
-  const mineral = getObjectById(creep.memory.worker?.mineralId);
+  const mineral = getObjectById(creep.memory.mineralId);
   const extractor = getMineralExtractor(creep.room);
 
   if (!mineral || !resourceHolder || !extractor) return;
@@ -89,7 +89,7 @@ const harvestMineral = (creep: Creep) => {
     return;
   }
 
-  const resource = creep.memory.worker?.resource || RESOURCE_ENERGY;
+  const resource = creep.memory.resource || RESOURCE_ENERGY;
   const canHarvest = !mineral.ticksToRegeneration && mineral.mineralAmount > 0 && !extractor.cooldown;
 
   harvest(creep, mineral, resourceHolder, canHarvest, false, resource);
@@ -99,9 +99,7 @@ const harvestMineral = (creep: Creep) => {
 const harvesterCreepType: CreepType = {
   name: CREEP_TYPE.HARVESTER,
   run(creep) {
-    if (!creep.memory.worker) return;
-
-    if (creep.memory.worker?.mineralId) {
+    if (creep.memory.mineralId) {
       harvestMineral(creep);
     } else {
       harvestEnergy(creep);

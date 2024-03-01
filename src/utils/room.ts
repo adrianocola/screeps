@@ -67,7 +67,7 @@ export const getRoomClosestEmptyExtension = (room: Room, half: 1 | 2): Structure
 };
 
 export const getRoomEmptyTower = (room: Room, ignoreTowerId?: Id<StructureTower>): StructureTower | undefined => {
-  const towers: StructureTower[] = room.find(FIND_MY_STRUCTURES, { filter: STRUCTURE_TOWER });
+  const towers: StructureTower[] = room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
   for (const tower of towers) {
     if (tower.id !== ignoreTowerId && tower.store.getUsedCapacity(RESOURCE_ENERGY) <= TOWER_RESERVED_ENERGY) {
       return tower;

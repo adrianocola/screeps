@@ -23,15 +23,12 @@ const systemCustom: RoomSystem = {
         [WORK]: 1,
       },
       memory: {
-        role: 'worker',
-        worker: {
-          type: workerCustom.name,
-          demandId: 'custom-W42S54',
-          roomName: room.name,
-          workRoom: 'W42S54',
-          sourceId: '5bbcaabe9099fc012e6321ea' as Id<Source>,
-          containerId: '65db6404de565795da439dc0' as Id<StructureLink>,
-        },
+        type: workerCustom.name,
+        demandId: 'custom-W42S54',
+        roomName: room.name,
+        workRoom: 'W42S54',
+        sourceId: '5bbcaabe9099fc012e6321ea' as Id<Source>,
+        containerId: '65db6404de565795da439dc0' as Id<StructureLink>,
       },
     });
 

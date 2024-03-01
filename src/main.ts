@@ -12,7 +12,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Memory.username = getRootSpawn().owner.username;
   }
 
-  // TODO make this run only every X ticks
   // Automatically delete memory of missing creeps
   for (const name in Memory.creeps) {
     if (!(name in Game.creeps)) {
@@ -30,17 +29,35 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 });
 
+// MUDAR BLUEPRINT PARA IGNORAR SWAMPS PARA DECIDIR DISTÂNCIAS! (vou colocar roads em cima mesmo)
+
 // CRIAR LÓGICA PARA EXPANSÃO!
-//  - IMPORTANTE: criar variação do scan para expansão (não precisa de tudo, só de algumas coisas)
-//    - score de expansão da sala
-//    - se tem inimigos adjacentes
-//  - criar lógica central, que controla se deve expandir (tem GPL), salas boas, etc
+//  - Criar score de expansão da sala
+//    - se cabe blueprint na sala (sem gastar muita CPU)
+//    - quantidade sources
+//    - distância entre blueprint, sources, controller e mineral
+//    - minério que ainda não tenho
+//    - quantidade de inimigos adjacentes
+//    - level de inimigos adjacentes
+//    - se tem estruturas inimigas (ramparts e outras estruturas)
+//    - se tem muitas constructed walls (podem atrapalhar posicionamento do blueprint)
+//    - talvez fazer score de blueprint desconsiderando constructed wall (E aí ter uma opção pra destruir algumas constructed walls que fiquem no caminho)
+//    - quantidade de swamps
+//    - quantidade de saídas (espaços de saída, mais difícil de defender)
+//    - quantidade de salas adjacentes
+//    - se é adjacente a highway (com saída pra ela)
+//    - se tem invader core (acho que pode desconsiderar, já que é temporário ou posso destruir)
+//  - criar lógica central, que controla se deve expandir (se tem GPL), salas boas, etc
 //  - sala tem que conseguir uma permissão pra expandir do controlador central
-//  - Forçar scan e blueprint quando controller for tomado
+//  - Forçar scan e blueprint quando controller for tomado ( no geral, devem sempre execugar quando subir de level
 //  - scout (passa por salas adjacentes, faz scan, pega score de expansão da sala)
-//  - cleaner (limpa estruturar inimigas, invader cores)
+//    - Passa pelas 8 salas em volta da sala alvo (a atual ou alguma outra), registrando estado das salas
+//    - Manter algum tipo de memória entre creeps, caso o explorador morra explorando. O próximo explorador deve seguir de onde o primeiro parou
+//      - Criar uma exploration queue na memória da sala, que o explorador se guia por ela e vai removendo as salas exploradas
+//  - cleaner (limpa estrutura inimigas e invader cores)
 //  - claimer (ataca controller reservado ou reserva. Depois que cleaner terminar, faz CLAIM)
 //  - X basic (mineram, constroem spawn, etc)
+//    - sala de origem vai ajudando até a sala chegar no lvl 3 ou 4
 
 //
 // FAZER LÓGICA MELHORADA DE SAFE MODE / DEFENSE!!!
@@ -52,7 +69,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 // - Ativar só alguns sistemas se tiver inimigos
 
 // CONTINUAR AQUI!
-//  - Permitir forçar um scan em situações específicas (construção terminada, feito upgrade do controller, após ataque inimigo, saiu do safe mode, etc)
+//  - Forçar execução de scan e blueprint quando a sala subir de level (manter último level na memory e comparar)
 //  - Deixar lógica do BlueprintScanner rodar por um pouco mais de tempo, tentar fazer um mapa mais otimizado e "fechado"
 //  - Fazer lógica para fechar sala com walls/ramparts (melhores lugares para colocar, etc)
 //  - Usar energia das expansions mais pertas do Spawn central (uma ordem de EXT_PACK deve resolver)

@@ -34,16 +34,13 @@ const collectFromSources = (room: Room, sourcesData: Record<string, RoomMemorySc
     const desired = Math.max(1, Math.floor(harvestedInTime / (maxSections * CARRY_CAPACITY)));
 
     systemSpawn.spawn(room, demandId, workerCollector.name, desired, 31, {
-      urgent: true,
-      optimizeForRoads: sourceData.paved,
+      essential: true,
+      forRoads: sourceData.paved,
       memory: {
-        role: 'worker',
-        worker: {
-          type: workerCollector.name,
-          demandId,
-          roomName: room.name,
-          sourceIndex: sourceData.index,
-        },
+        type: workerCollector.name,
+        demandId,
+        roomName: room.name,
+        sourceIndex: sourceData.index,
       },
     });
   }
@@ -69,15 +66,12 @@ const collectFromMineral = (room: Room, mineralData?: RoomMemoryScanMineral) => 
 
   systemSpawn.spawn(room, MINER_COLLECTOR_DEMAND_ID, workerCollector.name, 1, 61, {
     maxSections: 6,
-    optimizeForRoads: mineralData.paved,
+    forRoads: mineralData.paved,
     memory: {
-      role: 'worker',
-      worker: {
-        type: workerCollector.name,
-        demandId: MINER_COLLECTOR_DEMAND_ID,
-        roomName: room.name,
-        resource: mineralData.type,
-      },
+      type: workerCollector.name,
+      demandId: MINER_COLLECTOR_DEMAND_ID,
+      roomName: room.name,
+      resource: mineralData.type,
     },
   });
 };

@@ -115,7 +115,7 @@ export default (room: Room, spawn?: StructureSpawn, scanPaths?: boolean) => {
       spawnDistance: scanPaths ? rawPathDistance(source.pos, spawn) : sourceMemory?.spawnDistance ?? -1,
       paved: scanPaths
         ? getIsPathPaved(room, getRawPath(baseEntrancePos, source.pos, 1))
-        : sourceMemory?.paved ?? false,
+        : sourceMemory?.paved || undefined,
       sourceContainerId: sourceContainer?.id,
       harvestersDesired,
       nextSourceDistance: scanPaths

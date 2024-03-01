@@ -43,7 +43,7 @@ const systemUpgrade: RoomSystem = {
     // Make sure to spawn an emergency upgrader if the controller is about to downgrade
     if (!room.controller.upgradeBlocked && room.controller.ticksToDowngrade < CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY) {
       spawnSystem.spawn(room, upgraderEmergency.name, upgraderEmergency.name, 1, 2, {
-        urgent: true,
+        essential: true,
         maxSections: 3,
         sectionParts: {
           [WORK]: 1,
@@ -51,12 +51,9 @@ const systemUpgrade: RoomSystem = {
           [MOVE]: 2,
         },
         memory: {
-          role: 'worker',
-          worker: {
-            type: upgraderEmergency.name,
-            demandId: upgraderEmergency.name,
-            roomName: room.name,
-          },
+          type: upgraderEmergency.name,
+          demandId: upgraderEmergency.name,
+          roomName: room.name,
         },
       });
     }
@@ -74,7 +71,7 @@ const systemUpgrade: RoomSystem = {
     const memoryController = room.memory.state?.controller;
 
     spawnSystem.spawn(room, workerUpgrader.name, workerUpgrader.name, desired, 140, {
-      optimizeForRoads: memoryController?.paved,
+      forRoads: memoryController?.paved,
       maxSections: roomLevel === 8 ? Math.ceil(MAX_WORK_PARTS_LVL8 / WORK_PARTS_WEIGHT) : undefined, // because lvl8 controllers are limited to 15 per tick,
       sectionParts: {
         [WORK]: WORK_PARTS_WEIGHT,
@@ -82,12 +79,9 @@ const systemUpgrade: RoomSystem = {
       },
       fixedParts: [CARRY, CARRY, CARRY, CARRY],
       memory: {
-        role: 'worker',
-        worker: {
-          type: workerUpgrader.name,
-          demandId: workerUpgrader.name,
-          roomName: room.name,
-        },
+        type: workerUpgrader.name,
+        demandId: workerUpgrader.name,
+        roomName: room.name,
       },
     });
   },

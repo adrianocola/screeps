@@ -48,8 +48,6 @@ const collectMineralResource = (creep: Creep, mainResourceHolder: StructureStora
 const distributorCreepType: CreepType = {
   name: CREEP_TYPE.DISTRIBUTOR,
   run(creep) {
-    if (!creep.memory.worker) return;
-
     const mainResourceHolder = getMainResourceHolder(creep.room);
     if (!mainResourceHolder) return;
 

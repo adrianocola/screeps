@@ -12,16 +12,13 @@ const systemDistribute: RoomSystem = {
   },
   run(room: Room) {
     spawnSystem.spawn(room, workerTransferer.name, workerTransferer.name, 1, 6, {
-      urgent: true,
+      essential: true,
       fixedDir: true,
-      optimizeForRoads: true,
+      forRoads: true,
       memory: {
-        role: 'worker',
-        worker: {
-          type: workerTransferer.name,
-          demandId: workerTransferer.name,
-          roomName: room.name,
-        },
+        type: workerTransferer.name,
+        demandId: workerTransferer.name,
+        roomName: room.name,
       },
     });
   },

@@ -27,20 +27,17 @@ const systemDistribute: RoomSystem = {
     const maxSections = MAX_PARTS_PER_LEVEL[level];
 
     spawnSystem.spawn(room, workerDistributor.name, workerDistributor.name, 1, 7, {
-      urgent: true,
+      essential: true,
       sectionParts: {
         [CARRY]: 2,
         [MOVE]: 2, // better to have MOVE as multiple of 2 because of road calculations
       },
       maxSections,
-      optimizeForRoads: true,
+      forRoads: true,
       memory: {
-        role: 'worker',
-        worker: {
-          type: workerDistributor.name,
-          demandId: workerDistributor.name,
-          roomName: room.name,
-        },
+        type: workerDistributor.name,
+        demandId: workerDistributor.name,
+        roomName: room.name,
       },
     });
   },

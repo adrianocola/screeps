@@ -23,7 +23,7 @@ export default (room: Room, scanPaths?: boolean): RoomMemoryScanController | und
   return {
     id: room.controller.id,
     exitsDistances: scanPaths ? getExitsDistances(room.controller.pos) : controllerMemory?.exitsDistances ?? {},
-    paved: scanPaths ? paved : controllerMemory?.paved ?? false,
+    paved: scanPaths ? paved : controllerMemory?.paved || undefined,
     storageDistance: scanPaths ? storageDistance : controllerMemory?.storageDistance ?? -1,
     containerId: container?.id,
     linkId: link?.id,

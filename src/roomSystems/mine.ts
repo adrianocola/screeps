@@ -27,7 +27,8 @@ const systemMine: RoomSystem = {
     const mineralData = room.memory.state?.mineral;
     if (!mineralData) return;
 
-    if (mineralData.sourceKeeper || !mineralData.containerId || !mineralData.extractorId) return;
+    if (mineralData.sourceKeeper || !mineralData.containerId || !mineralData.extractorId || !mineralData.mineralId)
+      return;
 
     const mineral = Game.getObjectById<Mineral>(mineralData.mineralId);
     const terminalFreeCapacity = room.terminal?.store.getFreeCapacity();
@@ -46,21 +47,18 @@ const systemMine: RoomSystem = {
     const maxSections = MAX_PARTS_PER_LEVEL[level] || 12;
 
     spawnSystem.spawn(room, DEMAND_ID, harvesterCreepType.name, 1, 60, {
-      optimizeForRoads: mineralData.paved,
+      forRoads: mineralData.paved,
       maxSections,
       sectionParts: {
         [WORK]: 1,
         [MOVE]: 1,
       },
       memory: {
-        role: 'worker',
-        worker: {
-          type: harvesterCreepType.name,
-          demandId: DEMAND_ID,
-          roomName: room.name,
-          mineralId: mineralData.mineralId,
-          resource: mineralData.type,
-        },
+        type: harvesterCreepType.name,
+        demandId: DEMAND_ID,
+        roomName: room.name,
+        mineralId: mineralData.mineralId,
+        resource: mineralData.type,
       },
     });
   },

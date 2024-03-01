@@ -5,9 +5,7 @@ const customCreepType: CreepType = {
   name: CREEP_TYPE.CUSTOM,
   run(creep) {
     creep.notifyWhenAttacked(false);
-    if (!creep.memory.worker) return;
-
-    const containerOrLink = getObjectById(creep.memory.worker.containerId);
+    const containerOrLink = getObjectById(creep.memory.containerId);
     if (containerOrLink) {
       if (creep.pos.isNearTo(containerOrLink)) {
         if (creep.store.getUsedCapacity(RESOURCE_ENERGY)) {
@@ -20,9 +18,9 @@ const customCreepType: CreepType = {
       }
     }
 
-    const source = getObjectById(creep.memory.worker.sourceId as Id<Source>);
+    const source = getObjectById(creep.memory.sourceId as Id<Source>);
     if (!source) {
-      moveTo(creep, { pos: new RoomPosition(25, 25, creep.memory.worker.workRoom ?? '') });
+      moveTo(creep, { pos: new RoomPosition(25, 25, creep.memory.workRoom ?? '') });
       return;
     }
 

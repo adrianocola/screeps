@@ -5,15 +5,12 @@ import basicCreepType from 'creepTypes/basic';
 const createBasic = (room: Room, sourceId: string, nameSuffix: string | number, quantity: number, priority: number) => {
   const demandId = `${basicCreepType.name}-${nameSuffix}`;
   spawnSystem.spawn(room, `${basicCreepType.name}-${nameSuffix}`, basicCreepType.name, quantity, priority, {
-    urgent: true,
+    essential: true,
     memory: {
-      role: 'worker',
-      worker: {
-        type: basicCreepType.name,
-        sourceId: sourceId as Id<Source>,
-        demandId,
-        roomName: room.name,
-      },
+      type: basicCreepType.name,
+      sourceId: sourceId as Id<Source>,
+      demandId,
+      roomName: room.name,
     },
   });
 };

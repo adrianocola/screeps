@@ -387,8 +387,8 @@ interface BlueprintScanResult extends Pos {
 }
 
 interface SystemSpawnOptions extends SpawnOptions {
-  optimizeForRoads?: boolean; // if should only include 1 WALK part
-  urgent?: boolean; // if should spawn with the amount of energy available (instead of waiting for the optimal capacity)
+  forRoads?: boolean; // if should reduce MOVE parts
+  essential?: boolean; // if should spawn with the amount of energy available (instead of waiting for the optimal capacity)
   fixedDir?: boolean; // if should spawn using the fixed dirs in the Spawn memory
   maxSections?: number; // overwrite the job maxSections
   sectionParts?: BodyPartsMap<number>; // part => quantity, will try to fit as many sections as possible
@@ -429,7 +429,7 @@ interface SpawnMemory {
   fixedDirs?: DirectionConstant[];
 }
 
-interface CreepMemoryWorker {
+interface CreepMemory {
   type: CREEP_TYPE;
   demandId: string;
   roomName: string;
@@ -444,14 +444,9 @@ interface CreepMemoryWorker {
   roomsPath?: string[]; // choosen way/path of rooms to move between two rooms that are not adjacent (must include source and destination)
 }
 
-interface CreepMemory {
-  role: string;
-  worker?: CreepMemoryWorker;
-}
-
 interface RoomMemoryScanController {
   id: string;
-  paved: boolean;
+  paved?: boolean;
   storageDistance: number;
   exitsDistances: ExitMap<number>;
   containerId?: Id<StructureContainer>;
@@ -462,9 +457,9 @@ interface RoomMemoryScanMineral {
   containerId?: Id<StructureContainer>;
   exitsDistances: ExitMap<number>;
   extractorId?: Id<StructureExtractor>;
-  mineralId: Id<Mineral>;
-  paved: boolean;
-  sourceKeeper: boolean;
+  mineralId?: Id<Mineral>;
+  paved?: boolean;
+  sourceKeeper?: boolean;
   sourceKeeperId?: string;
   type: MineralConstant;
 }
@@ -476,7 +471,7 @@ declare interface RoomMemoryScanSource {
   spawnDistance: number;
   sourceContainerId?: Id<StructureContainer>;
   sourceLinkId?: Id<StructureLink>;
-  paved: boolean;
+  paved?: boolean;
   slots: DirectionMap<SLOT_TYPE>;
   slotsAvailable: number;
   exitsDistances: ExitMap<number>;

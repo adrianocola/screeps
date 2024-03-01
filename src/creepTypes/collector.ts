@@ -10,10 +10,10 @@ const collectorCreepType: CreepType = {
     [MOVE]: 2,
   },
   run(creep) {
-    const resource = creep.memory.worker?.resource || RESOURCE_ENERGY;
+    const resource = creep.memory.resource || RESOURCE_ENERGY;
     const energyOrMineralContainer =
       resource === RESOURCE_ENERGY
-        ? getSourceContainer(creep.room, creep.memory.worker?.sourceIndex)
+        ? getSourceContainer(creep.room, creep.memory.sourceIndex)
         : getMineralContainer(creep.room);
 
     const resourceHolder =

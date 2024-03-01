@@ -30,10 +30,10 @@ const getInitialSourceIndex = (room: Room): number => {
 const harvesterWalkerCreepType: CreepType = {
   name: CREEP_TYPE.HARVESTER_WALKER,
   run(creep) {
-    if (!creep.memory.worker || !creep.room.memory.state?.sources) return;
+    if (!creep.room.memory.state?.sources) return;
 
-    if (creep.memory.worker.sourceIndex === undefined) {
-      creep.memory.worker.sourceIndex = getInitialSourceIndex(creep.room);
+    if (creep.memory.sourceIndex === undefined) {
+      creep.memory.sourceIndex = getInitialSourceIndex(creep.room);
     }
 
     let sourceId: string | undefined;
@@ -43,7 +43,7 @@ const harvesterWalkerCreepType: CreepType = {
 
     for (const sId in sources) {
       const sourceD = sources[sId];
-      if (sourceD.index === creep.memory.worker?.sourceIndex) {
+      if (sourceD.index === creep.memory.sourceIndex) {
         sourceId = sId;
         sourceData = sourceD;
         sourceIndex = sourceD.index;
@@ -65,7 +65,7 @@ const harvesterWalkerCreepType: CreepType = {
       moveTo(creep, source.pos, { range: 1 });
     } else if (source.energy > 0) {
       if (harvest(creep, source) === OK) {
-        creep.memory.worker.harvested = true;
+        creep.memory.harvested = true;
         const harvestPower = creep.getActiveBodyparts(WORK) * HARVEST_POWER;
         if (creepUsedCapacity && targetHaveSpace && creep.store.getCapacity() - creepUsedCapacity <= harvestPower) {
           transfer(creep, sourceStorage, RESOURCE_ENERGY); // try to transfer energy, if possible
@@ -73,9 +73,9 @@ const harvesterWalkerCreepType: CreepType = {
       }
     } else if (creepUsedCapacity && targetHaveSpace) {
       transfer(creep, sourceStorage, RESOURCE_ENERGY);
-    } else if (creep.memory.worker.harvested) {
-      creep.memory.worker.sourceIndex = (sourceIndex + 1) % Object.keys(sources).length;
-      creep.memory.worker.harvested = false;
+    } else if (creep.memory.harvested) {
+      creep.memory.sourceIndex = (sourceIndex + 1) % Object.keys(sources).length;
+      creep.memory.harvested = false;
     }
 
     return;

@@ -15,7 +15,7 @@ const basicCreepType: CreepType = {
   run(creep) {
     creep.notifyWhenAttacked(false);
 
-    const source = getObjectById(creep.memory.worker?.sourceId);
+    const source = getObjectById(creep.memory.sourceId);
     if (!source) return;
 
     if (creep.pos.isNearTo(source)) {

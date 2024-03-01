@@ -38,7 +38,16 @@ const systemBuild: SystemBuild = {
     [ROOM_FEATURE.CONTROLLED]: true,
   },
   createConstructionSite(room: Room, pos: Pos, structureType: BuildableStructureConstant, priority = 20) {
-    if (room.createConstructionSite(pos.x, pos.y, structureType) === OK) {
+    let result: ScreepsReturnCode;
+    if (structureType === STRUCTURE_SPAWN) {
+      const spawns = room.find(FIND_MY_SPAWNS);
+      const spawnName = `${room.name}-${spawns.length + 1}`;
+      result = room.createConstructionSite(pos.x, pos.y, structureType, spawnName);
+    } else {
+      result = room.createConstructionSite(pos.x, pos.y, structureType);
+    }
+
+    if (result === OK) {
       if (!room.memory.build) room.memory.build = { queue: [], requests: [] };
       room.memory.build?.requests.push({ pos, structureType, priority });
     }
@@ -115,12 +124,9 @@ const systemBuild: SystemBuild = {
 
     spawnSystem.spawn(room, workerBuilder.name, workerBuilder.name, desiredBuilders, 120, {
       memory: {
-        role: 'worker',
-        worker: {
-          type: workerBuilder.name,
-          demandId: workerBuilder.name,
-          roomName: room.name,
-        },
+        type: workerBuilder.name,
+        demandId: workerBuilder.name,
+        roomName: room.name,
       },
     });
   },

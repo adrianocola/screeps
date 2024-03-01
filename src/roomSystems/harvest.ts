@@ -22,8 +22,8 @@ const spawnOneHarvesterPerRoom = (room: Room) => {
   const maxSections = calcNumberWorkPartsNeeded(sources);
 
   spawnSystem.spawn(room, demandId, workerHarvesterWalker.name, 1, 30, {
-    urgent: true,
-    optimizeForRoads: paved,
+    essential: true,
+    forRoads: paved,
     sectionParts: {
       [WORK]: 1,
       [MOVE]: 1,
@@ -31,12 +31,9 @@ const spawnOneHarvesterPerRoom = (room: Room) => {
     fixedParts: [CARRY, CARRY, CARRY, CARRY],
     maxSections,
     memory: {
-      role: 'worker',
-      worker: {
-        type: workerHarvesterWalker.name,
-        demandId,
-        roomName: room.name,
-      },
+      type: workerHarvesterWalker.name,
+      demandId,
+      roomName: room.name,
     },
   });
 };
@@ -51,9 +48,9 @@ const spawnOneHarvesterPerSource = (room: Room) => {
     const sourceContainer = getSourceContainer(room, sourceData.index);
     const demandId = `${workerHarvester.name}-S${sourceData.index}`;
     spawnSystem.spawn(room, demandId, workerHarvester.name, sourceData.harvestersDesired, 30, {
-      urgent: true,
+      essential: true,
       maxSections: getMaxSectionsPerHarvesters(sourceData.harvestersDesired),
-      optimizeForRoads: sourceData.paved,
+      forRoads: sourceData.paved,
       sectionParts: {
         [WORK]: 1,
         [MOVE]: 1,
@@ -61,14 +58,11 @@ const spawnOneHarvesterPerSource = (room: Room) => {
       // if there is a container, no need to have CARRY parts (resources are harvested directly to the container)
       fixedParts: sourceContainer ? undefined : [CARRY, CARRY],
       memory: {
-        role: 'worker',
-        worker: {
-          type: workerHarvester.name,
-          demandId,
-          roomName: room.name,
-          sourceId: sourceId as Id<Source>,
-          sourceIndex: sourceData.index,
-        },
+        type: workerHarvester.name,
+        demandId,
+        roomName: room.name,
+        sourceId: sourceId as Id<Source>,
+        sourceIndex: sourceData.index,
       },
     });
   }

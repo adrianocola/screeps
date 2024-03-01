@@ -77,7 +77,7 @@ export const buildBodyPartsArray = (
   for (let s = 0; s < sections; s += 1) {
     for (const [bodyPart, weight = 1] of bodyPartEntries) {
       for (let w = 0; w < weight; w += 1) {
-        if (options.optimizeForRoads && bodyPart === MOVE) {
+        if (options.forRoads && bodyPart === MOVE) {
           if (moveCount % 2 === 0) {
             partsArray.push(bodyPart as BodyPartConstant);
           }
@@ -99,7 +99,7 @@ export const buildBodyPartsArray = (
 };
 
 export const getRoom = (creep: Creep): Room => {
-  return creep.memory.worker?.roomName ? Game.rooms[creep.memory.worker?.roomName] : creep.room;
+  return creep.memory.roomName ? Game.rooms[creep.memory.roomName] : creep.room;
 };
 
 export const moveToRoom = (creep: Creep, roomName: string, returning: boolean = false): boolean => {
@@ -110,7 +110,7 @@ export const moveToRoom = (creep: Creep, roomName: string, returning: boolean = 
     return false;
   };
 
-  const roomsPath = creep.memory.worker?.roomsPath || [];
+  const roomsPath = creep.memory.roomsPath || [];
   if (!roomsPath.length) return goToTargetRoom();
 
   const currentIndex = roomsPath.indexOf(creep.room.name);

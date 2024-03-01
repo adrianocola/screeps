@@ -35,7 +35,7 @@ const systemSpawn: SystemSpawn = {
       return;
     }
 
-    const sectionCost = bodySectionCost(sectionParts, opts.optimizeForRoads);
+    const sectionCost = bodySectionCost(sectionParts, opts.forRoads);
     const fixedCost = bodyFixedCost(fixedParts);
     if (sectionCost + fixedCost > room.energyCapacityAvailable) {
       console.log(
@@ -44,14 +44,14 @@ const systemSpawn: SystemSpawn = {
       this.removeSpawn(room, item.id);
       return;
     }
-    const energy = opts.urgent ? Math.max(SPAWN_ENERGY_START, energyAvailable) : room.energyCapacityAvailable;
+    const energy = opts.essential ? Math.max(SPAWN_ENERGY_START, energyAvailable) : room.energyCapacityAvailable;
     let sectionsAllowedByEnergy = sectionCost ? Math.floor(energy / sectionCost) : 0;
     while (fixedCost && sectionsAllowedByEnergy >= 2 && sectionsAllowedByEnergy * sectionCost + fixedCost > energy) {
       sectionsAllowedByEnergy -= 1;
     }
 
     const totalSections = maxSections
-      ? Math.min(sectionsAllowedByEnergy, maxSections, maxBodySections(sectionParts, fixedParts, opts.optimizeForRoads))
+      ? Math.min(sectionsAllowedByEnergy, maxSections, maxBodySections(sectionParts, fixedParts, opts.forRoads))
       : sectionsAllowedByEnergy;
     const finalCost = totalSections * sectionCost + fixedCost;
     if ((sectionParts && totalSections === 0) || energy < finalCost) {
@@ -83,7 +83,7 @@ const systemSpawn: SystemSpawn = {
     const creepsArrays = Object.values(roomCreeps);
     for (const creeps of creepsArrays) {
       for (const creep of creeps) {
-        const demandId = creep.memory?.worker?.demandId || 'unknown';
+        const demandId = creep.memory.demandId || 'unknown';
         const creepsList = creepsByDemand[demandId] || [];
         creepsList.push(creep);
         creepsByDemand[demandId] = creepsList;

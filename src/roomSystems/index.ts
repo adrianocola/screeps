@@ -61,8 +61,8 @@ const getCreepsGroupedByRoomAndRole = () => {
   const roomCreeps: CreepsRoomMap = {};
 
   Object.values(Game.creeps).forEach(creep => {
-    const roomName = creep.memory?.worker?.roomName;
-    const jobName = creep.memory?.worker?.type;
+    const roomName = creep.memory.roomName;
+    const jobName = creep.memory.type;
     if (!roomName || !jobName) return;
 
     const room = roomCreeps[roomName] || {};

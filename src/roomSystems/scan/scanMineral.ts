@@ -27,8 +27,8 @@ export default (room: Room, scanPaths?: boolean): RoomMemoryScanMineral | undefi
     mineralId: mineral.id,
     paved: scanPaths
       ? getIsPathPaved(room, getRawPath(baseEntrancePos, mineral.pos, 1))
-      : mineralMemory?.paved ?? false,
-    sourceKeeper,
+      : mineralMemory?.paved || undefined,
+    sourceKeeper: sourceKeeper ?? undefined,
     sourceKeeperId: sourceKeeper ? sourceKeeperLairs[0].id : undefined,
     type: mineral.mineralType,
   };
