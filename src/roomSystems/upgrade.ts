@@ -58,7 +58,7 @@ const systemUpgrade: RoomSystem = {
       });
     }
 
-    if (!room.memory.scan.features[ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK]) return;
+    if (!room.memory.scan.features?.[ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK]) return;
 
     const desired = getDesiredNumberOfUpgraders(room);
 

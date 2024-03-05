@@ -77,7 +77,7 @@ const systemHarvest: RoomSystem = {
     [ROOM_FEATURE.SOURCES_HAVE_CONTAINER_OR_LINK]: true,
   },
   run(room: Room) {
-    const sourcesHaveLink = room.memory.scan?.features[ROOM_FEATURE.SOURCES_HAVE_LINK];
+    const sourcesHaveLink = room.memory.scan?.features?.[ROOM_FEATURE.SOURCES_HAVE_LINK];
     const numSources = Object.keys(room.memory.scan?.sources ?? {}).length;
 
     if (sourcesHaveLink && numSources >= 2) {

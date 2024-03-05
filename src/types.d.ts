@@ -527,7 +527,7 @@ interface RoomMemoryScan {
   mineral?: RoomMemoryScanMineral;
   sources: Record<string, RoomMemoryScanSource>;
   baseSpawnId?: Id<StructureSpawn>;
-  features: Record<ROOM_FEATURE, boolean>;
+  features?: Record<ROOM_FEATURE, boolean>;
   ownership: ROOM_OWNERSHIP;
   score?: number;
 }

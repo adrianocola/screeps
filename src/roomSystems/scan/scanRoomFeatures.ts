@@ -35,7 +35,9 @@ export default (
   controller?: RoomMemoryScanController,
   mineral?: RoomMemoryScanMineral,
   spawn?: StructureSpawn,
-): Record<ROOM_FEATURE, boolean> => {
+): Record<ROOM_FEATURE, boolean> | undefined => {
+  if (!room.controller?.my) return undefined;
+
   const controllerHaveLink = checkControllerHaveLink(controller);
   const controllerHaveContainerOrLink = checkControllerHaveContainerOrLink(controller);
   const allMineralsHaveContainer = checkAllMineralsHaveContainer(mineral);

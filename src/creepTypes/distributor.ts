@@ -72,8 +72,8 @@ const distributorCreepType: CreepType = {
     }
 
     let target: StructureExtension | StructureLink | StructureContainer | StructureTower | StructureSpawn | undefined;
-    const storageHaveLink = !!creep.room.memory.scan?.features[ROOM_FEATURE.STORAGE_HAVE_LINK];
-    const controllerHaveLink = !!creep.room.memory.scan?.features[ROOM_FEATURE.CONTROLLER_HAVE_LINK];
+    const storageHaveLink = !!creep.room.memory.scan?.features?.[ROOM_FEATURE.STORAGE_HAVE_LINK];
+    const controllerHaveLink = !!creep.room.memory.scan?.features?.[ROOM_FEATURE.CONTROLLER_HAVE_LINK];
 
     // if there is a storage link, there is a transferer. It should be responsible for filling the base tower
     const baseTowerId = storageHaveLink ? getBaseTower(creep.room)?.id : undefined;

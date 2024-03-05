@@ -7,7 +7,7 @@ import { ENERGY_HARVESTER_MAX_SECTIONS } from 'consts';
 const MINER_COLLECTOR_DEMAND_ID = `${workerCollector.name}-M`;
 
 const collectFromSources = (room: Room, sourcesData: Record<string, RoomMemoryScanSource> = {}) => {
-  if (!sourcesData || room.memory.scan?.features[ROOM_FEATURE.SOURCES_HAVE_LINK]) return;
+  if (!sourcesData || room.memory.scan?.features?.[ROOM_FEATURE.SOURCES_HAVE_LINK]) return;
 
   for (const sourceId in sourcesData) {
     const sourceData = sourcesData[sourceId];
@@ -39,7 +39,7 @@ const collectFromSources = (room: Room, sourcesData: Record<string, RoomMemorySc
 
 const collectFromMineral = (room: Room, mineralData?: RoomMemoryScanMineral) => {
   if (!mineralData) return;
-  if (!room.memory.scan?.features[ROOM_FEATURE.MINERALS_HAVE_EXTRACTOR]) return;
+  if (!room.memory.scan?.features?.[ROOM_FEATURE.MINERALS_HAVE_EXTRACTOR]) return;
 
   if (
     mineralData.sourceKeeper ||

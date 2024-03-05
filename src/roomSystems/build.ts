@@ -113,7 +113,7 @@ const systemBuild: SystemBuild = {
     }
 
     // down't spawn builders if spawn don't have a container
-    if (!room.memory.scan.features[ROOM_FEATURE.SPAWN_HAVE_CONTAINER]) return;
+    if (!room.memory.scan.features?.[ROOM_FEATURE.SPAWN_HAVE_CONTAINER]) return;
 
     const desiredBuilders = getDesiredNumberOfBuilders(room);
 

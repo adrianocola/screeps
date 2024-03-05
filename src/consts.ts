@@ -11,6 +11,7 @@ export const ENERGY_HARVESTER_MAX_SECTIONS = 6;
 export const MINERALS_REGISTER_TICKS = 1_0000;
 
 export const EXPANSION_TICKS_LIMIT = 50_000; // if expansion don't finish in this time, stop it and considere a failure
+export const ROOM_MAX_TICKS_IN_MEMORY = 50_000; // max ticks to keep room data in memory
 
 export const MIN_TERMINAL_ENERGY = 20_000;
 export const MAX_TERMINAL_RESOURCE = 250_000;

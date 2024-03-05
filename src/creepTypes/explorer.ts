@@ -1,5 +1,12 @@
-import { moveTo, suicide } from 'utils/creep';
+import { moveTo } from 'utils/creep';
 import scanRoomScore from 'roomSystems/scan/scanRoomScore';
+import { shuffleArray } from 'utils/random';
+
+const getRandomNeighbourRoom = (creep: Creep) => {
+  const exities = Game.map.describeExits(creep.room.name);
+  const exitDirs = shuffleArray(Object.keys(exities));
+  return exities[exitDirs[0] as ExitKey];
+};
 
 const creepTypeExporer: CreepType = {
   name: CREEP_TYPE.EXPLORER,
@@ -11,9 +18,20 @@ const creepTypeExporer: CreepType = {
   run(creep) {
     creep.notifyWhenAttacked(false);
 
+    if (creep.memory.workRoom) {
+      if (creep.room.name === creep.memory.workRoom) {
+        creep.memory.workRoom = getRandomNeighbourRoom(creep);
+      } else {
+        const target = new RoomPosition(25, 25, creep.memory.workRoom);
+        moveTo(creep, target);
+      }
+
+      return;
+    }
+
     const explore = Memory.rooms[creep.memory.roomName]?.explore;
     if (!explore?.queue?.length) {
-      suicide(creep);
+      creep.memory.workRoom = getRandomNeighbourRoom(creep);
       return;
     }
 

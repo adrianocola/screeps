@@ -2,6 +2,7 @@ import roomSystems from './roomSystems';
 import globalSystems from './globalSystems';
 import { getRootSpawn } from 'utils/game';
 import { ErrorMapper } from 'utils/ErrorMapper';
+import { ROOM_MAX_TICKS_IN_MEMORY } from 'consts';
 
 // adicionar MemHack (https://wiki.screepspl.us/index.php/MemHack)
 export const loop = ErrorMapper.wrapLoop(() => {
@@ -15,9 +16,20 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 
   // Automatically delete memory of missing creeps
-  for (const name in Memory.creeps) {
-    if (!(name in Game.creeps)) {
-      delete Memory.creeps[name];
+  if (Game.time % 10 === 0) {
+    for (const name in Memory.creeps) {
+      if (!(name in Game.creeps)) {
+        delete Memory.creeps[name];
+      }
+    }
+  }
+  if (Game.time % 100 === 0) {
+    // Automatically delete memory of rooms scaned a long time ago
+    for (const roomName in Memory.rooms) {
+      const roomMemory = Memory.rooms[roomName];
+      if (!roomMemory?.scan?.tick || Game.time - roomMemory.scan.tick > ROOM_MAX_TICKS_IN_MEMORY) {
+        delete Memory.rooms[roomName];
+      }
     }
   }
 
@@ -32,10 +44,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 });
 
-// - quando acabar queue do explorer, em vez de ele se matar, fazer ele andar aleatóriamente por salas não exploradas
-// - se falhar a expansão (não conseguir controlar a sala ou não conseguir chegar até lvl 3), incrementar expansionAttempts
 // - renomear novamente creep types e room systems para os nomes longos e parar de me importar tanto com memória
-// - se explorer encontrar uma sala sem controler e que não seja highway, explorar salar adjacentes a ela também
+// - se falhar a expansão (não conseguir controlar a sala ou não conseguir chegar até lvl 3), incrementar expansionAttempts
 // - nos calculos do blueprint, considerar espaços de source e mineração como ocupados (vai forçar ter espaço em volta)
 // - melhorar lógica do explorer para evitar salas que ele morreu (e evitar salas que dependam dessas salas)
 // - melhorar lógica de "não pisar em roads", pra buscar o espaço sem road mais próximo da creep e ao alcance do target (em vez de ser simplesmente o mais próximo do target)
