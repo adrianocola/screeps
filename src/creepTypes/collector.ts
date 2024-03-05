@@ -1,10 +1,11 @@
 import { moveTo, withdraw } from 'utils/creep';
 import { getMainResourceHolder } from 'utils/room';
 import { getMineralContainer, getSourceContainer } from 'utils/blueprint';
+import { dontStandOnRoads } from 'utils/worker';
 
 const collectorCreepType: CreepType = {
   name: CREEP_TYPE.COLLECTOR,
-  maxSections: 4,
+  maxSections: 5,
   sectionParts: {
     [CARRY]: 2,
     [MOVE]: 2,
@@ -33,6 +34,9 @@ const collectorCreepType: CreepType = {
       }
     } else if (energyOrMineralContainer.store.getUsedCapacity() >= creep.store.getCapacity()) {
       withdraw(creep, energyOrMineralContainer, resource);
+    } else {
+      // don't stand on the road (can block other creeps)
+      dontStandOnRoads(creep, energyOrMineralContainer);
     }
   },
 };

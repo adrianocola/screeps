@@ -1,5 +1,5 @@
-import { isRoomHighway } from './scanUtils';
 import { INVADER } from 'consts';
+import { isRoomHighway } from 'utils/room';
 
 export default (room: Room) => {
   if (room.controller) {

@@ -1,5 +1,6 @@
 import { getObjectById } from 'utils/game';
 import { build, moveTo, repair, transfer, upgradeController } from 'utils/creep';
+import { moveToRoomWork } from 'utils/worker';
 
 /**
  * Does a little bit of everything to get the colony started (or in case of emergency)
@@ -16,7 +17,12 @@ const basicCreepType: CreepType = {
     creep.notifyWhenAttacked(false);
 
     const source = getObjectById(creep.memory.sourceId);
-    if (!source) return;
+    if (!source) {
+      if (creep.memory.workRoom) {
+        moveToRoomWork(creep);
+      }
+      return;
+    }
 
     if (creep.pos.isNearTo(source)) {
       if (creep.store.getFreeCapacity() !== 0) {

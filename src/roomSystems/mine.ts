@@ -24,7 +24,7 @@ const systemMine: RoomSystem = {
     [ROOM_FEATURE.MINERALS_HAVE_CONTAINER]: true,
   },
   run(room: Room) {
-    const mineralData = room.memory.state?.mineral;
+    const mineralData = room.memory.scan?.mineral;
     if (!mineralData) return;
 
     if (mineralData.sourceKeeper || !mineralData.containerId || !mineralData.extractorId || !mineralData.mineralId)

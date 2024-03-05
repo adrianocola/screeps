@@ -111,7 +111,8 @@ class BlueprintScanner {
 
     const roomCallback = () => costMatrix;
 
-    const searchOptions = { roomCallback, maxRooms: 1, plainCost: 2, swampCost: 10 };
+    // swamps are not so bad, cuz we can build roads on top of them
+    const searchOptions = { roomCallback, maxRooms: 1, plainCost: 2, swampCost: 3 };
 
     for (const closeTo of blueprint.closeTo) {
       if (onlyPaved && !closeTo.paved) continue;
@@ -307,8 +308,31 @@ class BlueprintScanner {
     return possibleResults.reduce((acc, rect) => (rect.totalCost < acc.totalCost ? rect : acc), possibleResults[0]);
   };
 
-  private getStartPos(startFrom: StartFrom | Pos | STRUCTURE_CONTROLLER | string) {
-    if (startFrom === STRUCTURE_CONTROLLER) {
+  private getStartPos(startFrom: StartFrom | Pos | STRUCTURE_CONTROLLER | BLUEPRINT_ID | 'discover') {
+    if (startFrom === 'discover') {
+      let count = 0;
+      const pos: Pos = { x: 0, y: 0 };
+
+      if (this.room.controller) {
+        pos.x += this.room.controller.pos.x;
+        pos.y += this.room.controller.pos.y;
+        count += 1;
+      }
+      const sources = this.room.find(FIND_SOURCES);
+      for (const source of sources) {
+        pos.x += source.pos.x;
+        pos.y += source.pos.y;
+        count += 1;
+      }
+      const minerals = this.room.find(FIND_MINERALS);
+      for (const mineral of minerals) {
+        pos.x += mineral.pos.x;
+        pos.y += mineral.pos.y;
+        count += 1;
+      }
+
+      return { x: Math.floor(pos.x / count), y: Math.floor(pos.y / count) };
+    } else if (startFrom === STRUCTURE_CONTROLLER) {
       return this.room.controller?.pos;
     } else if (typeof startFrom === 'string') {
       const result = this.results[startFrom];
@@ -344,27 +368,45 @@ class BlueprintScanner {
     return undefined;
   };
 
-  private scanBaseBlueprint(rootSpawn?: StructureSpawn) {
+  private scanBaseBlueprint(baseSpawn?: StructureSpawn) {
     const baseBlueprint = BlueprintsMap[BLUEPRINT_ID.BASE];
     if (!baseBlueprint) throw new Error('No base blueprint found');
 
-    if (rootSpawn) {
-      const spawn1Pos = this.getRelativeStructurePos(baseBlueprint, BLUEPRINT_STRUCTURE.SPAWN1);
-      if (!spawn1Pos) throw new Error('No spawn1 found in base blueprint');
+    if (baseSpawn) {
+      let bestResult: { totalCost: number; blueprint?: Blueprint; costs?: BlueprintCost[]; pos?: Pos } = {
+        totalCost: Number.MAX_SAFE_INTEGER,
+      };
+      for (const dir of BASE_DIRECTIONS) {
+        const blueprintToDir = BlueprintScanner.blueprintToDirection(baseBlueprint, dir);
+        const spawn1Pos = this.getRelativeStructurePos(blueprintToDir, BLUEPRINT_STRUCTURE.SPAWN1);
+        if (!spawn1Pos) throw new Error('No spawn1 position found');
 
-      const initialPos = { x: rootSpawn.pos.x - spawn1Pos.x, y: rootSpawn.pos.y - spawn1Pos.y };
+        const initialPos = { x: baseSpawn.pos.x - spawn1Pos.x, y: baseSpawn.pos.y - spawn1Pos.y };
+        const itFits = this.checkIfBlueprintFit(initialPos, blueprintToDir, this.buildingCostMatrix);
+        if (!itFits) {
+          continue;
+        }
 
-      const costs = this.calcBlueprintCosts(initialPos, baseBlueprint);
-      return this.scanRegularBlueprint(baseBlueprint, {
-        ...initialPos,
-        totalCost: this.getBlueprintTotalCosts(costs),
-        dir: baseBlueprint.dir ?? RIGHT,
-        blueprint: baseBlueprint,
-        costs,
+        const costs = this.calcBlueprintCosts(initialPos, blueprintToDir);
+        const totalCosts = this.getBlueprintTotalCosts(costs);
+        if (totalCosts < bestResult.totalCost) {
+          bestResult = { totalCost: totalCosts, blueprint: blueprintToDir, costs, pos: initialPos };
+        }
+      }
+
+      if (!bestResult.blueprint || !bestResult.pos || !bestResult.costs)
+        throw new Error('Blueprint not found for base spawn');
+
+      return this.scanBlueprint(bestResult.blueprint, {
+        ...bestResult.pos,
+        totalCost: bestResult.totalCost,
+        dir: bestResult.blueprint.dir ?? RIGHT,
+        blueprint: bestResult.blueprint,
+        costs: bestResult.costs,
       });
     }
 
-    const basePosition = this.scanRegularBlueprint(baseBlueprint);
+    const basePosition = this.scanBlueprint(baseBlueprint);
 
     // TODO tratar caso de não achar posição válida (salvar essa informação na memory da room)
     if (!basePosition) throw new Error('No base result found');
@@ -372,7 +414,7 @@ class BlueprintScanner {
     return basePosition;
   }
 
-  private scanRegularBlueprint = (blueprint: Blueprint, forceBestPosition?: BlueprintScanResult) => {
+  public scanBlueprint = (blueprint: Blueprint, forceBestPosition?: BlueprintScanResult) => {
     const pos = this.getStartPos(blueprint.startFrom);
     if (!pos) return;
 
@@ -421,14 +463,14 @@ class BlueprintScanner {
     });
   };
 
-  public scan(rootSpawn?: StructureSpawn) {
+  public scan(baseSpawn?: StructureSpawn) {
     if (Object.keys(this.results).length) return this.results;
 
-    this.scanBaseBlueprint(rootSpawn);
+    this.scanBaseBlueprint(baseSpawn);
     const blueprintsWithoutBase = Blueprints.filter(b => !b.base);
 
     blueprintsWithoutBase.forEach(blueprint => {
-      this.scanRegularBlueprint(blueprint);
+      this.scanBlueprint(blueprint);
     });
 
     return this.results;

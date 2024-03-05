@@ -1,15 +1,13 @@
 import spawnSystem from './spawn';
 import { getBaseSpawnContainer } from 'utils/blueprint';
-import { dateFromObjectId, getObjectById } from 'utils/game';
+import { getObjectById } from 'utils/game';
 import { getLevelRate } from 'utils/controller';
 import workerBuilder from 'creepTypes/builder';
 
 const comparator = (a: BuildQueueItem, b: BuildQueueItem) => {
   if (a.priority !== b.priority) return a.priority - b.priority;
 
-  const aDate = dateFromObjectId(a.constructionSiteId).valueOf();
-  const bDate = dateFromObjectId(b.constructionSiteId).valueOf();
-  return aDate - bDate;
+  return a.constructionSiteId < b.constructionSiteId ? -1 : 1;
 };
 
 const getDesiredNumberOfBuilders = (room: Room): number => {
@@ -18,7 +16,7 @@ const getDesiredNumberOfBuilders = (room: Room): number => {
   if (room.storage) {
     levelRate = getLevelRate(room);
     energyAvailable = room.storage?.store.getUsedCapacity(RESOURCE_ENERGY) || 0;
-  } else if (room.memory.state?.baseSpawnId) {
+  } else if (room.memory.scan?.baseSpawnId) {
     const spawnContainer = getBaseSpawnContainer(room);
     energyAvailable = spawnContainer?.store.getUsedCapacity(RESOURCE_ENERGY) || 0;
   }
@@ -49,11 +47,11 @@ const systemBuild: SystemBuild = {
 
     if (result === OK) {
       if (!room.memory.build) room.memory.build = { queue: [], requests: [] };
-      room.memory.build?.requests.push({ pos, structureType, priority });
+      room.memory.build.requests.push({ pos, structureType, priority });
     }
   },
   run(room: Room) {
-    if (!room.memory.state?.baseSpawnId) return;
+    if (!room.memory.scan?.baseSpawnId) return;
 
     if (!room.memory.build) room.memory.build = { queue: [], requests: [] };
 
@@ -74,7 +72,6 @@ const systemBuild: SystemBuild = {
     }
 
     if (room.memory.build?.requests?.length) {
-      const existingRequests: BuildRequestItem[] = [];
       for (const request of room.memory.build.requests) {
         const requestConstructionSites = room.lookForAt(LOOK_CONSTRUCTION_SITES, request.pos.x, request.pos.y);
         if (requestConstructionSites.length) {
@@ -85,12 +82,10 @@ const systemBuild: SystemBuild = {
             structureType: constructionSite.structureType,
             priority: request.priority,
           });
-        } else {
-          existingRequests.push(request);
         }
       }
 
-      room.memory.build.requests = existingRequests;
+      room.memory.build.requests = [];
     } else {
       const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
       for (const constructionSite of constructionSites) {
@@ -118,7 +113,7 @@ const systemBuild: SystemBuild = {
     }
 
     // down't spawn builders if spawn don't have a container
-    if (!room.memory.state.features[ROOM_FEATURE.SPAWN_HAVE_CONTAINER]) return;
+    if (!room.memory.scan.features[ROOM_FEATURE.SPAWN_HAVE_CONTAINER]) return;
 
     const desiredBuilders = getDesiredNumberOfBuilders(room);
 

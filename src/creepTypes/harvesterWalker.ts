@@ -5,8 +5,8 @@ import { getSourceLinkOrContainer } from 'utils/blueprint';
 const getInitialSourceIndex = (room: Room): number => {
   let bestSource: Source | undefined;
   let bestSourceIndex: number | undefined;
-  for (const sourceId in room.memory.state?.sources) {
-    const sourceData = room.memory.state?.sources[sourceId];
+  for (const sourceId in room.memory.scan?.sources) {
+    const sourceData = room.memory.scan?.sources[sourceId];
     const source = getObjectById(sourceId as Id<Source>);
     if (source) {
       if (source.energy === source.energyCapacity) {
@@ -30,7 +30,7 @@ const getInitialSourceIndex = (room: Room): number => {
 const harvesterWalkerCreepType: CreepType = {
   name: CREEP_TYPE.HARVESTER_WALKER,
   run(creep) {
-    if (!creep.room.memory.state?.sources) return;
+    if (!creep.room.memory.scan?.sources) return;
 
     if (creep.memory.sourceIndex === undefined) {
       creep.memory.sourceIndex = getInitialSourceIndex(creep.room);
@@ -39,7 +39,7 @@ const harvesterWalkerCreepType: CreepType = {
     let sourceId: string | undefined;
     let sourceData: RoomMemoryScanSource | undefined;
     let sourceIndex: number | undefined;
-    const sources = creep.room.memory.state.sources;
+    const sources = creep.room.memory.scan.sources;
 
     for (const sId in sources) {
       const sourceD = sources[sId];

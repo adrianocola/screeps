@@ -2,9 +2,9 @@ import buildSystem from './build';
 import BlueprintScanner from 'blueprints/BlueprintScanner';
 import Blueprints from 'blueprints/Blueprints';
 import { getObjectById, getRootSpawn } from 'utils/game';
-import { getBlueprintDirection, getBlueprintRoadsToLevel } from 'utils/blueprint';
+import { getBlueprintDirection, getBlueprintRoadsToLevel, getSpawn1 } from 'utils/blueprint';
 import { getOppositeBaseDirection, getPosIndex, getRelativePosition, rotateDirection } from 'utils/directions';
-import { BLUEPRINT_START_BUILDING_ROADAS_LEVEL } from 'consts';
+import { BLUEPRINT_START_BUILDING_ROADS_LEVEL, ROOM_SIZE } from 'consts';
 
 // check is room pos is empty (not wall, blocking building or blueprint planned structure)
 export const isPosEmptyForSpawning = (room: Room, pos: Pos) => {
@@ -83,11 +83,8 @@ const setSpawnDirections = (spawn: StructureSpawn) => {
   }
 };
 
-const createMemoryBlueprintSchemas = (room: Room) => {
-  const rootSpawn = getRootSpawn();
-  const isRootSpawnRoom = room.name === rootSpawn.room.name;
-
-  const blueprintResults = new BlueprintScanner(room.name).scan(isRootSpawnRoom ? rootSpawn : undefined);
+const createMemoryBlueprintSchemas = (room: Room, spawn?: StructureSpawn) => {
+  const blueprintResults = new BlueprintScanner(room.name).scan(spawn);
   const schemas: Partial<Record<BLUEPRINT_ID, RoomMemoryBlueprintSchema>> = {};
   Object.entries(blueprintResults).map(([blueprintId, blueprintResult]) => {
     schemas[blueprintId as BLUEPRINT_ID] = {
@@ -99,14 +96,38 @@ const createMemoryBlueprintSchemas = (room: Room) => {
   return schemas;
 };
 
+const destroyConstructedWalls = (room: Room) => {
+  const constructedWalls = room.find(FIND_STRUCTURES, {
+    filter: s => s.structureType === STRUCTURE_WALL && s.hits,
+  });
+  for (const wall of constructedWalls) {
+    // don't destroy walls close to exities
+    if (wall.pos.x <= 2 || wall.pos.x >= ROOM_SIZE - 3 || wall.pos.y <= 2 || wall.pos.y >= ROOM_SIZE - 3) {
+      continue;
+    }
+
+    wall.destroy();
+  }
+};
+
 const getOrInitializeMemoryBlueprint = (room: Room) => {
   // initialize the memory
-  if (!room.memory.blueprint)
-    room.memory.blueprint = { schemas: createMemoryBlueprintSchemas(room), v: 1, structures: {} };
+  if (!room.memory.blueprint) {
+    destroyConstructedWalls(room);
+    const rootSpawn = getRootSpawn();
+    room.memory.blueprint = {
+      schemas: createMemoryBlueprintSchemas(room, room.name === rootSpawn.name ? rootSpawn : undefined),
+      v: 1,
+      structures: {},
+    };
+  }
 
   // if the schemas were deleted from memory (manually), initialize them (usefull to recalculate the schema)
   // TODO recalculate automatically if the version changes, also do it by controller level instead of all at wonce
-  if (!room.memory.blueprint.schemas) room.memory.blueprint.schemas = createMemoryBlueprintSchemas(room);
+  if (!room.memory.blueprint.schemas) {
+    const spawn = getSpawn1(room);
+    room.memory.blueprint.schemas = createMemoryBlueprintSchemas(room, spawn);
+  }
 
   return room.memory.blueprint;
 };
@@ -115,13 +136,13 @@ const getOrInitializeMemoryBlueprint = (room: Room) => {
  * Create construction sites based on the blueprint schema
  */
 const systemBlueprint: RoomSystem = {
-  interval: TICKS.TICK_100,
+  interval: TICKS.TICK_500,
   name: ROOM_SYSTEMS.BLUEPRINT,
   requiredFeatures: {
     [ROOM_FEATURE.CONTROLLED]: true,
   },
   run(room: Room) {
-    if (!room.controller || !room.controller?.my || !room.memory.state) return;
+    if (!room.controller || !room.controller?.my || !room.memory.scan) return;
 
     const memoryBlueprint = getOrInitializeMemoryBlueprint(room);
 
@@ -208,7 +229,7 @@ const systemBlueprint: RoomSystem = {
       });
     });
 
-    if (level >= BLUEPRINT_START_BUILDING_ROADAS_LEVEL) {
+    if (level >= BLUEPRINT_START_BUILDING_ROADS_LEVEL) {
       const blueprintRoadsPos = getBlueprintRoadsToLevel(room, level);
       const builtRoads = room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_ROAD } });
       const builtRoadsPosMap = builtRoads.reduce(
@@ -225,7 +246,8 @@ const systemBlueprint: RoomSystem = {
 
           const constructionSites = room.lookForAt(LOOK_CONSTRUCTION_SITES, roadPos.x, roadPos.y);
           if (!constructionSites.length) {
-            buildSystem.createConstructionSite(room, roadPos, STRUCTURE_ROAD, 1);
+            const isSwamp = room.lookForAt(LOOK_TERRAIN, roadPos.x, roadPos.y).some(terrain => terrain === 'swamp');
+            buildSystem.createConstructionSite(room, roadPos, STRUCTURE_ROAD, isSwamp ? 1 : 2);
           }
         }
       }

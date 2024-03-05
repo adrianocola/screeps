@@ -52,6 +52,7 @@ export default (
     [ROOM_FEATURE.CONTROLLED]: !!room.controller?.my,
     [ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK]: controllerHaveContainerOrLink,
     [ROOM_FEATURE.CONTROLLER_HAVE_LINK]: controllerHaveLink,
+    [ROOM_FEATURE.EXPANDING]: Memory.global?.expanding?.from === room.name,
     [ROOM_FEATURE.HAVE_TOWERS]: towers.length > 0,
     [ROOM_FEATURE.MINERALS_HAVE_CONTAINER]: allMineralsHaveContainer,
     [ROOM_FEATURE.MINERALS_HAVE_EXTRACTOR]: allMineralsHaveExtractor,

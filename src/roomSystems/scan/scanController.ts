@@ -4,7 +4,7 @@ import { getBaseEntrancePos, getControllerContainer, getControllerLink } from 'u
 export default (room: Room, scanPaths?: boolean): RoomMemoryScanController | undefined => {
   if (!room.controller) return undefined;
 
-  const controllerMemory = room.memory.state?.controller;
+  const controllerMemory = room.memory.scan?.controller;
   let paved = false;
   let storageDistance = -1;
 

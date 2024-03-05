@@ -34,18 +34,3 @@ export const getExitsDistances = (pos: RoomPosition): ExitMap<number> => {
   map[FIND_EXIT_LEFT] = getExitDistance(pos, FIND_EXIT_LEFT);
   return map;
 };
-
-export const roomNumberParser = (roomName: string): { x: number; y: number } | null => {
-  const match = roomName.match(/\w(\d+)\w(\d+)/);
-  if (!match) return null;
-
-  return {
-    x: parseInt(match[1], 10),
-    y: parseInt(match[2], 10),
-  };
-};
-
-export const isRoomHighway = (room: Room): boolean => {
-  const roomPos = roomNumberParser(room.name);
-  return !!roomPos && (roomPos.x % 10 === 0 || roomPos.y % 10 === 0);
-};

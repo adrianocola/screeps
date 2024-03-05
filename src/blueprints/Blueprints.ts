@@ -1,5 +1,5 @@
 // TODO permitir setar um level máximo para algumas estruturas (ajudaria pra deletar containers inúteis, depois que faz link)
-import { BLUEPRINT_START_BUILDING_ROADAS_LEVEL } from 'consts';
+import { BLUEPRINT_START_BUILDING_ROADS_LEVEL } from 'consts';
 
 const Blueprints: Blueprint[] = [
   {
@@ -13,11 +13,11 @@ const Blueprints: Blueprint[] = [
     entrance: { x: 4, y: 3 },
     dir: RIGHT,
     controller: 1,
-    startFrom: { x: 24, y: 24 },
+    startFrom: 'discover',
     closeTo: [
       { what: STRUCTURE_CONTROLLER, range: 1, weight: 10, paved: true },
       { what: FIND_SOURCES, range: 1, weight: 10, paved: true },
-      { what: FIND_MINERALS, range: 1, weight: 10, paved: true },
+      { what: FIND_MINERALS, range: 1, weight: 10 },
       { what: FIND_EXIT_TOP, range: 0, weight: 1, index: 0 },
       { what: FIND_EXIT_RIGHT, range: 0, weight: 1, index: 0 },
       { what: FIND_EXIT_BOTTOM, range: 0, weight: 1, index: 0 },
@@ -32,7 +32,7 @@ const Blueprints: Blueprint[] = [
         { id: BLUEPRINT_STRUCTURE.LAB1, controller: 7, priority: 11, structure: STRUCTURE_LAB },
         { id: BLUEPRINT_STRUCTURE.LAB2, controller: 7, priority: 12, structure: STRUCTURE_LAB },
         { id: BLUEPRINT_STRUCTURE.LAB3, controller: 7, priority: 13, structure: STRUCTURE_LAB },
-        { id: BLUEPRINT_STRUCTURE.TOWER1, controller: 3, priority: 0, structure: STRUCTURE_TOWER },
+        { id: BLUEPRINT_STRUCTURE.TOWER1, controller: 3, priority: 1, structure: STRUCTURE_TOWER },
         undefined,
       ],
       [
@@ -52,25 +52,25 @@ const Blueprints: Blueprint[] = [
       [
         {
           id: BLUEPRINT_STRUCTURE.ROAD3,
-          controller: BLUEPRINT_START_BUILDING_ROADAS_LEVEL,
+          controller: BLUEPRINT_START_BUILDING_ROADS_LEVEL,
           priority: 2,
           structure: STRUCTURE_ROAD,
         },
         {
           id: BLUEPRINT_STRUCTURE.ROAD4,
-          controller: BLUEPRINT_START_BUILDING_ROADAS_LEVEL,
+          controller: BLUEPRINT_START_BUILDING_ROADS_LEVEL,
           priority: 2,
           structure: STRUCTURE_ROAD,
         },
         {
           id: BLUEPRINT_STRUCTURE.ROAD5,
-          controller: BLUEPRINT_START_BUILDING_ROADAS_LEVEL,
+          controller: BLUEPRINT_START_BUILDING_ROADS_LEVEL,
           priority: 2,
           structure: STRUCTURE_ROAD,
         },
         {
           id: BLUEPRINT_STRUCTURE.ROAD6,
-          controller: BLUEPRINT_START_BUILDING_ROADAS_LEVEL,
+          controller: BLUEPRINT_START_BUILDING_ROADS_LEVEL,
           priority: 2,
           structure: STRUCTURE_ROAD,
         },
@@ -79,7 +79,7 @@ const Blueprints: Blueprint[] = [
           controller: 3,
           priority: 6,
           structure: STRUCTURE_CONTAINER,
-          supersededBy: BLUEPRINT_STRUCTURE.LINK3,
+          supersededBy: BLUEPRINT_STRUCTURE.STORAGE,
         },
       ],
     ],
@@ -267,7 +267,7 @@ const Blueprints: Blueprint[] = [
     startFrom: BLUEPRINT_ID.EXTRACTOR,
     closeTo: [
       { what: FIND_MINERALS, range: 1, index: 0 },
-      { what: BLUEPRINT_ID.BASE, range: 1 },
+      { what: BLUEPRINT_ID.BASE, range: 1, paved: true },
     ],
     ignoreNearKeyPoints: true,
     ignorePaths: true,

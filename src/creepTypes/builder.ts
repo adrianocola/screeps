@@ -1,6 +1,6 @@
 import { getObjectById } from 'utils/game';
 import { build, withdraw } from 'utils/creep';
-import { getRoom } from 'utils/worker';
+import { dontStandOnRoads, getRoom } from 'utils/worker';
 import { getMainResourceHolder } from 'utils/room';
 
 const getFirstConstructionSiteAvailable = (creep: Creep) => {
@@ -34,7 +34,10 @@ const builderCreepType: CreepType = {
         withdraw(creep, mainResourceHolder, RESOURCE_ENERGY);
       }
     } else {
-      build(creep, target);
+      build(creep, target, 3);
+      if (creep.pos.inRangeTo(target, 3)) {
+        dontStandOnRoads(creep, target);
+      }
     }
   },
 };

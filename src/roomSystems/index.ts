@@ -5,6 +5,7 @@ import creeps from './creeps';
 import custom from './custom';
 import defense from './defense';
 import distribute from './distribute';
+import explore from './explore';
 import fix from './fix';
 import harvest from './harvest';
 import heal from './heal';
@@ -29,9 +30,9 @@ interface CreepsRoomMap {
 
 // execution order ⬇️
 export const ALL_SYSTEMS: SystemsMap = {
+  [ROOM_SYSTEMS.BUILD]: build, // must be the first, so it doesn't process the build requests the same tick they were created (the construction sites don't exist yet)
   [ROOM_SYSTEMS.BLUEPRINT]: blueprint,
   [ROOM_SYSTEMS.BACKUP]: backup,
-  [ROOM_SYSTEMS.BUILD]: build,
   [ROOM_SYSTEMS.COLLECT]: collect,
   [ROOM_SYSTEMS.DEFENSE]: defense,
   [ROOM_SYSTEMS.DISTRIBUTE]: distribute,
@@ -41,6 +42,7 @@ export const ALL_SYSTEMS: SystemsMap = {
   [ROOM_SYSTEMS.TRANSFER]: transfer,
   [ROOM_SYSTEMS.MINE]: mine,
   [ROOM_SYSTEMS.UPGRADE]: upgrade,
+  [ROOM_SYSTEMS.EXPLORE]: explore,
   [ROOM_SYSTEMS.SCAN]: scan,
   [ROOM_SYSTEMS.SPAWN]: spawn, // must happen after all other systems might have requested something to spawn
   [ROOM_SYSTEMS.CREEPS]: creeps,
@@ -99,10 +101,17 @@ const shouldScanPaths = (room: Room) => {
 };
 
 const executeRoomSystems = (room: Room, systems: SystemsMap, roomCreeps: CreepsMap) => {
-  const roomFeatures = room.memory.state?.features;
-  const roomOwnership = room.memory.state?.ownership;
+  const roomFeatures = room.memory.scan?.features;
+  const roomOwnership = room.memory.scan?.ownership;
 
   const controllerLevel = room.controller?.level ?? 0;
+  if (room.controller?.my) {
+    // force running all system after a level change
+    if (room.memory.level !== controllerLevel) {
+      room.memory.lastRuns = {};
+    }
+    room.memory.level = controllerLevel;
+  }
 
   for (const systemName in systems) {
     const system = systems[systemName as ROOM_SYSTEMS];
@@ -120,7 +129,7 @@ const executeRoomSystems = (room: Room, systems: SystemsMap, roomCreeps: CreepsM
 
     if (forceRun) {
       if (!room.memory.forceRun) room.memory.forceRun = {};
-      room.memory.forceRun[systemName as ROOM_SYSTEMS] = false;
+      delete room.memory.forceRun[systemName as ROOM_SYSTEMS];
     }
 
     const haveControllerLevel = !system.controllerLevel || system.controllerLevel >= controllerLevel;
@@ -154,7 +163,7 @@ const roomSystems = () => {
 
     const roomCreeps = groupedCreeps[roomId] || {};
 
-    if (!room.memory.state) scan.run(room, roomCreeps); // force a initial scan
+    if (!room.memory.scan) scan.run(room, roomCreeps); // force a initial scan
 
     room.memory.scanPaths = shouldScanPaths(room);
 

@@ -1,7 +1,3 @@
-import spawnSystem from './spawn';
-import workerCustom from 'creepTypes/custom';
-import { SIMULATOR_ROOM } from 'consts';
-
 // specific code, to dome some very specific task
 const systemCustom: RoomSystem = {
   interval: TICKS.ALWAYS,
@@ -10,27 +6,27 @@ const systemCustom: RoomSystem = {
     [ROOM_FEATURE.BASIC]: false,
   },
   run(room: Room) {
-    if (room.name === SIMULATOR_ROOM) return;
+    if (room.name !== 'W42S55') return;
 
     // const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
     // if (constructionSites.length) return;
     //
-    spawnSystem.spawn(room, 'custom-W42S54', workerCustom.name, 1, 1000, {
-      maxSections: 9,
-      sectionParts: {
-        [MOVE]: 2,
-        [CARRY]: 1,
-        [WORK]: 1,
-      },
-      memory: {
-        type: workerCustom.name,
-        demandId: 'custom-W42S54',
-        roomName: room.name,
-        workRoom: 'W42S54',
-        sourceId: '5bbcaabe9099fc012e6321ea' as Id<Source>,
-        containerId: '65db6404de565795da439dc0' as Id<StructureLink>,
-      },
-    });
+    // spawnSystem.spawn(room, 'custom-W42S54', workerCustom.name, 1, 1000, {
+    //   maxSections: 9,
+    //   sectionParts: {
+    //     [MOVE]: 2,
+    //     [CARRY]: 1,
+    //     [WORK]: 1,
+    //   },
+    //   memory: {
+    //     type: workerCustom.name,
+    //     demandId: 'custom-W42S54',
+    //     roomName: room.name,
+    //     workRoom: 'W42S54',
+    //     sourceId: '5bbcaabe9099fc012e6321ea' as Id<Source>,
+    //     containerId: '65db6404de565795da439dc0' as Id<StructureLink>,
+    //   },
+    // });
 
     // spawnSystem.spawn(room, 'custom-W42S56', workerCustom.name, 1, 1000, {
     //   maxSections: 10,

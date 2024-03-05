@@ -1,3 +1,5 @@
+import { findFreeSpaceAround } from 'utils/directions';
+
 const BODY_PARTS_PRIORITY: BodyPartsMap<number> = {
   [TOUGH]: 1,
   [CARRY]: 2,
@@ -7,14 +9,6 @@ const BODY_PARTS_PRIORITY: BodyPartsMap<number> = {
   [CLAIM]: 6,
   [MOVE]: 7,
   [HEAL]: 8,
-};
-
-const MAX_SECTIONS_PER_HARVESTERS: { [index: number]: number } = {
-  1: 6,
-  2: 3,
-  3: 3,
-  4: 2,
-  5: 2,
 };
 
 export const moveRoadWeight = (weight: number) => Math.ceil(weight / 2);
@@ -102,19 +96,19 @@ export const getRoom = (creep: Creep): Room => {
   return creep.memory.roomName ? Game.rooms[creep.memory.roomName] : creep.room;
 };
 
+const goToTargetRoom = (creep: Creep, roomName: string) => {
+  creep.moveTo(new RoomPosition(25, 25, roomName));
+  return false;
+};
+
 export const moveToRoom = (creep: Creep, roomName: string, returning: boolean = false): boolean => {
   if (creep.room.name === roomName) return true;
 
-  const goToTargetRoom = () => {
-    creep.moveTo(new RoomPosition(25, 25, roomName));
-    return false;
-  };
-
-  const roomsPath = creep.memory.roomsPath || [];
-  if (!roomsPath.length) return goToTargetRoom();
+  const roomsPath = creep.memory.roomsPath ?? [];
+  if (!roomsPath.length) return goToTargetRoom(creep, roomName);
 
   const currentIndex = roomsPath.indexOf(creep.room.name);
-  if (currentIndex === -1) return goToTargetRoom();
+  if (currentIndex === -1) return goToTargetRoom(creep, roomName);
 
   const nextIndex = currentIndex + (returning ? -1 : 1);
   const nextRoom = nextIndex >= 0 && nextIndex < roomsPath.length ? roomsPath[nextIndex] : roomName;
@@ -124,6 +118,21 @@ export const moveToRoom = (creep: Creep, roomName: string, returning: boolean = 
   return false;
 };
 
-export const getMaxSectionsPerHarvesters = (slots: number) => {
-  return MAX_SECTIONS_PER_HARVESTERS[slots] || 6;
+export const moveToRoomHome = (creep: Creep): boolean => {
+  if (!creep.memory?.roomName) return true;
+  return moveToRoom(creep, creep.memory?.roomName, true);
+};
+
+export const moveToRoomWork = (creep: Creep): boolean => {
+  if (!creep.memory?.workRoom) return true;
+  return moveToRoom(creep, creep.memory?.workRoom, false);
+};
+
+export const dontStandOnRoads = (creep: Creep, target: RoomPosition | { pos: RoomPosition }) => {
+  if (creep.room.lookForAt(LOOK_STRUCTURES, creep).length) {
+    const freePos = findFreeSpaceAround(target instanceof RoomPosition ? target : target.pos, creep.room);
+    if (freePos) {
+      creep.moveTo(freePos);
+    }
+  }
 };

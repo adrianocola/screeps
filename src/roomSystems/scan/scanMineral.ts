@@ -7,7 +7,7 @@ export default (room: Room, scanPaths?: boolean): RoomMemoryScanMineral | undefi
   if (!foundMinerals.length) return;
 
   const mineral = foundMinerals[0];
-  const mineralMemory = room.memory.state?.mineral;
+  const mineralMemory = room.memory.scan?.mineral;
 
   const sourceKeeperLairs = room.controller
     ? []
@@ -19,6 +19,10 @@ export default (room: Room, scanPaths?: boolean): RoomMemoryScanMineral | undefi
   const baseEntrancePos = getBaseEntrancePos(room);
 
   const sourceKeeper = sourceKeeperLairs.length > 0;
+
+  if (room.controller?.my) {
+    Memory.global.minerals[mineral.mineralType] = Game.time;
+  }
 
   return {
     containerId: mineralContainer?.id,

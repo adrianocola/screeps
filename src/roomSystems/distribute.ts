@@ -4,7 +4,7 @@ import workerDistributor from 'creepTypes/distributor';
 const MAX_PARTS_PER_LEVEL: { [index: number]: number } = {
   1: 2,
   2: 2,
-  3: 4,
+  3: 5,
   4: 6,
   5: 6,
   6: 6,
@@ -21,7 +21,7 @@ const systemDistribute: RoomSystem = {
     [ROOM_FEATURE.SPAWN_HAVE_CONTAINER]: true,
   },
   run(room: Room) {
-    if (!room.memory.state?.baseSpawnId) return;
+    if (!room.memory.scan?.baseSpawnId) return;
 
     const level = room.controller?.level || 1;
     const maxSections = MAX_PARTS_PER_LEVEL[level];

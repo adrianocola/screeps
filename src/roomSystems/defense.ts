@@ -29,7 +29,7 @@ const systemDefense: RoomSystem = {
       room.memory.defense = { queue: [] };
     }
 
-    if (room.memory.state?.features[ROOM_FEATURE.HAVE_TOWERS]) return;
+    if (room.memory.scan?.features[ROOM_FEATURE.HAVE_TOWERS]) return;
 
     const demandId = workerDefender.name;
 

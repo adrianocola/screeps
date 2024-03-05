@@ -34,17 +34,17 @@ export const roomPathFinderOptions: PathFinderOpts = {
 };
 
 export const getRoomSpawn = (room: Room): StructureSpawn | undefined => {
-  if (!room.memory?.state?.baseSpawnId) return undefined;
-  return getObjectById<StructureSpawn>(room.memory.state.baseSpawnId);
+  if (!room.memory?.scan?.baseSpawnId) return undefined;
+  return getObjectById<StructureSpawn>(room.memory.scan.baseSpawnId);
 };
 
 export const getRoomFactory = (room: Room): StructureFactory | undefined => {
-  if (!room.memory?.state?.factoryId) return undefined;
-  return getObjectById(room.memory.state.factoryId);
+  if (!room.memory?.scan?.factoryId) return undefined;
+  return getObjectById(room.memory.scan.factoryId);
 };
 
 export const getRoomNumberOfSources = (room: Room): number => {
-  return Object.keys(room.memory.state?.sources || {}).length;
+  return Object.keys(room.memory.scan?.sources || {}).length;
 };
 
 export const getRoomClosestEmptyExtension = (room: Room, half: 1 | 2): StructureExtension | undefined => {
@@ -96,8 +96,8 @@ export const roomNumberParser = (roomName: string): { x: number; y: number } | n
   };
 };
 
-export const isRoomHighway = (room: Room): boolean => {
-  const roomPos = roomNumberParser(room.name);
+export const isRoomHighway = (room: Room | string): boolean => {
+  const roomPos = roomNumberParser(typeof room === 'string' ? room : room.name);
   return !!roomPos && (roomPos.x % 10 === 0 || roomPos.y % 10 === 0);
 };
 

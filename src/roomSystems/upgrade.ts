@@ -14,7 +14,7 @@ const getDesiredNumberOfUpgraders = (room: Room): number => {
   if (room.storage) {
     levelRate = getLevelRate(room);
     energyAvailable = room.storage?.store.getUsedCapacity(RESOURCE_ENERGY) || 0;
-  } else if (room.memory.state?.baseSpawnId) {
+  } else if (room.memory.scan?.baseSpawnId) {
     const spawnContainer = getBaseSpawnContainer(room);
     energyAvailable = spawnContainer?.store.getUsedCapacity(RESOURCE_ENERGY) || 0;
     levelRate = 0.5;
@@ -38,7 +38,7 @@ const systemUpgrade: RoomSystem = {
     [ROOM_FEATURE.SPAWN_HAVE_CONTAINER]: true,
   },
   run(room: Room) {
-    if (!room.controller || !room.controller.my || !room.memory.state?.baseSpawnId) return;
+    if (!room.controller || !room.controller.my || !room.memory.scan?.baseSpawnId) return;
 
     // Make sure to spawn an emergency upgrader if the controller is about to downgrade
     if (!room.controller.upgradeBlocked && room.controller.ticksToDowngrade < CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY) {
@@ -58,7 +58,7 @@ const systemUpgrade: RoomSystem = {
       });
     }
 
-    if (!room.memory.state.features[ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK]) return;
+    if (!room.memory.scan.features[ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK]) return;
 
     const desired = getDesiredNumberOfUpgraders(room);
 
@@ -68,7 +68,7 @@ const systemUpgrade: RoomSystem = {
     }
 
     const roomLevel = room.controller?.level || 0;
-    const memoryController = room.memory.state?.controller;
+    const memoryController = room.memory.scan?.controller;
 
     spawnSystem.spawn(room, workerUpgrader.name, workerUpgrader.name, desired, 140, {
       forRoads: memoryController?.paved,

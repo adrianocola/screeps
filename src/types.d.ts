@@ -145,10 +145,13 @@ declare const enum BLUEPRINT_STRUCTURE {
 declare const enum CREEP_TYPE {
   BASIC = 'bsc',
   BUILDER = 'bld',
+  CLAIMER = 'claimer',
+  CLEANER = 'cleaner',
   COLLECTOR = 'clt',
   CUSTOM = 'cst',
   DEFENDER = 'def',
   DISTRIBUTOR = 'dst',
+  EXPLORER = 'exp',
   HARVESTER = 'hvt',
   HARVESTER_WALKER = 'hvw',
   TRANSFERER = 'trf',
@@ -172,6 +175,11 @@ declare const enum SLOT_TYPE {
   STRUCTURE = 'STRUCTURE',
 }
 
+declare const enum GLOBAL_SYSTEMS {
+  EXPAND = 'expand',
+  EXPANSION_CHECK = 'expansionCheck',
+}
+
 declare const enum ROOM_SYSTEMS {
   BACKUP = 'bkp',
   BLUEPRINT = 'bpt',
@@ -181,6 +189,7 @@ declare const enum ROOM_SYSTEMS {
   CUSTOM = 'cst',
   DEFENSE = 'def',
   DISTRIBUTE = 'dst',
+  EXPLORE = 'expl',
   FIX = 'fix',
   HARVEST = 'hvt',
   HEAL = 'heal',
@@ -210,6 +219,7 @@ declare const enum ROOM_FEATURE {
   CONTROLLED = 'c',
   CONTROLLER_HAVE_CONTAINER_OR_LINK = 'chcol',
   CONTROLLER_HAVE_LINK = 'chl',
+  EXPANDING = 'exp',
   HAVE_TOWERS = 'ht',
   MINERALS_HAVE_CONTAINER = 'mhc',
   MINERALS_HAVE_EXTRACTOR = 'mhe',
@@ -224,6 +234,14 @@ declare const enum ROOM_FEATURE {
   TERMINAL = 't',
 }
 
+declare const enum EXPANSION_STATUS {
+  CLEANNING = 'cleanning',
+  CLAIMING = 'claiming',
+  GROWING = 'growing',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+}
+
 declare const enum TICKS {
   ALWAYS = 0,
   TICK_1 = 1,
@@ -235,6 +253,13 @@ declare const enum TICKS {
   TICK_100 = 100,
   TICK_200 = 200,
   TICK_300 = 300,
+  TICK_500 = 500,
+  TICK_1000 = 1_000,
+  TICK_2000 = 2_000,
+  TICK_5000 = 5_000,
+  TICK_10000 = 10_000,
+  TICK_20000 = 20_000,
+  TICK_50000 = 50_000,
 }
 
 declare const enum TRANSFERER_TASKS {
@@ -285,6 +310,12 @@ interface CreepType {
   fixedParts?: BodyPartConstant[]; // array of body parts to always include at the end
   maxSections?: number;
   run: (creep: Creep) => void;
+}
+
+interface GlobalSystem {
+  interval: TICKS;
+  name: GLOBAL_SYSTEMS;
+  run: () => void;
 }
 
 interface SystemStructure<T extends Structure> {
@@ -365,7 +396,7 @@ interface Blueprint {
   schema: (SchemaItem | undefined)[][]; // the schema of the blueprint
   dir?: BaseDirectionConstant; // the direction of the blueprint (usually RIGHT)
   controller: number; // the controller level required to build the structure
-  startFrom: StartFrom | STRUCTURE_CONTROLLER | Pos | BLUEPRINT_ID; // start from a source, mineral, or a specific position
+  startFrom: StartFrom | STRUCTURE_CONTROLLER | Pos | BLUEPRINT_ID | 'discover'; // start from a source, mineral, or a specific position
   closeTo?: CloseTo[]; // search for a place close to something
   ignoreNearKeyPoints?: boolean; // if being next to key points should be ignored when finding the structure location
   ignorePaths?: boolean; // if paths should be ignored when finding the structure location
@@ -422,6 +453,15 @@ interface Memory {
   rootSpawn: string;
   uuid: number;
   log: any;
+  global: GlobalMemory;
+}
+
+interface GlobalMemory {
+  minerals: Partial<Record<MineralConstant, number>>;
+  lastRuns: { [index: string]: number };
+  expanding?: { from: string; to: string; tick: number; status: EXPANSION_STATUS };
+  forceRun?: { [index: string]: boolean };
+  duration: number;
 }
 
 interface SpawnMemory {
@@ -475,16 +515,10 @@ declare interface RoomMemoryScanSource {
   slots: DirectionMap<SLOT_TYPE>;
   slotsAvailable: number;
   exitsDistances: ExitMap<number>;
-  harvestersDesired: number;
   nextSourceDistance: number;
 }
 
-interface RoomMemoryScanSpawn {
-  index: number;
-  containerId?: string;
-}
-
-interface RoomMemoryState {
+interface RoomMemoryScan {
   tick: number;
   counts: StructureMap<number>;
   controller?: RoomMemoryScanController;
@@ -495,6 +529,7 @@ interface RoomMemoryState {
   baseSpawnId?: Id<StructureSpawn>;
   features: Record<ROOM_FEATURE, boolean>;
   ownership: ROOM_OWNERSHIP;
+  score?: number;
 }
 
 interface RoomMemoryBlueprintSchema {
@@ -533,10 +568,17 @@ interface RoomMemoryHeal {
   queue: string[];
 }
 
+interface RoomMemoryExplore {
+  queue: string[]; // list of rooms to explore (always return to the start room between each room)
+  tick: number; // tick the exploration request was created
+  last?: string;
+}
+
 interface RoomMemory {
   duration: number;
   lastRuns: { [index: string]: number };
   name: string;
+  level?: number;
   forceRun?: Partial<Record<ROOM_SYSTEMS, boolean>>; // ignore the interval and force the system to run (still checks for requirements)
   scanPaths?: boolean;
   defense?: RoomMemoryDefense;
@@ -544,9 +586,11 @@ interface RoomMemory {
   heal?: RoomMemoryHeal;
   build?: RoomMemoryBuild;
   blueprint?: RoomMemoryBlueprint;
-  state?: RoomMemoryState;
+  explore?: RoomMemoryExplore;
+  scan?: RoomMemoryScan;
   spawn?: RoomMemorySpawn;
   visuals?: RoomMemoryVisuals;
+  expansionAttempts?: number;
 }
 
 interface FlagMemory {

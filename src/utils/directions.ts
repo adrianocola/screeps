@@ -108,3 +108,24 @@ export const checkIsValidPos = (pos: Pos) => {
 export const checkIsValidBuildablePos = (pos: Pos) => {
   return pos.x >= 1 && pos.x < ROOM_SIZE - 1 && pos.y >= 1 && pos.y < ROOM_SIZE - 1;
 };
+
+export const findFreeSpaceAround = (pos: Pos, room: Room): RoomPosition | undefined => {
+  for (const dir of ALL_DIRECTIONS) {
+    const newPos = getRelativePosition(pos, dir);
+    if (room.lookForAt(LOOK_TERRAIN, newPos.x, newPos.y).some(terrain => terrain === 'wall')) {
+      continue;
+    }
+    if (
+      room.lookForAt(LOOK_STRUCTURES, newPos.x, newPos.y).some(structure => structure.structureType === STRUCTURE_ROAD)
+    ) {
+      continue;
+    }
+    if (room.lookForAt(LOOK_CREEPS, newPos.x, newPos.y).length) {
+      continue;
+    }
+
+    return new RoomPosition(newPos.x, newPos.y, room.name);
+  }
+
+  return undefined;
+};

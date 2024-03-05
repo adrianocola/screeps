@@ -14,27 +14,6 @@ export const OBJECT_WEIGHT: { [K in SLOT_TYPE]: number } = {
 
 // ENERGY available per DAY per SOURCE (tick 3s, source 3k) = 288k
 
-const MAX_SLOTS_PER_LEVEL: { [index: number]: number } = {
-  0: 3,
-  1: 3,
-  2: 3,
-  3: 2,
-  4: 1,
-  5: 1,
-  6: 1,
-  7: 1,
-  8: 1,
-};
-
-const getSourceMaxSlots = (room: Room) => {
-  return MAX_SLOTS_PER_LEVEL[room.controller?.level || 0] || 5;
-};
-
-const getDesiredNumberOfHarvesters = (room: Room, slotsAvailable: number) => {
-  const sourceMaxSlots = getSourceMaxSlots(room);
-  return Math.min(sourceMaxSlots, slotsAvailable);
-};
-
 const getNextSourceDistance = (source: Source, nextSource: Source): number => {
   if (source === nextSource) return -1;
 
@@ -86,7 +65,7 @@ export default (room: Room, spawn?: StructureSpawn, scanPaths?: boolean) => {
   const sources: { [index: string]: RoomMemoryScanSource } = {};
   for (let i = 0; i < foundSources.length; i += 1) {
     const source = foundSources[i];
-    const sourceMemory = room.memory.state?.sources?.[source.id];
+    const sourceMemory = room.memory.scan?.sources?.[source.id];
     const nextSource = foundSources[(i + 1) % foundSources.length];
     const sourceKeeperLairs = room.controller
       ? []
@@ -101,7 +80,6 @@ export default (room: Room, spawn?: StructureSpawn, scanPaths?: boolean) => {
     const sourceKeeper = sourceKeeperLairs.length > 0;
 
     const slotsAvailable = TOP_LEFT - Object.keys(slots).length;
-    const harvestersDesired = getDesiredNumberOfHarvesters(room, slotsAvailable);
     const baseEntrancePos = getBaseEntrancePos(room);
 
     sources[source.id] = {
@@ -117,7 +95,6 @@ export default (room: Room, spawn?: StructureSpawn, scanPaths?: boolean) => {
         ? getIsPathPaved(room, getRawPath(baseEntrancePos, source.pos, 1))
         : sourceMemory?.paved || undefined,
       sourceContainerId: sourceContainer?.id,
-      harvestersDesired,
       nextSourceDistance: scanPaths
         ? getNextSourceDistance(source, nextSource)
         : sourceMemory?.nextSourceDistance ?? -1,

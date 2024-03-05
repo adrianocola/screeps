@@ -26,7 +26,7 @@ const transfererCreepType: CreepType = {
 
     const linkEnergy = storageLink.store.getUsedCapacity(RESOURCE_ENERGY);
     const storageUsedEnergy = storage.store.getUsedCapacity(RESOURCE_ENERGY);
-    const roomResource = creep.room.memory.state?.mineral?.type;
+    const roomResource = creep.room.memory.scan?.mineral?.type;
 
     const baseSpawn1 = getSpawn1(creep.room);
     const baseSpawn2 = getSpawn2(creep.room);

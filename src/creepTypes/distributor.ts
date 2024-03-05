@@ -1,4 +1,4 @@
-import { getMainResourceHolder, getRoomClosestEmptyExtension, getRoomEmptyTower, getRoomEmptySpawn } from 'utils/room';
+import { getMainResourceHolder, getRoomClosestEmptyExtension, getRoomEmptySpawn, getRoomEmptyTower } from 'utils/room';
 import { moveTo, signController, transfer, withdraw } from 'utils/creep';
 import { getBaseTower, getBlueprintEntrance, getControllerContainer, getMineralContainer } from 'utils/blueprint';
 
@@ -6,7 +6,7 @@ const isAlmostDyingAndTransferEnerggy = (creep: Creep, mainResourceHolder: Struc
   const ticksToLive = creep.ticksToLive || 0;
   // if almost dying, run to the source and transfer all energy
   if (ticksToLive < 20) {
-    const roomMineral = creep.room.memory.state?.mineral?.type;
+    const roomMineral = creep.room.memory.scan?.mineral?.type;
     if (creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
       transfer(creep, mainResourceHolder, RESOURCE_ENERGY);
     } else if (roomMineral && creep.store.getUsedCapacity(roomMineral) > 0) {
@@ -21,7 +21,7 @@ const isAlmostDyingAndTransferEnerggy = (creep: Creep, mainResourceHolder: Struc
 };
 
 const collectMineralResource = (creep: Creep, mainResourceHolder: StructureStorage | StructureContainer) => {
-  const roomMineral = creep.room.memory.state?.mineral?.type;
+  const roomMineral = creep.room.memory.scan?.mineral?.type;
 
   if (!roomMineral) return undefined;
 
@@ -72,8 +72,8 @@ const distributorCreepType: CreepType = {
     }
 
     let target: StructureExtension | StructureLink | StructureContainer | StructureTower | StructureSpawn | undefined;
-    const storageHaveLink = !!creep.room.memory.state?.features[ROOM_FEATURE.STORAGE_HAVE_LINK];
-    const controllerHaveLink = !!creep.room.memory.state?.features[ROOM_FEATURE.CONTROLLER_HAVE_LINK];
+    const storageHaveLink = !!creep.room.memory.scan?.features[ROOM_FEATURE.STORAGE_HAVE_LINK];
+    const controllerHaveLink = !!creep.room.memory.scan?.features[ROOM_FEATURE.CONTROLLER_HAVE_LINK];
 
     // if there is a storage link, there is a transferer. It should be responsible for filling the base tower
     const baseTowerId = storageHaveLink ? getBaseTower(creep.room)?.id : undefined;
@@ -81,7 +81,12 @@ const distributorCreepType: CreepType = {
     if (creep.room.energyAvailable === creep.room.energyCapacityAvailable) {
       target = getRoomEmptyTower(creep.room, baseTowerId);
       // if the controller has a link, no need to fill the container
-      if (!controllerHaveLink && !target) target = getControllerContainer(creep.room);
+      if (!controllerHaveLink && !target) {
+        const controllerContainer = getControllerContainer(creep.room);
+        if (controllerContainer && controllerContainer.store.getFreeCapacity(RESOURCE_ENERGY) >= 500) {
+          target = controllerContainer;
+        }
+      }
     } else {
       // if there is a storage link, there is a transferer. It should be responsible for fillling the spawn
       if (!storageHaveLink) target = getRoomEmptySpawn(creep.room);

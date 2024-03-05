@@ -17,7 +17,7 @@ export const getBlueprintEntrance = (room: Room, blueprintId: BLUEPRINT_ID) => {
     entrance = oppositePos(blueprint.entrance, blueprint.width, blueprint.height);
   } else {
     const rotation = getDirectionRotation(blueprint.dir, memoryBlueprint.dir);
-    entrance = rotatePos(blueprint.entrance, blueprint.height, blueprint.width, rotation);
+    entrance = rotatePos(blueprint.entrance, blueprint.width, blueprint.height, rotation);
   }
 
   return new RoomPosition(memoryBlueprint.pos.x + entrance.x, memoryBlueprint.pos.y + entrance.y, room.name);
@@ -129,15 +129,15 @@ export const getBlueprintStructure = <T extends Structure>(room: Room, id: BLUEP
 };
 
 export const getSpawn1 = (room: Room) => {
-  return getBlueprintStructure<StructureContainer>(room, BLUEPRINT_STRUCTURE.SPAWN1);
+  return getBlueprintStructure<StructureSpawn>(room, BLUEPRINT_STRUCTURE.SPAWN1);
 };
 
 export const getSpawn2 = (room: Room) => {
-  return getBlueprintStructure<StructureContainer>(room, BLUEPRINT_STRUCTURE.SPAWN2);
+  return getBlueprintStructure<StructureSpawn>(room, BLUEPRINT_STRUCTURE.SPAWN2);
 };
 
 export const getSpawn3 = (room: Room) => {
-  return getBlueprintStructure<StructureContainer>(room, BLUEPRINT_STRUCTURE.SPAWN2);
+  return getBlueprintStructure<StructureSpawn>(room, BLUEPRINT_STRUCTURE.SPAWN2);
 };
 
 export const getControllerContainer = (room: Room) => {

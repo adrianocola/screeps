@@ -3,6 +3,7 @@ import scanMineral from './scanMineral';
 import scanRoomFeatures from './scanRoomFeatures';
 import scanRoomOwnership from './scanRoomOwnership';
 import scanSources from './scanSources';
+import scanRoomScore from './scanRoomScore';
 import { getBaseSpawn } from 'utils/blueprint';
 
 export const MAPPED_STRUCTURES: StructureMap<boolean> = {
@@ -14,13 +15,12 @@ export const MAPPED_STRUCTURES: StructureMap<boolean> = {
   [STRUCTURE_OBSERVER]: true,
 };
 
-// TODO no need to recalculate some stuff everytime
 const systeScan: RoomSystem = {
-  interval: TICKS.TICK_300,
+  interval: TICKS.TICK_1000,
   name: ROOM_SYSTEMS.SCAN,
   run(room) {
     // already ran the scan this tick (can happen if this is a new room)
-    if (room.memory.state?.tick === Game.time) return;
+    if (room.memory.scan?.tick === Game.time) return;
 
     const counts: StructureMap<number> = {};
 
@@ -47,7 +47,8 @@ const systeScan: RoomSystem = {
     const sources = scanSources(room, spawn, scanPaths);
     const mineral = scanMineral(room, scanPaths);
 
-    room.memory.state = {
+    console.log('SCAN');
+    room.memory.scan = {
       tick: Game.time,
       counts,
       controller,
@@ -58,7 +59,9 @@ const systeScan: RoomSystem = {
       baseSpawnId: spawn?.id,
       features: scanRoomFeatures(room, sources, structuresMap, controller, mineral, spawn),
       ownership: scanRoomOwnership(room),
+      score: scanRoomScore(room, sources, mineral),
     };
+
     room.memory.scanPaths = false;
   },
 };
