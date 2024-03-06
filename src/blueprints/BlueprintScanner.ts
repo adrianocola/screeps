@@ -478,8 +478,3 @@ class BlueprintScanner {
 }
 
 export default BlueprintScanner;
-
-// CONTINUAR AQUI!!!
-//  - Como salvar resultado do scan de blueprint na memória
-//  - Como reconhecer primeiro spawn (colocado na mão) no blueprint
-//  - Como permitir que demais estruturas (observer, link) sejam colocadas no blueprint depois e funcionem corretamente

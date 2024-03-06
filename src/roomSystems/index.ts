@@ -137,7 +137,7 @@ const executeRoomSystems = (room: Room, systems: SystemsMap, roomCreeps: CreepsM
     const haveRequiredFeatures =
       !system.requiredFeatures ||
       Object.entries(system.requiredFeatures).every(([feature, reqValue]) => {
-        return roomFeatures?.[feature as ROOM_FEATURE] === reqValue;
+        return reqValue === !!roomFeatures?.[feature as ROOM_FEATURE];
       });
 
     const haveRequiredOwnership =

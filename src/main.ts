@@ -44,8 +44,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 });
 
-// - nos calculos do blueprint, considerar espaços de source e mineração como ocupados (pra forçar ter espaço pra andar em volta)
-// - melhorar lógica do explorer para evitar salas que ele morreu (e evitar salas que dependam dessas salas)
 // - melhorar lógica de "não pisar em roads", pra buscar o espaço sem road mais próximo da creep e ao alcance do target (em vez de ser simplesmente o mais próximo do target)
 // - Em vez do distributor ir pra uma posição fixa ao fica oscioso, simplesmente sair da estrada deve ser suficiente
 

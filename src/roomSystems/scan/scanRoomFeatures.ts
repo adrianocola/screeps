@@ -35,7 +35,7 @@ export default (
   controller?: RoomMemoryScanController,
   mineral?: RoomMemoryScanMineral,
   spawn?: StructureSpawn,
-): Record<ROOM_FEATURE, boolean> | undefined => {
+): Partial<Record<ROOM_FEATURE, boolean>> | undefined => {
   if (!room.controller?.my) return undefined;
 
   const controllerHaveLink = checkControllerHaveLink(controller);
@@ -49,23 +49,24 @@ export default (
   const storageHaveLink = checkStorageHaveLink(room);
   const towers = structures[STRUCTURE_TOWER] ?? [];
 
-  return {
-    [ROOM_FEATURE.BASIC]: !allSourcesHaveContainerOrLink || (!spawnHaveContainer && !room.storage),
-    [ROOM_FEATURE.CONTROLLED]: !!room.controller?.my,
-    [ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK]: controllerHaveContainerOrLink,
-    [ROOM_FEATURE.CONTROLLER_HAVE_LINK]: controllerHaveLink,
-    [ROOM_FEATURE.EXPANDING]: Memory.global?.expanding?.from === room.name,
-    [ROOM_FEATURE.HAVE_TOWERS]: towers.length > 0,
-    [ROOM_FEATURE.MINERALS_HAVE_CONTAINER]: allMineralsHaveContainer,
-    [ROOM_FEATURE.MINERALS_HAVE_EXTRACTOR]: allMineralsHaveExtractor,
-    [ROOM_FEATURE.SAFE_MODE_ACTIVE]: !!room.controller?.safeMode,
-    [ROOM_FEATURE.SOURCES_HAVE_CONTAINER]: allSourcesHaveContainer,
-    [ROOM_FEATURE.SOURCES_HAVE_LINK]: allSourcesHaveLink,
-    [ROOM_FEATURE.SOURCES_HAVE_CONTAINER_OR_LINK]: allSourcesHaveContainerOrLink,
-    [ROOM_FEATURE.SPAWN_HAVE_CONTAINER]: spawnHaveContainer,
-    [ROOM_FEATURE.SPAWN]: !!spawn,
-    [ROOM_FEATURE.STORAGE]: !!room.storage,
-    [ROOM_FEATURE.STORAGE_HAVE_LINK]: storageHaveLink,
-    [ROOM_FEATURE.TERMINAL]: !!room.terminal,
-  };
+  const features: Partial<Record<ROOM_FEATURE, boolean>> = {};
+  if (!allSourcesHaveContainerOrLink || (!spawnHaveContainer && !room.storage)) features[ROOM_FEATURE.BASIC] = true;
+  if (room.controller?.my) features[ROOM_FEATURE.CONTROLLED] = true;
+  if (controllerHaveContainerOrLink) features[ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK] = true;
+  if (controllerHaveLink) features[ROOM_FEATURE.CONTROLLER_HAVE_LINK] = true;
+  if (Memory.global?.expanding?.from === room.name) features[ROOM_FEATURE.EXPANDING] = true;
+  if (towers.length > 0) features[ROOM_FEATURE.HAVE_TOWERS] = true;
+  if (allMineralsHaveContainer) features[ROOM_FEATURE.MINERALS_HAVE_CONTAINER] = true;
+  if (allMineralsHaveExtractor) features[ROOM_FEATURE.MINERALS_HAVE_EXTRACTOR] = true;
+  if (room.controller?.safeMode) features[ROOM_FEATURE.SAFE_MODE_ACTIVE] = true;
+  if (allSourcesHaveContainer) features[ROOM_FEATURE.SOURCES_HAVE_CONTAINER] = true;
+  if (allSourcesHaveLink) features[ROOM_FEATURE.SOURCES_HAVE_LINK] = true;
+  if (allSourcesHaveContainerOrLink) features[ROOM_FEATURE.SOURCES_HAVE_CONTAINER_OR_LINK] = true;
+  if (spawnHaveContainer) features[ROOM_FEATURE.SPAWN_HAVE_CONTAINER] = true;
+  if (spawn) features[ROOM_FEATURE.SPAWN] = true;
+  if (room.storage) features[ROOM_FEATURE.STORAGE] = true;
+  if (storageHaveLink) features[ROOM_FEATURE.STORAGE_HAVE_LINK] = true;
+  if (room.terminal) features[ROOM_FEATURE.TERMINAL] = true;
+
+  return features;
 };

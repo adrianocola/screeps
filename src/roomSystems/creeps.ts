@@ -13,7 +13,8 @@ const systemWorkers: RoomSystem = {
       if (!creeps || !runner) continue;
 
       for (const creep of creeps) {
-        if (runner) runner.run(creep);
+        if (creep.spawning) continue;
+        runner.run(creep);
       }
     }
   },

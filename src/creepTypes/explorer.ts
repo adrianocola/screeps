@@ -18,6 +18,7 @@ const creepTypeExporer: CreepType = {
   run(creep) {
     creep.notifyWhenAttacked(false);
 
+    // explore queue is empty, so just move to a random neighbour room
     if (creep.memory.workRoom) {
       if (creep.room.name === creep.memory.workRoom) {
         creep.memory.workRoom = getRandomNeighbourRoom(creep);
@@ -29,10 +30,20 @@ const creepTypeExporer: CreepType = {
       return;
     }
 
+    // explore queue is empty, so just move to a random neighbour room
     const explore = Memory.rooms[creep.memory.roomName]?.explore;
     if (!explore?.queue?.length) {
       creep.memory.workRoom = getRandomNeighbourRoom(creep);
       return;
+    }
+
+    // if the explorer just spawned and have a last room set, it means it died while exploring
+    // so removes that room and any rooms that depend on it from the explore queue
+    if ((creep.ticksToLive ?? 0) >= CREEP_LIFE_TIME - 1 && explore.last && explore.last !== creep.memory.roomName) {
+      const lastRoomIndex = explore.queue.lastIndexOf(explore.last);
+      if (lastRoomIndex !== -1) {
+        explore.queue = explore.queue.slice(lastRoomIndex + 1);
+      }
     }
 
     if (creep.room.name === explore.queue[0]) {
@@ -53,6 +64,8 @@ const creepTypeExporer: CreepType = {
       const target = new RoomPosition(25, 25, explore.queue[0]);
       moveTo(creep, target);
     }
+
+    explore.last = creep.room.name;
   },
 };
 

@@ -11,8 +11,8 @@ export const getExploreQueue = (roomName: string, levels = 0): string[] => {
   for (const exitDir in exits) {
     const exitRoom = exits[exitDir as ExitKey]!;
 
-    // no need to go to rooms that are already discovered
-    if (Game.rooms[exitRoom]) continue;
+    // no need to go to rooms that are already controlled by me
+    if (Game.rooms[exitRoom]?.controller?.my) continue;
 
     queue.push(...getExploreQueue(exitRoom, levels - 1));
     queue.push(roomName);
