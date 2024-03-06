@@ -143,20 +143,20 @@ declare const enum BLUEPRINT_STRUCTURE {
 }
 
 declare const enum CREEP_TYPE {
-  BASIC = 'bsc',
-  BUILDER = 'bld',
+  BASIC = 'basic',
+  BUILDER = 'builder',
   CLAIMER = 'claimer',
   CLEANER = 'cleaner',
-  COLLECTOR = 'clt',
-  CUSTOM = 'cst',
-  DEFENDER = 'def',
-  DISTRIBUTOR = 'dst',
-  EXPLORER = 'exp',
-  HARVESTER = 'hvt',
-  HARVESTER_WALKER = 'hvw',
-  TRANSFERER = 'trf',
-  UPGRADER = 'upg',
-  UPGRADER_EMERGENCY = 'upge',
+  COLLECTOR = 'collector',
+  CUSTOM = 'custom',
+  DEFENDER = 'defender',
+  DISTRIBUTOR = 'distributor',
+  EXPLORER = 'explorer',
+  HARVESTER = 'harvester',
+  HARVESTER_WALKER = 'harvesterWalker',
+  TRANSFERER = 'transferer',
+  UPGRADER = 'upgrader',
+  UPGRADER_EMERGENCY = 'upgraderEmergency',
 }
 
 declare const enum DIRECTION_ROTATION {
@@ -181,25 +181,25 @@ declare const enum GLOBAL_SYSTEMS {
 }
 
 declare const enum ROOM_SYSTEMS {
-  BACKUP = 'bkp',
-  BLUEPRINT = 'bpt',
-  BUILD = 'bld',
-  COLLECT = 'clt',
-  CREEPS = 'crp',
-  CUSTOM = 'cst',
-  DEFENSE = 'def',
-  DISTRIBUTE = 'dst',
-  EXPLORE = 'expl',
+  BACKUP = 'backup',
+  BLUEPRINT = 'blueprint',
+  BUILD = 'build',
+  COLLECT = 'collect',
+  CREEPS = 'creeps',
+  CUSTOM = 'custom',
+  DEFENSE = 'defense',
+  DISTRIBUTE = 'distribute',
+  EXPLORE = 'explore',
   FIX = 'fix',
-  HARVEST = 'hvt',
+  HARVEST = 'harvest',
   HEAL = 'heal',
   MINE = 'mine',
   SCAN = 'scan',
-  STRUCTURES = 'str',
-  SPAWN = 'spn',
-  TRANSFER = 'trf',
-  UPGRADE = 'upg',
-  VISUALS = 'vis',
+  STRUCTURES = 'structures',
+  SPAWN = 'spawn',
+  TRANSFER = 'transfer',
+  UPGRADE = 'upgrade',
+  VISUALS = 'visuals',
 }
 
 declare const enum ROOM_OWNERSHIP {
