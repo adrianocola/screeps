@@ -1,8 +1,11 @@
+import expansionCheckSystem from './expansionCheck';
 import spawnSystem from 'roomSystems/spawn';
 import claimerCreepType from 'creepTypes/claimer';
 import cleanerCreepType from 'creepTypes/cleaner';
 import basicCreepType from 'creepTypes/basic';
 import { getBaseSpawnContainer, getBaseTower } from 'utils/blueprint';
+import { INVADER } from 'consts';
+import { getBodyPartsMap } from 'utils/creepBody';
 
 const globalExpand: GlobalSystem = {
   interval: TICKS.TICK_100,
@@ -30,8 +33,6 @@ const globalExpand: GlobalSystem = {
       }
     }
 
-    // TODO detect if room is under attack and change status to CLEANNING or, depending on the attacker size, cancel expansion
-
     // always keeps a cleaner around, to prevent invaders and keep the room loaded
     const structures = toRoom.find(FIND_HOSTILE_STRUCTURES);
     const mainTower = getBaseTower(toRoom);
@@ -51,6 +52,25 @@ const globalExpand: GlobalSystem = {
     }
 
     if (!toRoom) return;
+
+    // check if there are too many enemies or big enemies in the room
+    // TODO if enemies are detected, spawn a big warrior to help
+    const enemies = toRoom.find(FIND_HOSTILE_CREEPS, { filter: c => c.owner.username !== INVADER });
+    if (enemies.length >= 3) {
+      expansionCheckSystem.cancelExpansion();
+      Game.notify(`Canceled expansion from room ${from} to ${to} due to too many enemies (${enemies.length}).`);
+    } else {
+      const hasBigWarriors = enemies.some(enemy => {
+        const bodyCounts = getBodyPartsMap(enemy);
+        return (
+          (bodyCounts[ATTACK] ?? 0) >= 10 || (bodyCounts[RANGED_ATTACK] ?? 0) >= 10 || (bodyCounts[HEAL] ?? 0) >= 10
+        );
+      });
+      if (hasBigWarriors) {
+        expansionCheckSystem.cancelExpansion();
+        Game.notify(`Canceled expansion from room ${from} to ${to} due to big enemies.`);
+      }
+    }
 
     if (status === EXPANSION_STATUS.CLEANNING) {
       if (!structures.length) {

@@ -318,6 +318,10 @@ interface GlobalSystem {
   run: () => void;
 }
 
+interface ExpansionCheckGlobalSystem extends GlobalSystem {
+  cancelExpansion: () => void;
+}
+
 interface SystemStructure<T extends Structure> {
   structureType: StructureConstant;
   run: (structure: T) => void;

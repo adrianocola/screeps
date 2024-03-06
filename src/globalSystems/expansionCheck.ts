@@ -1,15 +1,23 @@
 import { EXPANSION_TICKS_LIMIT } from 'consts';
 
-const globalExpansionCheck: GlobalSystem = {
+const globalExpansionCheck: ExpansionCheckGlobalSystem = {
   interval: TICKS.TICK_10000,
   name: GLOBAL_SYSTEMS.EXPANSION_CHECK,
+  cancelExpansion() {
+    if (!Memory.global.expanding) return;
+
+    const toMemory = Memory.rooms[Memory.global.expanding.to];
+    toMemory.expansionAttempts = (toMemory.expansionAttempts || 0) + 1;
+    delete Memory.global.expanding;
+  },
   run() {
     if (Memory.global.expanding) {
       // considere a failure
       if (Game.time - Memory.global.expanding.tick >= EXPANSION_TICKS_LIMIT) {
-        const toMemory = Memory.rooms[Memory.global.expanding.to];
-        toMemory.expansionAttempts = (toMemory.expansionAttempts || 0) + 1;
-        delete Memory.global.expanding;
+        this.cancelExpansion();
+        Game.notify(
+          `Canceled expansion from room ${Memory.global.expanding.from} to ${Memory.global.expanding.to} due to time limit.`,
+        );
       }
       return;
     }
