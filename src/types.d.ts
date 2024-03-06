@@ -193,6 +193,7 @@ declare const enum ROOM_SYSTEMS {
   FIX = 'fix',
   HARVEST = 'harvest',
   HEAL = 'heal',
+  MARKET = 'market',
   MINE = 'mine',
   SCAN = 'scan',
   STRUCTURES = 'structures',
@@ -578,6 +579,18 @@ interface RoomMemoryExplore {
   last?: string;
 }
 
+interface RoomMemoryMarketStats {
+  count: number;
+  credits: number;
+  amount: number;
+}
+
+interface RoomMemoryMarket {
+  balance: number;
+  sell: Partial<Record<ResourceConstant, RoomMemoryMarketStats>>;
+  buy: Partial<Record<ResourceConstant, RoomMemoryMarketStats>>;
+}
+
 interface RoomMemory {
   duration: number;
   lastRuns: { [index: string]: number };
@@ -594,6 +607,7 @@ interface RoomMemory {
   scan?: RoomMemoryScan;
   spawn?: RoomMemorySpawn;
   visuals?: RoomMemoryVisuals;
+  market?: RoomMemoryMarket;
   expansionAttempts?: number;
 }
 

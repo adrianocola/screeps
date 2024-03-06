@@ -17,6 +17,7 @@ import blueprint from './blueprint';
 import scan from './scan';
 import structures from './structures';
 import visuals from './visuals';
+import market from './market';
 
 import { SIMULATOR_ROOM } from 'consts';
 
@@ -44,6 +45,7 @@ export const ALL_SYSTEMS: SystemsMap = {
   [ROOM_SYSTEMS.UPGRADE]: upgrade,
   [ROOM_SYSTEMS.EXPLORE]: explore,
   [ROOM_SYSTEMS.SCAN]: scan,
+  [ROOM_SYSTEMS.MARKET]: market,
   [ROOM_SYSTEMS.SPAWN]: spawn, // must happen after all other systems might have requested something to spawn
   [ROOM_SYSTEMS.CREEPS]: creeps,
   [ROOM_SYSTEMS.STRUCTURES]: structures,

@@ -60,7 +60,7 @@ const transfererCreepType: CreepType = {
       } else if (
         terminal &&
         terminal.store.getUsedCapacity(RESOURCE_ENERGY) < MIN_TERMINAL_ENERGY &&
-        storageUsedEnergy > 50000
+        storageUsedEnergy > 30_000
       ) {
         creep.memory.task = TRANSFERER_TASKS.FILL_TERMINAL_ENERGY;
       } else if (terminal && terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 1.5 * MIN_TERMINAL_ENERGY) {

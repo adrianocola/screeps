@@ -22,6 +22,11 @@ const globalExpansionCheck: ExpansionCheckGlobalSystem = {
       return;
     }
 
+    const controlledRoomsCount = Object.values(Game.rooms).filter(room => room.controller?.my).length;
+
+    // TODO if avg CPU is too high, also don't expand
+    if (controlledRoomsCount >= Game.gcl.level - 1) return;
+
     // TODO also check if the room is not under attack or any other emergency state
     const elegibleRooms = Object.values(Game.rooms).filter(
       room =>

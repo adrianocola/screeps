@@ -21,13 +21,14 @@ const isAlmostDyingAndTransferEnerggy = (creep: Creep, mainResourceHolder: Struc
   return undefined;
 };
 
-const collectMineralResource = (creep: Creep, mainResourceHolder: StructureStorage | StructureContainer) => {
+const collectMineralResource = (creep: Creep) => {
   const roomMineral = creep.room.memory.scan?.mineral?.type;
+  const terminalOrStorage = creep.room.terminal ?? creep.room.storage;
 
-  if (!roomMineral) return undefined;
+  if (!roomMineral || !terminalOrStorage) return undefined;
 
   if (creep.store.getUsedCapacity(roomMineral) > 0) {
-    transfer(creep, mainResourceHolder, roomMineral);
+    transfer(creep, terminalOrStorage, roomMineral);
     return OK;
   }
 
@@ -35,7 +36,7 @@ const collectMineralResource = (creep: Creep, mainResourceHolder: StructureStora
   if (roomMineral && mineralContainer && creep.room.energyAvailable === creep.room.energyCapacityAvailable) {
     if (mineralContainer.store.getUsedCapacity(roomMineral) >= creep.store.getCapacity(roomMineral) / 2) {
       if (creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-        transfer(creep, mainResourceHolder, RESOURCE_ENERGY);
+        transfer(creep, terminalOrStorage, RESOURCE_ENERGY);
       } else {
         withdraw(creep, mineralContainer, roomMineral);
       }
@@ -55,7 +56,7 @@ const distributorCreepType: CreepType = {
     if (isAlmostDyingAndTransferEnerggy(creep, mainResourceHolder) === OK) return;
 
     // TODO don't do this if the room is under attack or any other emergency state
-    if (collectMineralResource(creep, mainResourceHolder) === OK) return;
+    if (collectMineralResource(creep) === OK) return;
 
     if (creep.room.controller?.my && creep.room.controller?.sign?.username !== Memory.username) {
       signController(creep, creep.room.controller, 'War is the price of peace');

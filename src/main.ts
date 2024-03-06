@@ -44,8 +44,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 });
 
-// PRÓXIMOS PASSOS:
-// - CRIAR LÓGICA PARA VENDER NO MARKET (básica, só pra não ficar acumulando mineral infinitamente)
 // - CRIAR LÓGICA PARA MINERAR SALA NEUTRAL
 // - CRIAR LÓGICA PARA CERCAR SALA COM WALLS/RAMPARTS
 
