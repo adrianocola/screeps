@@ -1,6 +1,7 @@
 import { getMainResourceHolder, getRoomClosestEmptyExtension, getRoomEmptySpawn, getRoomEmptyTower } from 'utils/room';
-import { moveTo, signController, transfer, withdraw } from 'utils/creep';
-import { getBaseTower, getBlueprintEntrance, getControllerContainer, getMineralContainer } from 'utils/blueprint';
+import { signController, transfer, withdraw } from 'utils/creep';
+import { getBaseTower, getControllerContainer, getMineralContainer } from 'utils/blueprint';
+import { dontStandOnRoads } from 'utils/worker';
 
 const isAlmostDyingAndTransferEnerggy = (creep: Creep, mainResourceHolder: StructureStorage | StructureContainer) => {
   const ticksToLive = creep.ticksToLive || 0;
@@ -101,10 +102,7 @@ const distributorCreepType: CreepType = {
       withdraw(creep, mainResourceHolder, RESOURCE_ENERGY);
     } else {
       // try not stand in the way of other creeps
-      const towersEntrance = getBlueprintEntrance(creep.room, BLUEPRINT_ID.TOWERS);
-      if (towersEntrance && !creep.pos.isEqualTo(towersEntrance.x, towersEntrance.y)) {
-        moveTo(creep, { pos: new RoomPosition(towersEntrance.x, towersEntrance.y, creep.room.name) });
-      }
+      dontStandOnRoads(creep, mainResourceHolder, 2);
     }
   },
 };

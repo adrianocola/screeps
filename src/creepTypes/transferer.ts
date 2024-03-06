@@ -11,11 +11,6 @@ import { getBaseTower, getControllerLink, getSpawn1, getSpawn2, getStorageLink, 
 
 const transfererCreepType: CreepType = {
   name: CREEP_TYPE.TRANSFERER,
-  maxSections: 8,
-  sectionParts: {
-    [CARRY]: 2,
-    [MOVE]: 2,
-  },
   run(creep) {
     const storageLink = getStorageLink(creep.room);
     const storage = creep.room.storage;

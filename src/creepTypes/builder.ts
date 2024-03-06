@@ -36,7 +36,7 @@ const builderCreepType: CreepType = {
     } else {
       build(creep, target, 3);
       if (creep.pos.inRangeTo(target, 3)) {
-        dontStandOnRoads(creep, target);
+        dontStandOnRoads(creep, target, 3);
       }
     }
   },

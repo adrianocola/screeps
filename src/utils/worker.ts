@@ -128,9 +128,11 @@ export const moveToRoomWork = (creep: Creep): boolean => {
   return moveToRoom(creep, creep.memory?.workRoom, false);
 };
 
-export const dontStandOnRoads = (creep: Creep, target: RoomPosition | { pos: RoomPosition }) => {
+export const dontStandOnRoads = (creep: Creep, target: RoomPosition | { pos: RoomPosition }, range = 1) => {
+  const targetPos = target instanceof RoomPosition ? target : target.pos;
+  // if standing on roads
   if (creep.room.lookForAt(LOOK_STRUCTURES, creep).length) {
-    const freePos = findFreeSpaceAround(target instanceof RoomPosition ? target : target.pos, creep.room);
+    const freePos = findFreeSpaceAround(creep.room, creep.pos, targetPos, range);
     if (freePos) {
       creep.moveTo(freePos);
     }

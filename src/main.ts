@@ -44,11 +44,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 });
 
-// - melhorar lógica de "não pisar em roads", pra buscar o espaço sem road mais próximo da creep e ao alcance do target (em vez de ser simplesmente o mais próximo do target)
-// - Em vez do distributor ir pra uma posição fixa ao fica oscioso, simplesmente sair da estrada deve ser suficiente
-
 // PRÓXIMOS PASSOS:
-// - CRIAR LÓGICA PARA VENDER NO MARKET
+// - CRIAR LÓGICA PARA VENDER NO MARKET (básica, só pra não ficar acumulando mineral infinitamente)
 // - CRIAR LÓGICA PARA MINERAR SALA NEUTRAL
 // - CRIAR LÓGICA PARA CERCAR SALA COM WALLS/RAMPARTS
 
