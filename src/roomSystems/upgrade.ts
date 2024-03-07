@@ -59,6 +59,8 @@ const systemUpgrade: RoomSystem = {
     }
 
     if (!room.memory.scan.features?.[ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK]) return;
+    // don't upgrade if expanding (to save some energy)
+    if (room.memory.scan.features?.[ROOM_FEATURE.EXPANDING]) return;
 
     const desired = getDesiredNumberOfUpgraders(room);
 

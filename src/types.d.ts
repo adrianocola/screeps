@@ -593,7 +593,7 @@ interface RoomMemoryMarket {
 
 interface RoomMemory {
   duration: number;
-  lastRuns: { [index: string]: number };
+  lastRuns: Partial<Record<ROOM_SYSTEMS, number>>;
   name: string;
   level?: number;
   forceRun?: Partial<Record<ROOM_SYSTEMS, boolean>>; // ignore the interval and force the system to run (still checks for requirements)

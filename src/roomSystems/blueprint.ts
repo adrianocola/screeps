@@ -116,7 +116,7 @@ const getOrInitializeMemoryBlueprint = (room: Room) => {
     destroyConstructedWalls(room);
     const rootSpawn = getRootSpawn();
     room.memory.blueprint = {
-      schemas: createMemoryBlueprintSchemas(room, room.name === rootSpawn.name ? rootSpawn : undefined),
+      schemas: createMemoryBlueprintSchemas(room, room.name === rootSpawn.room.name ? rootSpawn : undefined),
       v: 1,
       structures: {},
     };

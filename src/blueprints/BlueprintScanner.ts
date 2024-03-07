@@ -11,7 +11,12 @@ import {
   rotateBaseDirection,
   rotatePos,
 } from 'utils/directions';
-import { BASE_DIRECTIONS } from 'consts';
+import { BASE_DIRECTIONS, ROOM_SIZE } from 'consts';
+
+const PATH_ROAD_COST = 1;
+const PATH_PLAIN_COST = 3;
+const PATH_SWAMP_COST = 5;
+const PATH_WALL_COST = 20;
 
 class BlueprintScanner {
   private roomName: string;
@@ -27,7 +32,7 @@ class BlueprintScanner {
     this.room = Game.rooms[roomName];
     this.buildingCostMatrix = new PathFinder.CostMatrix();
     this.buildingsAndPathsCostMatrix = new PathFinder.CostMatrix();
-    this.pathFindingCostMatrix = new PathFinder.CostMatrix();
+    this.pathFindingCostMatrix = BlueprintScanner.getWalkablePathCostMatrix(this.room);
     this.terrain = new Room.Terrain(roomName);
     this.results = {};
 
@@ -83,6 +88,46 @@ class BlueprintScanner {
     };
   }
 
+  public static getWalkablePathCostMatrix = (room: Room) => {
+    const costMatrix = new PathFinder.CostMatrix();
+
+    const terrain = room.getTerrain();
+    for (let y = 1; y < ROOM_SIZE - 1; y += 1) {
+      for (let x = 1; x < ROOM_SIZE - 1; x += 1) {
+        const tile = terrain.get(x, y);
+        if (tile === TERRAIN_MASK_SWAMP) {
+          costMatrix.set(x, y, PATH_SWAMP_COST);
+        } else if (tile === TERRAIN_MASK_WALL) {
+          costMatrix.set(x, y, PATH_WALL_COST);
+        } else {
+          costMatrix.set(x, y, PATH_PLAIN_COST);
+        }
+      }
+    }
+
+    const sources = room.find(FIND_SOURCES);
+    const minerals = room.find(FIND_MINERALS);
+    const structured = room.find(FIND_STRUCTURES);
+
+    for (const source of sources) {
+      costMatrix.set(source.pos.x, source.pos.y, 0xff);
+    }
+    for (const mineral of minerals) {
+      costMatrix.set(mineral.pos.x, mineral.pos.y, 0xff);
+    }
+    for (const structure of structured) {
+      if (structure.structureType === STRUCTURE_ROAD) {
+        if (!costMatrix.get(structure.pos.x, structure.pos.y)) {
+          costMatrix.set(structure.pos.x, structure.pos.y, PATH_ROAD_COST);
+        }
+      } else {
+        costMatrix.set(structure.pos.x, structure.pos.y, 0xff);
+      }
+    }
+
+    return costMatrix;
+  };
+
   public static blueprintToDirection(blueprint: Blueprint, direction: BaseDirectionConstant) {
     if (!blueprint.dir || blueprint.dir === direction) return blueprint;
 
@@ -112,7 +157,7 @@ class BlueprintScanner {
     const roomCallback = () => costMatrix;
 
     // swamps are not so bad, cuz we can build roads on top of them
-    const searchOptions = { roomCallback, maxRooms: 1, plainCost: 2, swampCost: 3 };
+    const searchOptions = { roomCallback, maxRooms: 1 };
 
     for (const closeTo of blueprint.closeTo) {
       if (onlyPaved && !closeTo.paved) continue;

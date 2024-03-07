@@ -84,7 +84,7 @@ const TYPE_TEXT = '"type":';
 const TYPE_CREEP = '"creep"';
 const shouldScanPaths = (room: Room) => {
   if (room.memory.scanPaths || room.memory.scanPaths === undefined) return true;
-  if (Game.time - room.memory.lastRuns[ROOM_SYSTEMS.SCAN] >= 20_000) return true;
+  if (Game.time - (room.memory.lastRuns[ROOM_SYSTEMS.SCAN] ?? 0) >= 20_000) return true;
   if (!room.controller?.my) return false;
 
   // check in the event log if any structure in the room was destroyed
@@ -103,7 +103,7 @@ const shouldScanPaths = (room: Room) => {
 };
 
 const executeRoomSystems = (room: Room, systems: SystemsMap, roomCreeps: CreepsMap) => {
-  const roomFeatures = room.memory.scan?.features;
+  const roomFeatures = room.memory.scan?.features ?? {};
   const roomOwnership = room.memory.scan?.ownership;
 
   const controllerLevel = room.controller?.level ?? 0;
@@ -119,13 +119,15 @@ const executeRoomSystems = (room: Room, systems: SystemsMap, roomCreeps: CreepsM
     const system = systems[systemName as ROOM_SYSTEMS];
     if (!system) continue;
 
-    const lastRun = room.memory.lastRuns[systemName];
+    const lastRun = room.memory.lastRuns[systemName as ROOM_SYSTEMS] ?? 0;
     const forceRun = !!room.memory.forceRun?.[systemName as ROOM_SYSTEMS];
     const isSimulatorRoom = room.name === SIMULATOR_ROOM;
+    const interval = system.interval as number;
     if (
       !forceRun &&
       !isSimulatorRoom && // force run all systems in simulator room
-      (!roomFeatures || (lastRun && Game.time < lastRun + system.interval))
+      lastRun &&
+      Game.time - lastRun < interval
     )
       continue;
 
@@ -139,7 +141,7 @@ const executeRoomSystems = (room: Room, systems: SystemsMap, roomCreeps: CreepsM
     const haveRequiredFeatures =
       !system.requiredFeatures ||
       Object.entries(system.requiredFeatures).every(([feature, reqValue]) => {
-        return reqValue === !!roomFeatures?.[feature as ROOM_FEATURE];
+        return reqValue === !!roomFeatures[feature as ROOM_FEATURE];
       });
 
     const haveRequiredOwnership =
@@ -147,7 +149,7 @@ const executeRoomSystems = (room: Room, systems: SystemsMap, roomCreeps: CreepsM
 
     if (haveControllerLevel && haveRequiredFeatures && haveRequiredOwnership) {
       system.run(room, roomCreeps);
-      room.memory.lastRuns[systemName] = Game.time;
+      room.memory.lastRuns[systemName as ROOM_SYSTEMS] = Game.time;
     }
   }
 };

@@ -264,6 +264,7 @@ const Blueprints: Blueprint[] = [
     maxRange: 1,
     maxCount: 8,
     controller: 6,
+    entrance: { x: 0, y: 0 },
     startFrom: BLUEPRINT_ID.EXTRACTOR,
     closeTo: [
       { what: FIND_MINERALS, range: 1, index: 0 },

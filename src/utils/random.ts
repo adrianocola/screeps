@@ -14,3 +14,5 @@ export const shuffleArray = <T>(array: T[]): T[] => {
 
   return array;
 };
+
+export const randomArrayElement = <T>(array: T[]): T => array[Math.floor(Math.random() * array.length)];

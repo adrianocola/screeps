@@ -8,8 +8,6 @@ export const SYSTEMS: Partial<Record<GLOBAL_SYSTEMS, GlobalSystem>> = {
 };
 
 const globalSystems = () => {
-  if (!Memory.global) Memory.global = { minerals: {}, lastRuns: {}, duration: 0 };
-
   const start = Game.cpu.getUsed();
   for (const systemName in SYSTEMS) {
     const system = SYSTEMS[systemName as GLOBAL_SYSTEMS];

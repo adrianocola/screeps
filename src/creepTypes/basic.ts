@@ -1,5 +1,5 @@
 import { getObjectById } from 'utils/game';
-import { build, moveTo, repair, transfer, upgradeController } from 'utils/creep';
+import { build, harvest, moveTo, repair, transfer, upgradeController } from 'utils/creep';
 import { moveToRoomWork } from 'utils/worker';
 
 /**
@@ -26,7 +26,7 @@ const basicCreepType: CreepType = {
 
     if (creep.pos.isNearTo(source)) {
       if (creep.store.getFreeCapacity() !== 0) {
-        creep.harvest(source);
+        if (source.energy) creep.harvest(source);
         return;
       }
     } else if (creep.store.getUsedCapacity() === 0) {

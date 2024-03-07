@@ -11,9 +11,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log('Set the property "rootSpawn" with the root Spawn name in the Memory to start');
     return;
   }
-  if (!Memory.username) {
-    Memory.username = getRootSpawn().owner.username;
-  }
+  if (!Memory.global) Memory.global = { minerals: {}, lastRuns: {}, duration: 0 };
+  if (!Memory.username) Memory.username = getRootSpawn().owner.username;
 
   // Automatically delete memory of missing creeps
   if (Game.time % 10 === 0) {

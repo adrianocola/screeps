@@ -30,7 +30,7 @@ export default (
   // if (room.controller?.my) return 0;
 
   if (!room.controller) return 0;
-  if (Game.map.getRoomStatus(room.name).status !== 'normal') return 0;
+  if (Game.map.getRoomStatus(room.name)?.status !== 'normal') return 0;
 
   const baseBlueprint = Blueprints.find(b => b.base)!;
   const modBaseBlueprint = { ...baseBlueprint, maxCount: 10 };

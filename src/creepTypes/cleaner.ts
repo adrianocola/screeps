@@ -25,7 +25,7 @@ const cleanerCreepType: CreepType = {
 
     if (target) attack(creep, target);
     else if (creep.room.controller) {
-      moveTo(creep, creep.room.controller, { range: 3 });
+      moveTo(creep, creep.room.controller, { range: 5 });
     }
   },
 };

@@ -1,4 +1,5 @@
 import { ALL_DIRECTIONS, BASE_DIRECTIONS, ROOM_SIZE } from 'consts';
+import { randomArrayElement } from 'utils/random';
 
 const POS_SEPARATOR = ':';
 

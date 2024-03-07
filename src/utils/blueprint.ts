@@ -26,7 +26,7 @@ export const getBlueprintEntrance = (room: Room, blueprintId: BLUEPRINT_ID) => {
 const getCostMatrixAndOrientedBlueprints = (room: Room) => {
   const memoryBlueprints = room.memory.blueprint?.schemas;
 
-  const costMatrix = new PathFinder.CostMatrix();
+  const costMatrix = BlueprintScanner.getWalkablePathCostMatrix(room);
   const orientedBlueprints: Partial<Record<BLUEPRINT_ID, Blueprint>> = {};
 
   if (memoryBlueprints) {
@@ -39,8 +39,12 @@ const getCostMatrixAndOrientedBlueprints = (room: Room) => {
       for (let x = 0; x < orientedBlueprint.width; x++) {
         for (let y = 0; y < orientedBlueprint.height; y++) {
           const item = orientedBlueprint.schema[y][x];
-          if (item && item.structure !== STRUCTURE_ROAD && item.structure !== STRUCTURE_CONTAINER) {
-            costMatrix.set(memoryBlueprint.pos.x + x, memoryBlueprint.pos.y + y, 0xff);
+          if (item) {
+            if (item.structure === STRUCTURE_ROAD) {
+              costMatrix.set(memoryBlueprint.pos.x + x, memoryBlueprint.pos.y + y, 1);
+            } else if (item.structure !== STRUCTURE_CONTAINER) {
+              costMatrix.set(memoryBlueprint.pos.x + x, memoryBlueprint.pos.y + y, 0xff);
+            }
           }
         }
       }

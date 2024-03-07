@@ -8,7 +8,7 @@ import { INVADER } from 'consts';
 import { getBodyPartsMap } from 'utils/creepBody';
 
 const globalExpand: GlobalSystem = {
-  interval: TICKS.TICK_100,
+  interval: TICKS.TICK_20,
   name: GLOBAL_SYSTEMS.EXPAND,
   run() {
     if (!Memory.global.expanding || Memory.global.expanding.status === EXPANSION_STATUS.COMPLETED) return;
@@ -21,7 +21,7 @@ const globalExpand: GlobalSystem = {
       return;
     }
 
-    const toRoom = Game.rooms[to];
+    const toRoom = Game.rooms[to] as Room | undefined;
     if (toRoom && toRoom.controller?.my && toRoom.controller?.level >= 3) {
       const spawnContainer = getBaseSpawnContainer(toRoom);
       if (spawnContainer) {
@@ -34,13 +34,13 @@ const globalExpand: GlobalSystem = {
     }
 
     // always keeps a cleaner around, to prevent invaders and keep the room loaded
-    const structures = toRoom.find(FIND_HOSTILE_STRUCTURES);
-    const mainTower = getBaseTower(toRoom);
+    const structures = toRoom?.find(FIND_HOSTILE_STRUCTURES) ?? [];
+    const mainTower = toRoom ? getBaseTower(toRoom) : undefined;
     if (mainTower) {
       spawnSystem.removeSpawn(fromRoom, cleanerCreepType.name);
     } else {
       const totalHits = structures.reduce((acc, structure) => acc + structure.hits, 0);
-      const cleannerQuantity = Math.min(3, Math.ceil(totalHits / 2_000_000));
+      const cleannerQuantity = Math.min(3, Math.ceil(totalHits / 2_000_000)) || 1;
       spawnSystem.spawn(fromRoom, cleanerCreepType.name, cleanerCreepType.name, cleannerQuantity, 50, {
         memory: {
           type: cleanerCreepType.name,
@@ -85,7 +85,7 @@ const globalExpand: GlobalSystem = {
       } else {
         const ticksToEnd = toRoom.controller?.reservation?.ticksToEnd ?? 0;
         const maxSections = ticksToEnd ? 5 : 1;
-        spawnSystem.spawn(fromRoom, claimerCreepType.name, claimerCreepType.name, 1, 50, {
+        spawnSystem.spawn(fromRoom, claimerCreepType.name, claimerCreepType.name, 1, 49, {
           maxSections,
           memory: {
             type: claimerCreepType.name,
@@ -102,7 +102,7 @@ const globalExpand: GlobalSystem = {
         for (const sourceId in toRoomMemory.scan.sources) {
           const sourceData = toRoomMemory.scan.sources[sourceId];
           const demandId = `${basicCreepType.name}-E-${sourceData.index}`;
-          spawnSystem.spawn(fromRoom, demandId, basicCreepType.name, 1, 49, {
+          spawnSystem.spawn(fromRoom, demandId, basicCreepType.name, 1, 48, {
             maxSections: 10,
             memory: {
               demandId,
