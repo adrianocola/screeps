@@ -1,5 +1,5 @@
 import { getObjectById } from 'utils/game';
-import { build, harvest, moveTo, repair, transfer, upgradeController } from 'utils/creep';
+import { build, moveTo, repair, transfer, upgradeController } from 'utils/creep';
 import { moveToRoomWork } from 'utils/worker';
 
 /**

@@ -1,4 +1,3 @@
-// TODO permitir setar um level máximo para algumas estruturas (ajudaria pra deletar containers inúteis, depois que faz link)
 import { BLUEPRINT_START_BUILDING_ROADS_LEVEL } from 'consts';
 
 const Blueprints: Blueprint[] = [
@@ -191,7 +190,7 @@ const Blueprints: Blueprint[] = [
         {
           id: BLUEPRINT_STRUCTURE.CONTAINER4,
           controller: 3,
-          priority: 9,
+          priority: 1,
           structure: STRUCTURE_CONTAINER,
           supersededBy: BLUEPRINT_STRUCTURE.LINK4,
         },

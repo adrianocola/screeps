@@ -39,7 +39,7 @@ const systemExplore: RoomSystem = {
   run(room: Room) {
     // create the need to explore every EXPLORE_TICKS_INTERVAL ticks
     if (!room.memory.explore || Game.time - room.memory.explore.tick >= EXPLORE_TICKS_INTERVAL) {
-      room.memory.explore = getExploreDataForRoom(room.name, 2);
+      room.memory.explore = getExploreDataForRoom(room.name, 3);
     }
 
     if (room.memory.explore.queue.length) {

@@ -14,7 +14,7 @@ const cleanerCreepType: CreepType = {
     let target: Creep | Structure | null = creep.pos.findClosestByPath(FIND_HOSTILE_CREEPS);
 
     if (!target) {
-      target = creep.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
+      target = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
         filter: { structureType: STRUCTURE_INVADER_CORE },
       });
     }

@@ -2,7 +2,7 @@ import roomSystems from './roomSystems';
 import globalSystems from './globalSystems';
 import { getRootSpawn } from 'utils/game';
 import { ErrorMapper } from 'utils/ErrorMapper';
-import { ROOM_MAX_TICKS_IN_MEMORY } from 'consts';
+import { EXPANSION_START_COUNTDOWN, ROOM_MAX_TICKS_IN_MEMORY } from 'consts';
 
 // adicionar MemHack (https://wiki.screepspl.us/index.php/MemHack)
 export const loop = ErrorMapper.wrapLoop(() => {
@@ -11,7 +11,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log('Set the property "rootSpawn" with the root Spawn name in the Memory to start');
     return;
   }
-  if (!Memory.global) Memory.global = { minerals: {}, lastRuns: {}, duration: 0 };
+  if (!Memory.global)
+    Memory.global = { minerals: {}, lastRuns: {}, duration: 0, expansionCountdown: EXPANSION_START_COUNTDOWN };
   if (!Memory.username) Memory.username = getRootSpawn().owner.username;
 
   // Automatically delete memory of missing creeps
@@ -42,12 +43,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log(Game.cpu.getUsed());
   }
 });
-
-// considerar expandir para até 2 de distância de uma sala controlada (senão nunca vou atravessar highways, ou posso perder salas boas)
-// revisar se vou expandir a cada 50k ticks mesmo. Talvez só expandir em 50k ticks se a sala for boa (200+ de score). Senão só expandir a cada 100k
-// talvez não construir algumas estruturas se a sala só tiver 1 source (ex: labs, terminal, nuke, etc)
-// quando acabar de expandir, setar tick da global.expansion como o tick atual do jogo. PRa só começar a expandir depois de 50k ticks de TERMINAR a expansão
-// Arrumar harvester walker, as vezes ele nasce e vai pro source errado (o que não tem energy, por exemplo)
 
 // - CRIAR LÓGICA PARA MINERAR SALA NEUTRAL
 // - CRIAR LÓGICA PARA CERCAR SALA COM WALLS/RAMPARTS

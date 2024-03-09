@@ -240,8 +240,6 @@ declare const enum EXPANSION_STATUS {
   CLEANNING = 'cleanning',
   CLAIMING = 'claiming',
   GROWING = 'growing',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
 }
 
 declare const enum TICKS {
@@ -321,7 +319,9 @@ interface GlobalSystem {
 }
 
 interface ExpansionCheckGlobalSystem extends GlobalSystem {
-  cancelExpansion: () => void;
+  cancelExpansion: (reason?: string) => void;
+  resetExpansion: () => void;
+  completeExpansion: () => void;
 }
 
 interface SystemStructure<T extends Structure> {
@@ -376,6 +376,7 @@ interface SchemaItem {
   controller: number;
   priority: number;
   supersededBy?: BLUEPRINT_STRUCTURE; // if this structure is built, this one should be destroyed (useful for containers)
+  minSources?: number; // only build if the room has this number of sources
 }
 
 interface CloseTo {
@@ -465,7 +466,8 @@ interface Memory {
 interface GlobalMemory {
   minerals: Partial<Record<MineralConstant, number>>;
   lastRuns: { [index: string]: number };
-  expanding?: { from: string; to: string; tick: number; status: EXPANSION_STATUS };
+  expansionCountdown: number;
+  expanding?: { from: string; to: string; tick: number; score: number; status: EXPANSION_STATUS };
   forceRun?: { [index: string]: boolean };
   duration: number;
 }

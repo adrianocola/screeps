@@ -54,10 +54,8 @@ export default (
   if (room.controller?.my) features[ROOM_FEATURE.CONTROLLED] = true;
   if (controllerHaveContainerOrLink) features[ROOM_FEATURE.CONTROLLER_HAVE_CONTAINER_OR_LINK] = true;
   if (controllerHaveLink) features[ROOM_FEATURE.CONTROLLER_HAVE_LINK] = true;
-  if (Memory.global?.expanding?.from === room.name && Memory.global?.expanding?.status !== EXPANSION_STATUS.COMPLETED)
-    features[ROOM_FEATURE.EXPANDING_FROM] = true;
-  if (Memory.global?.expanding?.to === room.name && Memory.global?.expanding?.status !== EXPANSION_STATUS.COMPLETED)
-    features[ROOM_FEATURE.EXPANDING_TO] = true;
+  if (Memory.global?.expanding?.from === room.name) features[ROOM_FEATURE.EXPANDING_FROM] = true;
+  if (Memory.global?.expanding?.to === room.name) features[ROOM_FEATURE.EXPANDING_TO] = true;
   if (towers.length > 0) features[ROOM_FEATURE.HAVE_TOWERS] = true;
   if (allMineralsHaveContainer) features[ROOM_FEATURE.MINERALS_HAVE_CONTAINER] = true;
   if (allMineralsHaveExtractor) features[ROOM_FEATURE.MINERALS_HAVE_EXTRACTOR] = true;

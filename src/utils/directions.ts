@@ -1,7 +1,13 @@
 import { ALL_DIRECTIONS, BASE_DIRECTIONS, ROOM_SIZE } from 'consts';
-import { randomArrayElement } from 'utils/random';
 
 const POS_SEPARATOR = ':';
+
+const OPPOSITE_EXIT_KEYS: Record<ExitKey, ExitKey> = {
+  1: '5',
+  3: '7',
+  5: '1',
+  7: '3',
+};
 
 const OPPOSITE_BASE_DIRECTIONS: Record<BaseDirectionConstant, BaseDirectionConstant> = {
   [TOP]: BOTTOM,
@@ -11,6 +17,8 @@ const OPPOSITE_BASE_DIRECTIONS: Record<BaseDirectionConstant, BaseDirectionConst
 };
 
 export const getPosIndex = (pos: Pos) => `${pos.x}${POS_SEPARATOR}${pos.y}`;
+
+export const getOppositeExitKey = (exitKey: ExitKey) => OPPOSITE_EXIT_KEYS[exitKey];
 
 export const getOppositeBaseDirection = (dir: BaseDirectionConstant) => OPPOSITE_BASE_DIRECTIONS[dir];
 

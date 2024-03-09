@@ -4,20 +4,27 @@ import claimerCreepType from 'creepTypes/claimer';
 import cleanerCreepType from 'creepTypes/cleaner';
 import basicCreepType from 'creepTypes/basic';
 import { getBaseSpawnContainer, getBaseTower } from 'utils/blueprint';
-import { INVADER } from 'consts';
+import { EXPANSION_TICKS_LIMIT, INVADER } from 'consts';
 import { getBodyPartsMap } from 'utils/creepBody';
 
 const globalExpand: GlobalSystem = {
   interval: TICKS.TICK_20,
   name: GLOBAL_SYSTEMS.EXPAND,
   run() {
-    if (!Memory.global.expanding || Memory.global.expanding.status === EXPANSION_STATUS.COMPLETED) return;
+    if (!Memory.global.expanding) return;
+
+    if (Game.time - Memory.global.expanding.tick >= EXPANSION_TICKS_LIMIT) {
+      expansionCheckSystem.cancelExpansion(
+        `time limit (${Game.time - Memory.global.expanding.tick}/${EXPANSION_TICKS_LIMIT} ticks)`,
+      );
+      return;
+    }
 
     const { status, from, to } = Memory.global.expanding;
     const fromRoom = Game.rooms[from];
     if (!fromRoom) {
-      // lost access to source room, cancel expansion
-      delete Memory.global.expanding;
+      // lost access to from room, cancel expansion
+      expansionCheckSystem.cancelExpansion(`lost access to from room ${from}`);
       return;
     }
 
@@ -25,10 +32,7 @@ const globalExpand: GlobalSystem = {
     if (toRoom && toRoom.controller?.my && toRoom.controller?.level >= 3) {
       const spawnContainer = getBaseSpawnContainer(toRoom);
       if (spawnContainer) {
-        Memory.global.expanding.status = EXPANSION_STATUS.COMPLETED;
-        Game.notify(
-          `Completed expansion from room ${from} to ${to} in ${Game.time - Memory.global.expanding.tick} ticks.`,
-        );
+        expansionCheckSystem.completeExpansion();
         return;
       }
     }
@@ -57,8 +61,7 @@ const globalExpand: GlobalSystem = {
     // TODO if enemies are detected, spawn a big warrior to help
     const enemies = toRoom.find(FIND_HOSTILE_CREEPS, { filter: c => c.owner.username !== INVADER });
     if (enemies.length >= 3) {
-      expansionCheckSystem.cancelExpansion();
-      Game.notify(`Canceled expansion from room ${from} to ${to} due to too many enemies (${enemies.length}).`);
+      expansionCheckSystem.cancelExpansion(`too many enemies (${enemies.length})`);
     } else {
       const hasBigWarriors = enemies.some(enemy => {
         const bodyCounts = getBodyPartsMap(enemy);
@@ -67,8 +70,7 @@ const globalExpand: GlobalSystem = {
         );
       });
       if (hasBigWarriors) {
-        expansionCheckSystem.cancelExpansion();
-        Game.notify(`Canceled expansion from room ${from} to ${to} due to big enemies.`);
+        expansionCheckSystem.cancelExpansion('big enemies detected');
       }
     }
 

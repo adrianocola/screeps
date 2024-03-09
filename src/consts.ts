@@ -10,6 +10,10 @@ export const ENERGY_HARVESTER_MAX_SECTIONS = 6;
 
 export const MINERALS_REGISTER_TICKS = 1_0000;
 
+export const EXPANSION_REQUIRED_FEATURE = ROOM_FEATURE.TERMINAL;
+export const EXPANSION_MIN_STORAGE_ENERGY = 10_000;
+export const EXPANSION_COUNTDOWN_SCORE = 100;
+export const EXPANSION_START_COUNTDOWN = 8; // will try to expand to room with this score * EXPANSION_COUNTDOWN_SCORE, decreasing every expansionCheck run
 export const EXPANSION_TICKS_LIMIT = 50_000; // if expansion don't finish in this time, stop it and considere a failure
 export const ROOM_MAX_TICKS_IN_MEMORY = 50_000; // max ticks to keep room data in memory
 

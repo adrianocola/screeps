@@ -1,6 +1,7 @@
 import { getBaseSpawnContainer } from 'utils/blueprint';
 import { getObjectById } from 'utils/game';
 import { TOWER_RESERVED_ENERGY } from 'consts';
+import { getOppositeBaseDirection, getOppositeExitKey } from 'utils/directions';
 
 export const getRoomCallback = (roomName: string): CostMatrix | boolean => {
   const room = Game.rooms[roomName];
@@ -129,3 +130,22 @@ export const getMainResourceHolder = (room: Room) => {
 
 export const getMainResourceHolderId = (room: Room): Id<StructureStorage> | Id<StructureContainer> | undefined =>
   getMainResourceHolder(room)?.id;
+
+export const getRoomNeighbours = (roomName: string, distance: number, fromExit?: ExitKey): string[] => {
+  const list: string[] = [];
+  if (!distance) return list;
+
+  const exits = Game.map.describeExits(roomName);
+  const reverseFromExit = fromExit ? getOppositeExitKey(fromExit) : undefined;
+
+  for (const exitDir in exits) {
+    const exitDirTyped = exitDir as ExitKey;
+    if (exitDirTyped === reverseFromExit) continue;
+
+    const exitRoom = exits[exitDirTyped]!;
+
+    list.push(exitRoom, ...getRoomNeighbours(exitRoom, distance - 1, exitDirTyped));
+  }
+
+  return [...new Set(list)];
+};
