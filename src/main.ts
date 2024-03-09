@@ -43,6 +43,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 });
 
+// considerar expandir para até 2 de distância de uma sala controlada (senão nunca vou atravessar highways, ou posso perder salas boas)
+// revisar se vou expandir a cada 50k ticks mesmo. Talvez só expandir em 50k ticks se a sala for boa (200+ de score). Senão só expandir a cada 100k
+// talvez não construir algumas estruturas se a sala só tiver 1 source (ex: labs, terminal, nuke, etc)
+// quando acabar de expandir, setar tick da global.expansion como o tick atual do jogo. PRa só começar a expandir depois de 50k ticks de TERMINAR a expansão
+// Arrumar harvester walker, as vezes ele nasce e vai pro source errado (o que não tem energy, por exemplo)
+
 // - CRIAR LÓGICA PARA MINERAR SALA NEUTRAL
 // - CRIAR LÓGICA PARA CERCAR SALA COM WALLS/RAMPARTS
 

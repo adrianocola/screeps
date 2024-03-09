@@ -107,7 +107,8 @@ class BlueprintScanner {
 
     const sources = room.find(FIND_SOURCES);
     const minerals = room.find(FIND_MINERALS);
-    const structured = room.find(FIND_STRUCTURES);
+    const roads = room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_ROAD } });
+    const structures = room.find(FIND_STRUCTURES, { filter: s => s.structureType !== STRUCTURE_ROAD });
 
     for (const source of sources) {
       costMatrix.set(source.pos.x, source.pos.y, 0xff);
@@ -115,14 +116,11 @@ class BlueprintScanner {
     for (const mineral of minerals) {
       costMatrix.set(mineral.pos.x, mineral.pos.y, 0xff);
     }
-    for (const structure of structured) {
-      if (structure.structureType === STRUCTURE_ROAD) {
-        if (!costMatrix.get(structure.pos.x, structure.pos.y)) {
-          costMatrix.set(structure.pos.x, structure.pos.y, PATH_ROAD_COST);
-        }
-      } else {
-        costMatrix.set(structure.pos.x, structure.pos.y, 0xff);
-      }
+    for (const road of roads) {
+      costMatrix.set(road.pos.x, road.pos.y, PATH_ROAD_COST);
+    }
+    for (const structure of structures) {
+      costMatrix.set(structure.pos.x, structure.pos.y, 0xff);
     }
 
     return costMatrix;

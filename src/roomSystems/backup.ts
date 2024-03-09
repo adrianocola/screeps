@@ -24,7 +24,7 @@ const systemBackup: RoomSystem = {
   },
   run(room: Room) {
     const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES).length;
-    const isExpandingToRoom = Memory.global.expanding?.to === room.name;
+    const isExpandingToRoom = room.memory.scan?.features?.[ROOM_FEATURE.EXPANDING_TO];
     // add more creeps to compensate for movement and add even more if there are no construction sites
     // (probably there is only upgrade controller left to do and we can speed up the process)
     const extraCreepsPerSource = (constructionSites ? 1 : 2) - (isExpandingToRoom ? 2 : 0);
