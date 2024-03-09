@@ -76,7 +76,7 @@ const systemUpgrade: RoomSystem = {
 
     spawnSystem.spawn(room, workerUpgrader.name, workerUpgrader.name, desired, 140, {
       forRoads: memoryController?.paved,
-      maxSections: roomLevel === 8 ? Math.ceil(MAX_WORK_PARTS_LVL8 / WORK_PARTS_WEIGHT) : undefined, // because lvl8 controllers are limited to 15 per tick,
+      maxSections: roomLevel === 8 ? Math.ceil(MAX_WORK_PARTS_LVL8 / WORK_PARTS_WEIGHT) : 5, // because lvl8 controllers are limited to 15 per tick,
       sectionParts: {
         [WORK]: WORK_PARTS_WEIGHT,
         [MOVE]: 2,

@@ -3,28 +3,20 @@ import { getObjectById } from 'utils/game';
 import { getSourceLinkOrContainer } from 'utils/blueprint';
 
 const getInitialSourceIndex = (room: Room): number => {
-  let bestSource: Source | undefined;
-  let bestSourceIndex: number | undefined;
-  for (const sourceId in room.memory.scan?.sources) {
-    const sourceData = room.memory.scan?.sources[sourceId];
-    const source = getObjectById(sourceId as Id<Source>);
-    if (source) {
-      if (source.energy === source.energyCapacity) {
-        return sourceData.index;
-      }
+  const sources = room.memory.scan?.sources ?? {};
 
-      if (bestSource) {
-        if (source.ticksToRegeneration < bestSource.ticksToRegeneration) {
-          bestSource = source;
-          bestSourceIndex = sourceData.index;
-        }
-      } else {
-        bestSource = source;
-        bestSourceIndex = sourceData.index;
-      }
-    }
-  }
-  return bestSourceIndex ?? 0;
+  // sort by energy (desc) and then by ticksToRegeneration (asc) if energy is the same
+  const sortedSources = Object.keys(sources).sort((a, b) => {
+    const sourceA = getObjectById(a as Id<Source>);
+    const sourceB = getObjectById(b as Id<Source>);
+    if (!sourceA || !sourceB) return 0;
+
+    if (sourceA?.energy !== sourceB.energy) return sourceB.energy - sourceA.energy;
+
+    return sourceA.ticksToRegeneration - sourceB.ticksToRegeneration;
+  });
+
+  return sources[sortedSources[0]]?.index ?? 0;
 };
 
 const harvesterWalkerCreepType: CreepType = {
