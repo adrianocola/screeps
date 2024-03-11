@@ -18,6 +18,7 @@ import scan from './scan';
 import structures from './structures';
 import visuals from './visuals';
 import market from './market';
+import neighborHarvest from './neighborHarvest';
 
 import { SIMULATOR_ROOM } from 'consts';
 
@@ -41,6 +42,7 @@ export const ALL_SYSTEMS: SystemsMap = {
   [ROOM_SYSTEMS.HARVEST]: harvest,
   [ROOM_SYSTEMS.HEAL]: heal,
   [ROOM_SYSTEMS.TRANSFER]: transfer,
+  [ROOM_SYSTEMS.NEIGHBOR_HARVEST]: neighborHarvest,
   [ROOM_SYSTEMS.MINE]: mine,
   [ROOM_SYSTEMS.UPGRADE]: upgrade,
   [ROOM_SYSTEMS.EXPLORE]: explore,

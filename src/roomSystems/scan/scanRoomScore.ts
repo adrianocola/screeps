@@ -10,13 +10,13 @@ const basePathDistance = (pos: RoomPosition, target: RoomPosition | _HasRoomPosi
   return pos.findPathTo(target, { ignoreCreeps: true, ignoreRoads: true, plainCost: 2, swampCost: 3, range }).length;
 };
 
-const ownershipScore: Record<ROOM_OWNERSHIP, number> = {
-  [ROOM_OWNERSHIP.ME_CONTROLLED]: 2,
+const neighborOwnershipScore: Record<ROOM_OWNERSHIP, number> = {
+  [ROOM_OWNERSHIP.ME_CONTROLLED]: 1,
   [ROOM_OWNERSHIP.ME_RESERVED]: 0,
-  [ROOM_OWNERSHIP.INVADER_CONTROLLED]: -5,
+  [ROOM_OWNERSHIP.INVADER_CONTROLLED]: 0,
   [ROOM_OWNERSHIP.INVADER_RESERVED]: 0.5,
-  [ROOM_OWNERSHIP.PLAYER_CONTROLLED]: -5,
-  [ROOM_OWNERSHIP.PLAYER_RESERVED]: -2,
+  [ROOM_OWNERSHIP.PLAYER_CONTROLLED]: -2,
+  [ROOM_OWNERSHIP.PLAYER_RESERVED]: -1,
   [ROOM_OWNERSHIP.UNCONTROLLED]: 1,
   [ROOM_OWNERSHIP.HIGHWAY]: 0.5,
   [ROOM_OWNERSHIP.NEUTRAL]: 2,
@@ -27,17 +27,16 @@ export default (
   scanSources: Record<string, RoomMemoryScanSource> = {},
   scanMineral?: RoomMemoryScanMineral,
 ): number => {
-  // if (room.controller?.my) return 0;
-
-  if (!room.controller) return 0;
-  if (Game.map.getRoomStatus(room.name)?.status !== 'normal') return 0;
+  if (!room.controller) return -1000;
+  if (room.controller?.my) return -1001;
+  if (Game.map.getRoomStatus(room.name)?.status !== 'normal') return -1002;
 
   const baseBlueprint = Blueprints.find(b => b.base)!;
   const modBaseBlueprint = { ...baseBlueprint, maxCount: 10 };
   const baseResult = new BlueprintScanner(room.name).scanBlueprint(modBaseBlueprint);
 
   // If the base blueprint doesn't fit in the room, exclude the room
-  if (!baseResult) return 0;
+  if (!baseResult) return -1003;
 
   const basePos = new RoomPosition(baseResult.x, baseResult.y, room.name);
   let score = 0;
@@ -60,7 +59,7 @@ export default (
   for (const sourceId in scanSources) {
     const source = getObjectById(sourceId as Id<Source>)!;
     const sourceData = scanSources[sourceId];
-    score += BASE_SCORE;
+    score += 2 * BASE_SCORE;
     score += (sourceData.slotsAvailable * BASE_SCORE) / 10;
     score += BASE_SCORE - basePathDistance(basePos, source);
   }
@@ -72,6 +71,10 @@ export default (
     // player controlled
   } else if (room.controller.owner?.username) {
     score -= BASE_SCORE * room.controller.level * 3;
+
+    // reserved by me
+  } else if (room.controller.reservation?.username === Memory.username) {
+    score -= BASE_SCORE / 2;
   }
 
   // enemy structures
@@ -95,7 +98,7 @@ export default (
       if (!exitRoomMemory || !exitRoomMemory.scan?.ownership) {
         score -= 2 * BASE_SCORE;
       } else if (exitRoomMemory.scan.ownership) {
-        score += BASE_SCORE * (ownershipScore[exitRoomMemory.scan.ownership] ?? 0);
+        score += BASE_SCORE * (neighborOwnershipScore[exitRoomMemory.scan.ownership] ?? 0);
       }
     }
   }
@@ -107,7 +110,7 @@ export default (
   // previous expansion attempts
   score -= (room.memory.expansionAttempts ?? 0) * BASE_SCORE * 2;
 
-  if (isNaN(score)) return -1;
+  if (isNaN(score)) return -1004;
 
-  return score;
+  return Math.round(score);
 };

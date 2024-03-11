@@ -265,6 +265,7 @@ class BlueprintScanner {
     const scannedPositions: Record<string, boolean> = {};
     let scanPositions: Pos[] = [pos];
     let found = false;
+    let foundSpace = false;
     let range = 0;
 
     do {
@@ -277,12 +278,17 @@ class BlueprintScanner {
         scannedPositions[posIndex] = true;
         if (!checkIsValidBuildablePos(scanPos)) continue;
 
-        if (range > 0) {
+        // if maxRange is higher than 0, we should stop scanning when we find a wall (right now, maxRange = 0 only for extractors)
+        if (maxRange > 0) {
           const code = this.terrain.get(scanPos.x, scanPos.y);
-          if (code === TERRAIN_MASK_WALL) continue;
+          if (code === TERRAIN_MASK_WALL) {
+            if (foundSpace) continue;
+          } else {
+            foundSpace = true;
+          }
         }
 
-        if (range >= minRange && callback(scanPos)) {
+        if (foundSpace && range >= minRange && callback(scanPos)) {
           found = true;
           break;
         }

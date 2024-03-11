@@ -1,7 +1,7 @@
 import { getBaseSpawnContainer } from 'utils/blueprint';
 import { getObjectById } from 'utils/game';
-import { TOWER_RESERVED_ENERGY } from 'consts';
-import { getOppositeBaseDirection, getOppositeExitKey } from 'utils/directions';
+import { ALL_DIRECTIONS, TOWER_RESERVED_ENERGY } from 'consts';
+import { getOppositeExitKey } from 'utils/directions';
 
 export const getRoomCallback = (roomName: string): CostMatrix | boolean => {
   const room = Game.rooms[roomName];
@@ -148,4 +148,14 @@ export const getRoomNeighbours = (roomName: string, distance: number, fromExit?:
   }
 
   return [...new Set(list)];
+};
+
+export const getSlotsAvailable = (sourceData: RoomMemoryScanSource): DirectionConstant[] => {
+  const available: DirectionConstant[] = [];
+  for (const direction of ALL_DIRECTIONS) {
+    if (!sourceData.slots[direction]) {
+      available.push(direction);
+    }
+  }
+  return available;
 };

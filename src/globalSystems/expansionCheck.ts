@@ -53,7 +53,7 @@ const globalExpansionCheck: ExpansionCheckGlobalSystem = {
     if (!elegibleFromRooms.length) return;
 
     const expansionCountdown = Memory.global.expansionCountdown ?? 0;
-    const minScore = expansionCountdown * EXPANSION_COUNTDOWN_SCORE;
+    const minScore = expansionCountdown * EXPANSION_COUNTDOWN_SCORE || 1; // 1 is the minimum score
 
     // best result following the rules (in order)
     //    - best score (respecting minScore)

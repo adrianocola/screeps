@@ -34,3 +34,12 @@ export const getExitsDistances = (pos: RoomPosition): ExitMap<number> => {
   map[FIND_EXIT_LEFT] = getExitDistance(pos, FIND_EXIT_LEFT);
   return map;
 };
+
+export const findSingleStructureInRange = <T extends AnyStructure>(
+  pos: RoomPosition,
+  range: number,
+  structureType: StructureConstant,
+) => {
+  const structures = pos.findInRange<T>(FIND_STRUCTURES, range, { filter: { structureType } });
+  return structures.length ? structures[0] : undefined;
+};

@@ -87,7 +87,8 @@ const globalExpand: GlobalSystem = {
       } else {
         const ticksToEnd = toRoom.controller?.reservation?.ticksToEnd ?? 0;
         const maxSections = ticksToEnd ? 5 : 1;
-        spawnSystem.spawn(fromRoom, claimerCreepType.name, claimerCreepType.name, 1, 49, {
+        const quantity = ticksToEnd ? Math.ceil(ticksToEnd / 2_500) : 1;
+        spawnSystem.spawn(fromRoom, claimerCreepType.name, claimerCreepType.name, quantity, 49, {
           maxSections,
           memory: {
             type: claimerCreepType.name,

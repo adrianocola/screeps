@@ -154,6 +154,10 @@ declare const enum CREEP_TYPE {
   EXPLORER = 'explorer',
   HARVESTER = 'harvester',
   HARVESTER_WALKER = 'harvesterWalker',
+  NEIGHBOR_CLEANER = 'nCleaner',
+  NEIGHBOR_COLLECTOR = 'nCollector',
+  NEIGHBOR_HARVESTER = 'nHarvester',
+  NEIGHBOR_RESERVER = 'nReserver',
   TRANSFERER = 'transferer',
   UPGRADER = 'upgrader',
   UPGRADER_EMERGENCY = 'upgraderEmergency',
@@ -195,6 +199,7 @@ declare const enum ROOM_SYSTEMS {
   HEAL = 'heal',
   MARKET = 'market',
   MINE = 'mine',
+  NEIGHBOR_HARVEST = 'nHarvest',
   SCAN = 'scan',
   STRUCTURES = 'structures',
   SPAWN = 'spawn',
@@ -482,7 +487,8 @@ interface CreepMemory {
   demandId: string;
   roomName: string;
   workRoom?: string;
-  containerId?: Id<StructureContainer | StructureLink>;
+  target?: Id<Structure | Creep>;
+  containerId?: Id<StructureStorage | StructureContainer | StructureLink>;
   task?: TRANSFERER_TASKS;
   harvested?: boolean; // used to control if harvesterWalker already harvested this source
   sourceIndex?: number;
@@ -493,7 +499,6 @@ interface CreepMemory {
 }
 
 interface RoomMemoryScanController {
-  id: string;
   paved?: boolean;
   storageDistance: number;
   exitsDistances: ExitMap<number>;
@@ -526,6 +531,10 @@ declare interface RoomMemoryScanSource {
   nextSourceDistance: number;
 }
 
+declare interface RoomMemoryScanStorage {
+  exitsDistances: ExitMap<number>;
+}
+
 interface RoomMemoryScan {
   tick: number;
   counts: StructureMap<number>;
@@ -533,6 +542,7 @@ interface RoomMemoryScan {
   factoryId?: Id<StructureFactory>;
   observerId?: Id<StructureObserver>;
   mineral?: RoomMemoryScanMineral;
+  storage?: RoomMemoryScanStorage;
   sources: Record<string, RoomMemoryScanSource>;
   baseSpawnId?: Id<StructureSpawn>;
   features?: Partial<Record<ROOM_FEATURE, boolean>>;
@@ -594,6 +604,11 @@ interface RoomMemoryMarket {
   buy: Partial<Record<ResourceConstant, RoomMemoryMarketStats>>;
 }
 
+interface RoomMemoryNeighbor {
+  from: string;
+  tick: number;
+}
+
 interface RoomMemory {
   duration: number;
   lastRuns: Partial<Record<ROOM_SYSTEMS, number>>;
@@ -611,6 +626,8 @@ interface RoomMemory {
   spawn?: RoomMemorySpawn;
   visuals?: RoomMemoryVisuals;
   market?: RoomMemoryMarket;
+  neighborSource?: Record<string, RoomMemoryNeighbor>;
+  neighborReserve?: RoomMemoryNeighbor;
   expansionAttempts?: number;
 }
 

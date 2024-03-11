@@ -1,3 +1,6 @@
+// import spawnSystem from './spawn';
+// import workerCustom from 'creepTypes/custom';
+
 // specific code, to dome some very specific task
 const systemCustom: RoomSystem = {
   interval: TICKS.ALWAYS,
@@ -6,7 +9,20 @@ const systemCustom: RoomSystem = {
     [ROOM_FEATURE.BASIC]: false,
   },
   run(room: Room) {
-    if (room.name !== 'W42S55') return;
+    if (room.name !== 'W43S54') return;
+
+    // spawnSystem.spawn(room, 'custom-W43S54-1', workerCustom.name, 1, 1000, {
+    //   sectionParts: {
+    //     [TOUGH]: 1,
+    //     [MOVE]: 1,
+    //   },
+    //   maxSections: 1,
+    //   memory: {
+    //     type: workerCustom.name,
+    //     demandId: 'custom-W43S54-1',
+    //     roomName: room.name,
+    //   },
+    // });
 
     // const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
     // if (constructionSites.length) return;

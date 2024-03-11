@@ -28,6 +28,8 @@ const collectorCreepType: CreepType = {
       if (creep.pos.isNearTo(resourceHolder)) {
         if (resourceHolder.store.getFreeCapacity() > 0) {
           creep.transfer(resourceHolder, resource);
+        } else {
+          dontStandOnRoads(creep, resourceHolder);
         }
       } else {
         moveTo(creep, resourceHolder, { range: 1 });

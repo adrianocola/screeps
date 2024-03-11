@@ -10,6 +10,7 @@ export const moveTo = (
   target: RoomPosition | { pos: RoomPosition },
   opts?: MoveToOpts,
 ): ScreepsReturnCode => {
+  if (creep.fatigue) return ERR_TIRED;
   // // by default, ignore creeps, so that creeps in opposite directions can cross each other in the same road
   // const finalOpts:MoveToOpts = {
   //   reusePath: 10,

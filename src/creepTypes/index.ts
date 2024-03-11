@@ -12,9 +12,12 @@ import harvesterWalker from './harvesterWalker';
 import transferer from './transferer';
 import upgrader from './upgrader';
 import upgraderEmergency from './upgraderEmergency';
+import neighborCleaner from './neighborCleaner';
+import neighborCollector from './neighborCollector';
+import neighborHarvester from './neighborHarvester';
+import neighborReserver from './neighborReserver';
 
-// execution order ⬇️
-const CreepTypes: Record<CREEP_TYPE, CreepType> = {
+const CreepTypes: Partial<Record<CREEP_TYPE, CreepType>> = {
   [CREEP_TYPE.BASIC]: basic,
   [CREEP_TYPE.DEFENDER]: defender,
   [CREEP_TYPE.HARVESTER]: harvester,
@@ -27,6 +30,10 @@ const CreepTypes: Record<CREEP_TYPE, CreepType> = {
   [CREEP_TYPE.UPGRADER_EMERGENCY]: upgraderEmergency,
   [CREEP_TYPE.CLEANER]: cleaner,
   [CREEP_TYPE.CLAIMER]: claimer,
+  [CREEP_TYPE.NEIGHBOR_CLEANER]: neighborCleaner,
+  [CREEP_TYPE.NEIGHBOR_COLLECTOR]: neighborCollector,
+  [CREEP_TYPE.NEIGHBOR_HARVESTER]: neighborHarvester,
+  [CREEP_TYPE.NEIGHBOR_RESERVER]: neighborReserver,
   [CREEP_TYPE.EXPLORER]: explorer,
   [CREEP_TYPE.CUSTOM]: custom,
 };

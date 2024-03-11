@@ -5,6 +5,7 @@ import scanRoomOwnership from './scanRoomOwnership';
 import scanSources from './scanSources';
 import scanRoomScore from './scanRoomScore';
 import { getBaseSpawn } from 'utils/blueprint';
+import scanStorage from 'roomSystems/scan/scanStorage';
 
 export const MAPPED_STRUCTURES: StructureMap<boolean> = {
   [STRUCTURE_TOWER]: true,
@@ -47,7 +48,7 @@ const systeScan: RoomSystem = {
     const sources = scanSources(room, spawn, scanPaths);
     const mineral = scanMineral(room, scanPaths);
 
-    console.log('SCAN');
+    console.log('SCAN', room.name);
     room.memory.scan = {
       tick: Game.time,
       counts,
@@ -57,6 +58,7 @@ const systeScan: RoomSystem = {
       mineral,
       sources,
       baseSpawnId: spawn?.id,
+      storage: scanStorage(room),
       features: scanRoomFeatures(room, sources, structuresMap, controller, mineral, spawn),
       ownership: scanRoomOwnership(room),
       score: scanRoomScore(room, sources, mineral),

@@ -21,7 +21,6 @@ export default (room: Room, scanPaths?: boolean): RoomMemoryScanController | und
   const link = getControllerLink(room);
 
   return {
-    id: room.controller.id,
     exitsDistances: scanPaths ? getExitsDistances(room.controller.pos) : controllerMemory?.exitsDistances ?? {},
     paved: scanPaths ? paved : controllerMemory?.paved || undefined,
     storageDistance: scanPaths ? storageDistance : controllerMemory?.storageDistance ?? -1,

@@ -22,6 +22,13 @@ const systemSpawn: SystemSpawn = {
   },
   doSpawn(room: Room, spawn: StructureSpawn, item: SpawnDemandItem, energyAvailable: number): number | undefined {
     const worker = CreepTypes[item.workerType];
+
+    if (!worker) {
+      console.log(`Removing spawn of worker "${item.workerType}" (${item.id}) because creep type was not found`);
+      this.removeSpawn(room, item.id);
+      return;
+    }
+
     const opts: SystemSpawnOptions = item.opts ? { ...item.opts } : {};
     const sectionParts = opts.sectionParts ?? worker.sectionParts;
     const fixedParts = opts.fixedParts ?? worker.fixedParts ?? [];

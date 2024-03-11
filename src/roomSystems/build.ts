@@ -56,6 +56,7 @@ const systemBuild: SystemBuild = {
     if (!room.memory.build) room.memory.build = { queue: [], requests: [] };
 
     const queue = room.memory.build?.queue ?? [];
+    const beforeQueueLength = queue.length;
     const existingConstructionSitesMap: Record<string, boolean> = {};
 
     // check if all construction sites in the queue still exist
@@ -106,6 +107,11 @@ const systemBuild: SystemBuild = {
     }
 
     room.memory.build.queue = sortQueue(validQueue);
+
+    // force a scan after a structure was built
+    if (validQueue.length < beforeQueueLength) {
+      delete room.memory.lastRuns[ROOM_SYSTEMS.SCAN];
+    }
 
     if (!validQueue.length) {
       spawnSystem.removeSpawn(room, workerBuilder.name);

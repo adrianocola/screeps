@@ -1,4 +1,10 @@
-import { getExitsDistances, getIsPathPaved, getRawPath, rawPathDistance } from './scanUtils';
+import {
+  findSingleStructureInRange,
+  getExitsDistances,
+  getIsPathPaved,
+  getRawPath,
+  rawPathDistance,
+} from './scanUtils';
 import { getBaseEntrancePos, getSourceContainer, getSourceLink } from 'utils/blueprint';
 import { getRelativePosition } from 'utils/directions';
 import { ALL_DIRECTIONS, SOURCE_KEEPER } from 'consts';
@@ -74,7 +80,9 @@ export default (room: Room, spawn?: StructureSpawn, scanPaths?: boolean) => {
         });
     const slots = scanPaths ? getSlots(source) : sourceMemory?.slots ?? {};
 
-    const sourceContainer = getSourceContainer(room, i);
+    const sourceContainer =
+      getSourceContainer(room, i) ?? findSingleStructureInRange(source.pos, 1, STRUCTURE_CONTAINER);
+
     const sourceLink = getSourceLink(room, i);
 
     const sourceKeeper = sourceKeeperLairs.length > 0;
