@@ -64,17 +64,13 @@ export default (
     score += BASE_SCORE - basePathDistance(basePos, source);
   }
 
-  // invader controlled
-  if (room.controller.owner?.username === INVADER) {
-    score -= BASE_SCORE / 2;
-
-    // player controlled
-  } else if (room.controller.owner?.username) {
+  // player controlled
+  if (room.controller.owner?.username) {
     score -= BASE_SCORE * room.controller.level * 3;
 
     // reserved by me
   } else if (room.controller.reservation?.username === Memory.username) {
-    score -= BASE_SCORE / 2;
+    score -= BASE_SCORE;
   }
 
   // enemy structures

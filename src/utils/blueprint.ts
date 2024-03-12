@@ -73,7 +73,7 @@ export const getBlueprintRoadsToLevel = (room: Room, level: number): RoomPositio
     );
   };
 
-  // then geth costs/paths
+  // then get costs/paths
   for (const blueprint of Blueprints) {
     if (blueprint.controller > level) continue;
 
@@ -101,6 +101,7 @@ export const getBlueprintRoadsToLevel = (room: Room, level: number): RoomPositio
 
     // include entrance in the path
     for (const cost of costs) {
+      costMatrix.set(entrancePos.x, entrancePos.y, 1);
       cost.path.forEach(pos => costMatrix.set(pos.x, pos.y, 1));
       roadList.push([entrancePos, ...cost.path]);
     }

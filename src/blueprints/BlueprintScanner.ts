@@ -154,7 +154,6 @@ class BlueprintScanner {
 
     const roomCallback = () => costMatrix;
 
-    // swamps are not so bad, cuz we can build roads on top of them
     const searchOptions = { roomCallback, maxRooms: 1 };
 
     for (const closeTo of blueprint.closeTo) {
@@ -186,7 +185,7 @@ class BlueprintScanner {
             searchOptions,
           );
           if (result.incomplete) return [];
-          costs.push({ value: result.cost, weight: closeTo.weight ?? 1, path: result.path });
+          costs.push({ value: result.cost + 1, weight: closeTo.weight ?? 1, path: [...result.path, otherEntrance] });
         }
       } else {
         let findings = room.find(closeTo.what);

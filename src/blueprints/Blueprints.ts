@@ -16,7 +16,7 @@ const Blueprints: Blueprint[] = [
     closeTo: [
       { what: STRUCTURE_CONTROLLER, range: 1, weight: 10 },
       { what: FIND_SOURCES, range: 1, weight: 10 },
-      { what: FIND_MINERALS, range: 1, weight: 10 },
+      { what: FIND_MINERALS, range: 1, weight: 5 },
       { what: FIND_EXIT_TOP, range: 0, weight: 1, index: 0 },
       { what: FIND_EXIT_RIGHT, range: 0, weight: 1, index: 0 },
       { what: FIND_EXIT_BOTTOM, range: 0, weight: 1, index: 0 },

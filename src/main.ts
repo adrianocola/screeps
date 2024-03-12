@@ -49,7 +49,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 });
 
-// - Fazer explorer fugir de invaders, source keepers e outros inimigos
+// - MINERAR SOURCES COM SOURCE KEEPER!
+// - MUDAR LÓGICA DE EXPANSÃO, não considerar inimigos na sala para o score. Só considerar os inimigos na sala na hora de expandir (aí ve a condição real da sala)
 // - CRIAR LÓGICA PARA CERCAR SALA COM WALLS/RAMPARTS
 
 //
