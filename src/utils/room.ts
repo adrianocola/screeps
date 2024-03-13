@@ -1,7 +1,8 @@
 import { getBaseSpawnContainer } from 'utils/blueprint';
 import { getObjectById } from 'utils/game';
 import { ALL_DIRECTIONS, TOWER_RESERVED_ENERGY } from 'consts';
-import { getOppositeExitKey } from 'utils/directions';
+import { getOppositeExitKey, getRelativePosition } from 'utils/directions';
+import { shuffleArray } from 'utils/random';
 
 export const getRoomCallback = (roomName: string): CostMatrix | boolean => {
   const room = Game.rooms[roomName];
@@ -158,4 +159,36 @@ export const getSlotsAvailable = (sourceData: RoomMemoryScanSource): DirectionCo
     }
   }
   return available;
+};
+
+export const isSpaceBlocked = (room: Room, pos: Pos, roadsBlock = false): boolean => {
+  if (room.lookForAt(LOOK_TERRAIN, pos.x, pos.y).some(terrain => terrain === 'wall')) {
+    return true;
+  }
+  if (
+    room
+      .lookForAt(LOOK_STRUCTURES, pos.x, pos.y)
+      .filter(s => s.structureType !== STRUCTURE_ROAD || (roadsBlock && s.structureType === STRUCTURE_ROAD)).length
+  ) {
+    return true;
+  }
+  if (room.lookForAt(LOOK_CREEPS, pos.x, pos.y).length) {
+    return true;
+  }
+
+  return false;
+};
+
+export const findFreeSpaceAround = (room: Room, target: Pos): Pos | undefined => {
+  const shuffledDirections = shuffleArray(ALL_DIRECTIONS);
+  for (const dir of shuffledDirections) {
+    const pos = getRelativePosition(target, dir);
+    if (isSpaceBlocked(room, pos, true)) {
+      continue;
+    }
+
+    return pos;
+  }
+
+  return undefined;
 };

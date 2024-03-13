@@ -117,31 +117,3 @@ export const checkIsValidPos = (pos: Pos) => {
 export const checkIsValidBuildablePos = (pos: Pos) => {
   return pos.x >= 1 && pos.x < ROOM_SIZE - 1 && pos.y >= 1 && pos.y < ROOM_SIZE - 1;
 };
-
-export const findFreeSpaceAround = (
-  room: Room,
-  pos: RoomPosition,
-  target: RoomPosition,
-  range: number,
-): RoomPosition | undefined => {
-  for (const dir of ALL_DIRECTIONS) {
-    const { x, y } = getRelativePosition(pos, dir);
-    const newPos = new RoomPosition(x, y, room.name);
-    if (room.lookForAt(LOOK_TERRAIN, newPos.x, newPos.y).some(terrain => terrain === 'wall')) {
-      continue;
-    }
-    if (room.lookForAt(LOOK_STRUCTURES, newPos.x, newPos.y).length) {
-      continue;
-    }
-    if (room.lookForAt(LOOK_CREEPS, newPos.x, newPos.y).length) {
-      continue;
-    }
-    if (!target.inRangeTo(newPos, range)) {
-      continue;
-    }
-
-    return newPos;
-  }
-
-  return undefined;
-};

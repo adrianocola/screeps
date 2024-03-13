@@ -488,6 +488,7 @@ interface CreepMemory {
   roomName: string;
   workRoom?: string;
   target?: Id<Structure | Creep>;
+  targetPos?: Pos;
   containerId?: Id<StructureStorage | StructureContainer | StructureLink>;
   task?: TRANSFERER_TASKS;
   harvested?: boolean; // used to control if harvesterWalker already harvested this source

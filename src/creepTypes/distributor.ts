@@ -1,5 +1,5 @@
 import { getMainResourceHolder, getRoomClosestEmptyExtension, getRoomEmptySpawn, getRoomEmptyTower } from 'utils/room';
-import { signController, transfer, withdraw } from 'utils/creep';
+import { moveTo, signController, transfer, withdraw } from 'utils/creep';
 import { getBaseTower, getControllerContainer, getMineralContainer } from 'utils/blueprint';
 import { dontStandOnRoads } from 'utils/worker';
 
@@ -47,6 +47,19 @@ const collectMineralResource = (creep: Creep) => {
   return undefined;
 };
 
+const withdrawEnergy = (creep: Creep, mainResourceHolder: StructureStorage | StructureContainer) => {
+  if (creep.pos.isNearTo(mainResourceHolder.pos)) {
+    if (mainResourceHolder.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
+      // try not stand in the way of other creeps
+      dontStandOnRoads(creep, mainResourceHolder, 1);
+    } else {
+      creep.withdraw(mainResourceHolder, RESOURCE_ENERGY);
+    }
+  } else {
+    moveTo(creep, mainResourceHolder.pos);
+  }
+};
+
 const distributorCreepType: CreepType = {
   name: CREEP_TYPE.DISTRIBUTOR,
   run(creep) {
@@ -64,12 +77,16 @@ const distributorCreepType: CreepType = {
     }
 
     if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
-      withdraw(creep, mainResourceHolder, RESOURCE_ENERGY);
+      withdrawEnergy(creep, mainResourceHolder);
       return;
     }
 
     // if next to the main source and have some space, grab some energy (can continue moving)
-    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) !== 0 && creep.pos.isNearTo(mainResourceHolder.pos)) {
+    if (
+      creep.store.getFreeCapacity(RESOURCE_ENERGY) !== 0 &&
+      creep.pos.isNearTo(mainResourceHolder.pos) &&
+      mainResourceHolder.store.getUsedCapacity(RESOURCE_ENERGY) !== 0
+    ) {
       creep.withdraw(mainResourceHolder, RESOURCE_ENERGY);
     }
 
@@ -100,7 +117,7 @@ const distributorCreepType: CreepType = {
     if (target && target.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
       transfer(creep, target, RESOURCE_ENERGY);
     } else if (creep.store.getFreeCapacity(RESOURCE_ENERGY) !== 0) {
-      withdraw(creep, mainResourceHolder, RESOURCE_ENERGY);
+      withdrawEnergy(creep, mainResourceHolder);
     } else {
       // try not stand in the way of other creeps
       dontStandOnRoads(creep, mainResourceHolder, 2);

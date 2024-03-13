@@ -1,6 +1,7 @@
-import { findFreeSpaceAround, getRelativePosition } from 'utils/directions';
+import { getRelativePosition } from 'utils/directions';
 import { randomArrayElement } from 'utils/random';
 import { ALL_DIRECTIONS } from 'consts';
+import { isSpaceBlocked } from 'utils/room';
 
 const BODY_PARTS_PRIORITY: BodyPartsMap<number> = {
   [TOUGH]: 1,
@@ -130,11 +131,32 @@ export const moveToRoomWork = (creep: Creep): boolean => {
   return moveToRoom(creep, creep.memory?.workRoom, false);
 };
 
+export const findFreeSpaceAroundCreep = (
+  creep: Creep,
+  target: RoomPosition,
+  range: number,
+): RoomPosition | undefined => {
+  for (const dir of ALL_DIRECTIONS) {
+    const { x, y } = getRelativePosition(creep.pos, dir);
+    const newPos = new RoomPosition(x, y, creep.room.name);
+    if (isSpaceBlocked(creep.room, newPos, true)) {
+      continue;
+    }
+    if (!target.inRangeTo(newPos, range)) {
+      continue;
+    }
+
+    return newPos;
+  }
+
+  return undefined;
+};
+
 export const dontStandOnRoads = (creep: Creep, target: RoomPosition | { pos: RoomPosition }, range = 1) => {
   const targetPos = target instanceof RoomPosition ? target : target.pos;
   // if standing on roads
   if (creep.room.lookForAt(LOOK_STRUCTURES, creep).length) {
-    let freePos = findFreeSpaceAround(creep.room, creep.pos, targetPos, range);
+    let freePos = findFreeSpaceAroundCreep(creep, targetPos, range);
     if (!freePos) {
       // get random direction
       const randomDir = randomArrayElement(ALL_DIRECTIONS);
