@@ -20,7 +20,7 @@ const CLEANER_MAX_SECTIONS = 5;
 const STRONG_CLEANER_MAX_SECTIONS = 2 * CLEANER_MAX_SECTIONS;
 
 const spawnHarvester = (room: Room, neighborSourceData: NeighborSourceData, neighborRoom?: Room) => {
-  if (!neighborRoom || neighborRoom.controller?.reservation?.username !== Memory.username) return;
+  if (neighborRoom && neighborRoom.controller?.reservation?.username !== Memory.username) return;
 
   const demandId = `${workerNeighborHarvester.name}-${neighborSourceData.room}-S${neighborSourceData.sourceIndex}`;
   spawnSystem.spawn(room, demandId, workerNeighborHarvester.name, 1, 60, {
@@ -45,7 +45,7 @@ const spawnCollector = (room: Room, neighborSourceData: NeighborSourceData, neig
   if (!neighborSourceData.sourceContainerId) return;
   if (!neighborRoom || neighborRoom.controller?.reservation?.username !== Memory.username) return;
 
-  const maxSections = Math.ceil(
+  const maxSections = Math.floor(
     (neighborSourceData.distance * 2 * HARVEST_POWER * HARVESTER_MAX_PARTS) / CARRY_CAPACITY,
   );
 
@@ -71,7 +71,7 @@ const spawnReserver = (room: Room, neighborName: string, neighborRoom?: Room) =>
   const ticksToEnd = neighborRoom?.controller?.reservation?.ticksToEnd || 0;
   const isInvader = neighborRoom?.controller?.reservation?.username === INVADER;
   const demandId = `${workerNeighborReserver.name}-${neighborName}`;
-  if (neighborRoom?.controller && (isInvader || ticksToEnd <= 2000)) {
+  if ((!neighborRoom || neighborRoom?.controller) && (isInvader || ticksToEnd <= 2000)) {
     spawnSystem.spawn(room, demandId, workerNeighborReserver.name, 1, 59, {
       maxSections: 5,
       sectionParts: {
@@ -129,8 +129,6 @@ const neighborHarvest: RoomSystem = {
     [ROOM_FEATURE.STORAGE]: true,
   },
   run(room: Room, roomCreeps) {
-    if (Object.keys(room.memory.scan?.sources ?? {}).length !== 1) return;
-
     const possibleSources: NeighborSourceData[] = [];
     const neighborCleaners: Creep[] = roomCreeps[workerNeighborCleaner.name] || [];
 
@@ -141,7 +139,7 @@ const neighborHarvest: RoomSystem = {
       const toMyRoomExit = getOppositeExitKey(exitKey as ExitKey);
       const neighborMemory = Memory.rooms[neighborName];
       const neighborScan = neighborMemory.scan;
-      const storageToExitsDistance = room.memory.scan?.storage?.exitsDistances[exitKey as ExitKey] ?? 100;
+      const storageToExitDistance = room.memory.scan?.storage?.exitsDistances[exitKey as ExitKey] ?? 100;
 
       if (!neighborScan || !neighborName || !neighborMemory || !neighborMemory.scan) continue;
 
@@ -160,7 +158,7 @@ const neighborHarvest: RoomSystem = {
         const neighborSource = neighborMemory.neighborSource?.[neighborSourceId as Id<Source>];
         if (neighborSource?.from !== room.name && Game.time - (neighborSource?.tick ?? 0) < 1000) continue;
         const sourceToExitDistance = neighborSourceData.exitsDistances[toMyRoomExit] || 100;
-        const distance = storageToExitsDistance + sourceToExitDistance;
+        const distance = storageToExitDistance + sourceToExitDistance;
 
         possibleSources.push({
           distance,
@@ -178,6 +176,9 @@ const neighborHarvest: RoomSystem = {
     if (!closestSource) {
       return;
     }
+
+    const roomSourcesCount = Object.keys(room.memory.scan?.sources ?? {}).length;
+    if (roomSourcesCount > 1 && closestSource.distance > 50) return;
 
     const closestSourceNeighborMemory = Memory.rooms[closestSource.room];
     if (!closestSourceNeighborMemory.neighborSource) closestSourceNeighborMemory.neighborSource = {};

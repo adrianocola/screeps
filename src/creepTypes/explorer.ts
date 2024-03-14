@@ -20,7 +20,12 @@ export const roomCallback = (roomName: string): CostMatrix => {
   if (!room) return costs;
 
   room.find(FIND_STRUCTURES).forEach(function (struct) {
-    if (struct.structureType !== STRUCTURE_CONTAINER && (struct.structureType !== STRUCTURE_RAMPART || !struct.my)) {
+    if (struct.structureType === STRUCTURE_ROAD) {
+      costs.set(struct.pos.x, struct.pos.y, 1);
+    } else if (
+      struct.structureType !== STRUCTURE_CONTAINER &&
+      (struct.structureType !== STRUCTURE_RAMPART || !struct.my)
+    ) {
       // Can't walk through non-walkable buildings
       costs.set(struct.pos.x, struct.pos.y, 0xff);
     }
@@ -50,7 +55,11 @@ const moveToRoom = (creep: Creep, roomName: string) => {
 
   const target = new RoomPosition(25, 25, roomName);
   // ignore swamps, otherwise the explorer can get stuck
-  const searchResult = PathFinder.search(creep.pos, { pos: target, range: 20 }, { roomCallback, swampCost: 1 });
+  const searchResult = PathFinder.search(
+    creep.pos,
+    { pos: target, range: 10 },
+    { roomCallback, plainCost: 2, swampCost: 3 },
+  );
   creep.moveByPath(searchResult.path);
 };
 

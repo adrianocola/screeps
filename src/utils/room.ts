@@ -168,7 +168,7 @@ export const isSpaceBlocked = (room: Room, pos: Pos, roadsBlock = false): boolea
   if (
     room
       .lookForAt(LOOK_STRUCTURES, pos.x, pos.y)
-      .filter(s => s.structureType !== STRUCTURE_ROAD || (roadsBlock && s.structureType === STRUCTURE_ROAD)).length
+      .some(s => s.structureType !== STRUCTURE_ROAD || (roadsBlock && s.structureType === STRUCTURE_ROAD))
   ) {
     return true;
   }

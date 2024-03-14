@@ -61,7 +61,7 @@ const globalExpansionCheck: ExpansionCheckGlobalSystem = {
     //    - highest level
     let bestResult = { from: '', to: '', score: 0, distance: 1000, level: 0 };
     for (const elegibleFromRoom of elegibleFromRooms) {
-      const neighbourRooms = getRoomNeighbours(elegibleFromRoom.name, 2);
+      const neighbourRooms = getRoomNeighbours(elegibleFromRoom.name, 3);
       const sortedNeighbourRooms = neighbourRooms
         .map(roomName => Memory.rooms[roomName])
         .sort((a, b) => (b.scan?.score ?? 0) - (a.scan?.score ?? 0));

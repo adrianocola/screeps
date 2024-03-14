@@ -36,7 +36,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   // const exploreRooms = Object.values(Memory.rooms)
   //   .sort((a, b) => (b.scan?.score ?? -10000) - (a.scan?.score ?? -10000))
   //   .slice(0, 5);
-  // console.log('EXPLORE ROOMS:', exploreRooms.map(r => `${r.name}: ${r.scan?.score ?? -10000}`).join('; '));
+  // console.log('EXPAND ROOMS:', exploreRooms.map(r => `${r.name}: ${r.scan?.score ?? -10000}`).join('; '));
 
   roomSystems();
   globalSystems();

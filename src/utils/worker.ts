@@ -1,5 +1,5 @@
 import { getRelativePosition } from 'utils/directions';
-import { randomArrayElement } from 'utils/random';
+import { randomArrayElement, shuffleArray } from 'utils/random';
 import { ALL_DIRECTIONS } from 'consts';
 import { isSpaceBlocked } from 'utils/room';
 
@@ -136,13 +136,14 @@ export const findFreeSpaceAroundCreep = (
   target: RoomPosition,
   range: number,
 ): RoomPosition | undefined => {
-  for (const dir of ALL_DIRECTIONS) {
+  const shuffledDirections = shuffleArray(ALL_DIRECTIONS);
+  for (const dir of shuffledDirections) {
     const { x, y } = getRelativePosition(creep.pos, dir);
     const newPos = new RoomPosition(x, y, creep.room.name);
     if (isSpaceBlocked(creep.room, newPos, true)) {
       continue;
     }
-    if (!target.inRangeTo(newPos, range)) {
+    if (!newPos.inRangeTo(target, range)) {
       continue;
     }
 

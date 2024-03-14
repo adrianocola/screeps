@@ -1,4 +1,5 @@
 import { getRoomSpawn, roomPathFinderOptions } from 'utils/room';
+import { dontStandOnRoads } from 'utils/worker';
 
 export const suicide = (creep: Creep, message?: string) => {
   if (message) console.log(`${creep.name}: ${message}`);
@@ -90,6 +91,7 @@ export const withdraw = (
 ): ScreepsReturnCode => {
   if (creep.pos.isNearTo(target)) {
     if (target.store.getUsedCapacity(resourceType) === 0) {
+      dontStandOnRoads(creep, target, 1);
       return ERR_NOT_ENOUGH_RESOURCES;
     }
     return creep.withdraw(target, resourceType, amount);
@@ -241,6 +243,7 @@ export const build = (
       fleeFrom(creep, target.pos, 1);
       return ERR_NOT_IN_RANGE;
     }
+    dontStandOnRoads(creep, target, range);
     return creep.build(target);
   } else {
     moveTo(creep, target);

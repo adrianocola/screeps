@@ -56,7 +56,6 @@ const systemMarket: RoomSystem = {
       }
     });
 
-    console.log('MARKET 6', !!bestDeal);
     if (bestDeal) {
       if (!room.memory.market) room.memory.market = { balance: 0, sell: {}, buy: {} };
       if (Game.market.deal(bestDeal.order.id, bestDeal.amount, room.name) === OK) {

@@ -2,7 +2,7 @@ import spawnSystem from './spawn';
 import creepExplorer from 'creepTypes/explorer';
 import { EXPLORE_TICKS_INTERVAL } from 'consts';
 
-export const getExploreQueue = (roomName: string, levels = 0): string[] => {
+const getExploreQueue = (roomName: string, levels: number, fromRoom?: string): string[] => {
   const queue: string[] = [roomName];
   if (!levels) return queue;
 
@@ -11,17 +11,20 @@ export const getExploreQueue = (roomName: string, levels = 0): string[] => {
   for (const exitDir in exits) {
     const exitRoom = exits[exitDir as ExitKey]!;
 
+    // no need to go to rooms already in the queue
+    if (exitRoom === fromRoom) continue;
+
     // no need to go to rooms that are already controlled by me
     if (Game.rooms[exitRoom]?.controller?.my) continue;
 
-    queue.push(...getExploreQueue(exitRoom, levels - 1));
+    queue.push(...getExploreQueue(exitRoom, levels - 1, roomName));
     queue.push(roomName);
   }
 
   return queue;
 };
 
-export const getExploreDataForRoom = (roomName: string, levels = 1): RoomMemoryExplore => {
+const getExploreDataForRoom = (roomName: string, levels: number): RoomMemoryExplore => {
   return {
     queue: getExploreQueue(roomName, levels),
     tick: Game.time,
@@ -39,7 +42,7 @@ const systemExplore: RoomSystem = {
   run(room: Room) {
     // create the need to explore every EXPLORE_TICKS_INTERVAL ticks
     if (!room.memory.explore || Game.time - room.memory.explore.tick >= EXPLORE_TICKS_INTERVAL) {
-      room.memory.explore = getExploreDataForRoom(room.name, 3);
+      room.memory.explore = getExploreDataForRoom(room.name, 4);
     }
 
     if (room.memory.explore.queue.length) {

@@ -25,7 +25,7 @@ const systeScan: RoomSystem = {
 
     const counts: StructureMap<number> = {};
 
-    const scanPaths = room.memory.scanPaths;
+    const scanPaths = room.memory.scanPaths === undefined ? true : room.memory.scanPaths;
     const structuresMap: StructureMap<Structure[]> = {};
     const structuresFound = room.find<AnyOwnedStructure>(FIND_STRUCTURES, {
       filter: ({ structureType }) => MAPPED_STRUCTURES[structureType],
