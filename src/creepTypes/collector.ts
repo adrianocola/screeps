@@ -22,6 +22,17 @@ const collectorCreepType: CreepType = {
 
     if (!energyOrMineralContainer || !resourceHolder) return;
 
+    // if the creep just spawned, check if the previous creep tombstone contains some resources in it and get it
+    if (creep.store.getUsedCapacity() === 0 && CREEP_LIFE_TIME - (creep.ticksToLive ?? 0) < 50) {
+      const tombstones = creep.room.find(FIND_TOMBSTONES, {
+        filter: t => t.store.getUsedCapacity(resource) && t.creep.name.includes(creep.memory.demandId),
+      });
+      if (tombstones.length) {
+        withdraw(creep, tombstones[0], resource);
+        return;
+      }
+    }
+
     if (!creep.pos.isNearTo(energyOrMineralContainer) && creep.store.getUsedCapacity() === 0) {
       moveTo(creep, energyOrMineralContainer, { range: 1 });
     } else if (creep.store.getUsedCapacity()) {

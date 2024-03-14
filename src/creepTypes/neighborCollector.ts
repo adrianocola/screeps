@@ -14,6 +14,17 @@ const workerNeighborCollector: CreepType = {
     if (!resourceHolder) return;
 
     if (creep.store.getUsedCapacity() === 0) {
+      // if the creep just spawned, check if the previous creep tombstone contains some resources in it and get it
+      if (CREEP_LIFE_TIME - (creep.ticksToLive ?? 0) < 100) {
+        const tombstones = creep.room.find(FIND_TOMBSTONES, {
+          filter: t => t.store.getUsedCapacity(RESOURCE_ENERGY) && t.creep.name.includes(creep.memory.demandId),
+        });
+        if (tombstones.length) {
+          withdraw(creep, tombstones[0], RESOURCE_ENERGY);
+          return;
+        }
+      }
+
       const sourceContainer = getObjectById(creep.memory.containerId);
       if (sourceContainer) {
         if (creep.pos.isNearTo(sourceContainer)) {
@@ -26,7 +37,7 @@ const workerNeighborCollector: CreepType = {
       } else {
         moveToRoomWork(creep);
       }
-    } else if (creep.store.getUsedCapacity()) {
+    } else {
       if (creep.pos.isNearTo(resourceHolder)) {
         if (resourceHolder.store.getFreeCapacity() > 0) {
           creep.transfer(resourceHolder, RESOURCE_ENERGY);
