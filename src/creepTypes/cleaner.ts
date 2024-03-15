@@ -9,7 +9,7 @@ const cleanerCreepType: CreepType = {
     [MOVE]: 1,
   },
   run(creep) {
-    if (!moveToRoomWork(creep)) return;
+    if (moveToRoomWork(creep)) return;
 
     let target: Creep | Structure | null = creep.pos.findClosestByPath(FIND_HOSTILE_CREEPS);
 

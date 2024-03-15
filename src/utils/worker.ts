@@ -2,6 +2,7 @@ import { getRelativePosition } from 'utils/directions';
 import { randomArrayElement, shuffleArray } from 'utils/random';
 import { ALL_DIRECTIONS } from 'consts';
 import { isSpaceBlocked } from 'utils/room';
+import { moveToUsingPath } from 'utils/path';
 
 const BODY_PARTS_PRIORITY: BodyPartsMap<number> = {
   [TOUGH]: 1,
@@ -99,36 +100,21 @@ export const getRoom = (creep: Creep): Room => {
   return creep.memory.roomName ? Game.rooms[creep.memory.roomName] : creep.room;
 };
 
-const goToTargetRoom = (creep: Creep, roomName: string) => {
-  creep.moveTo(new RoomPosition(25, 25, roomName));
-  return false;
-};
+export const moveToRoom = (creep: Creep, roomName: string): boolean => {
+  if (creep.room.name === roomName) return false;
 
-export const moveToRoom = (creep: Creep, roomName: string, returning: boolean = false): boolean => {
-  if (creep.room.name === roomName) return true;
-
-  const roomsPath = creep.memory.roomsPath ?? [];
-  if (!roomsPath.length) return goToTargetRoom(creep, roomName);
-
-  const currentIndex = roomsPath.indexOf(creep.room.name);
-  if (currentIndex === -1) return goToTargetRoom(creep, roomName);
-
-  const nextIndex = currentIndex + (returning ? -1 : 1);
-  const nextRoom = nextIndex >= 0 && nextIndex < roomsPath.length ? roomsPath[nextIndex] : roomName;
-
-  creep.moveTo(new RoomPosition(25, 25, nextRoom));
-
-  return false;
+  moveToUsingPath(creep, new RoomPosition(25, 25, roomName), 10, 10);
+  return true;
 };
 
 export const moveToRoomHome = (creep: Creep): boolean => {
-  if (!creep.memory?.roomName) return true;
-  return moveToRoom(creep, creep.memory?.roomName, true);
+  if (!creep.memory?.roomName) return false;
+  return moveToRoom(creep, creep.memory?.roomName);
 };
 
 export const moveToRoomWork = (creep: Creep): boolean => {
-  if (!creep.memory?.workRoom) return true;
-  return moveToRoom(creep, creep.memory?.workRoom, false);
+  if (!creep.memory?.workRoom) return false;
+  return moveToRoom(creep, creep.memory?.workRoom);
 };
 
 export const findFreeSpaceAroundCreep = (

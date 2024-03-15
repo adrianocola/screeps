@@ -10,7 +10,7 @@ const claimerCreepType: CreepType = {
     [MOVE]: 1,
   },
   run(creep) {
-    if (!moveToRoomWork(creep)) return;
+    if (moveToRoomWork(creep)) return;
 
     if (creep.room.controller) {
       if (isControllerFree(creep.room)) {

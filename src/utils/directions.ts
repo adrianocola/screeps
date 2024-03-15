@@ -18,6 +18,11 @@ const OPPOSITE_BASE_DIRECTIONS: Record<BaseDirectionConstant, BaseDirectionConst
 
 export const getPosIndex = (pos: Pos) => `${pos.x}${POS_SEPARATOR}${pos.y}`;
 
+export const posFromIndex = (index: string): Pos => {
+  const split = index.split(POS_SEPARATOR);
+  return { x: parseInt(split[0], 10), y: parseInt(split[1], 10) };
+};
+
 export const getOppositeExitKey = (exitKey: ExitKey) => OPPOSITE_EXIT_KEYS[exitKey];
 
 export const getOppositeBaseDirection = (dir: BaseDirectionConstant) => OPPOSITE_BASE_DIRECTIONS[dir];

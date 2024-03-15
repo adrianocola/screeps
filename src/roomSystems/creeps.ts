@@ -14,6 +14,19 @@ const systemWorkers: RoomSystem = {
 
       for (const creep of creeps) {
         if (creep.spawning) continue;
+
+        // if reached move destination, can remove the move memory
+        if (creep.memory.move) {
+          const targetPos = new RoomPosition(
+            creep.memory.move.target.x,
+            creep.memory.move.target.y,
+            creep.memory.move.target.roomName,
+          );
+          if (creep.pos.inRangeTo(targetPos, creep.memory.move.range)) {
+            delete creep.memory.move;
+          }
+        }
+
         runner.run(creep);
       }
     }

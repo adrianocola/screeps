@@ -7,7 +7,7 @@ const workerNeighborHarvester: CreepType = {
   name: CREEP_TYPE.NEIGHBOR_HARVESTER,
   run(creep) {
     creep.notifyWhenAttacked(false);
-    if (!moveToRoomWork(creep)) return;
+    if (moveToRoomWork(creep)) return;
 
     const source = getObjectById(creep.memory.sourceId as Id<Source>);
     if (!source) return;

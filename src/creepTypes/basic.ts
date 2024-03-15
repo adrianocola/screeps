@@ -16,13 +16,10 @@ const basicCreepType: CreepType = {
   run(creep) {
     creep.notifyWhenAttacked(false);
 
+    if (moveToRoomWork(creep)) return;
+
     const source = getObjectById(creep.memory.sourceId);
-    if (!source) {
-      if (creep.memory.workRoom) {
-        moveToRoomWork(creep);
-      }
-      return;
-    }
+    if (!source) return;
 
     if (creep.pos.isNearTo(source)) {
       if (creep.store.getFreeCapacity() !== 0) {

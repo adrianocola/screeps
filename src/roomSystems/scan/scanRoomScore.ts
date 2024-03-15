@@ -1,7 +1,7 @@
 import BlueprintScanner from 'blueprints/BlueprintScanner';
 import Blueprints from 'blueprints/Blueprints';
 import { getObjectById } from 'utils/game';
-import { BASE_DIRECTIONS, INVADER, MINERALS_REGISTER_TICKS } from 'consts';
+import { BASE_DIRECTIONS, MINERALS_REGISTER_TICKS } from 'consts';
 import { isRoomHighway } from 'utils/room';
 
 const BASE_SCORE = 50;

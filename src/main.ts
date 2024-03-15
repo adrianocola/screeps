@@ -49,6 +49,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 });
 
+// Ajustar remove harvester para cancelar harvest se tiver inimigos fortes na sala (de player). Tentar só depois de um tempo
+// Ou então mandar cleaners melhores pra matar os inimigos
+// Ordenar body parts (ou intercalar, sei lá)
+
+// Não construir algumas estruturas em salas com apenas 1 source (tipo factory, labs, nuker, etc). Talvez nem precise de muitas extensions tb
 // - MINERAR SOURCES COM SOURCE KEEPER!
 // - MUDAR LÓGICA DE EXPANSÃO, não considerar inimigos na sala para o score. Só considerar os inimigos na sala na hora de expandir (aí ve a condição real da sala)
 // - CRIAR LÓGICA PARA CERCAR SALA COM WALLS/RAMPARTS

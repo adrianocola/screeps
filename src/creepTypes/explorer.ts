@@ -1,5 +1,6 @@
 import scanRoomScore from 'roomSystems/scan/scanRoomScore';
 import { shuffleArray } from 'utils/random';
+import { moveToRoom } from 'utils/worker';
 
 const getRandomNeighbourRoom = (creep: Creep): string | undefined => {
   const exities = Game.map.describeExits(creep.room.name);
@@ -12,55 +13,6 @@ const getRandomNeighbourRoom = (creep: Creep): string | undefined => {
   }
 
   return undefined;
-};
-
-export const roomCallback = (roomName: string): CostMatrix => {
-  const costs = new PathFinder.CostMatrix();
-  const room = Game.rooms[roomName];
-  if (!room) return costs;
-
-  room.find(FIND_STRUCTURES).forEach(function (struct) {
-    if (struct.structureType === STRUCTURE_ROAD) {
-      costs.set(struct.pos.x, struct.pos.y, 1);
-    } else if (
-      struct.structureType !== STRUCTURE_CONTAINER &&
-      (struct.structureType !== STRUCTURE_RAMPART || !struct.my)
-    ) {
-      // Can't walk through non-walkable buildings
-      costs.set(struct.pos.x, struct.pos.y, 0xff);
-    }
-  });
-
-  // Avoid creeps in the room
-  room.find(FIND_CREEPS).forEach(function (creep) {
-    costs.set(creep.pos.x, creep.pos.y, 0xff);
-  });
-
-  // Avoid hostile keepers
-  const sourceKeepers = room.find(FIND_HOSTILE_CREEPS);
-  for (const sourceKeeper of sourceKeepers) {
-    for (let x = -3; x <= 3; x++) {
-      for (let y = -3; y <= 3; y++) {
-        costs.set(sourceKeeper.pos.x + x, sourceKeeper.pos.y + y, 0xff);
-      }
-    }
-    costs.set(sourceKeeper.pos.x, sourceKeeper.pos.y, 0xff);
-  }
-
-  return costs;
-};
-
-const moveToRoom = (creep: Creep, roomName: string) => {
-  if (creep.fatigue > 0) return;
-
-  const target = new RoomPosition(25, 25, roomName);
-  // ignore swamps, otherwise the explorer can get stuck
-  const searchResult = PathFinder.search(
-    creep.pos,
-    { pos: target, range: 10 },
-    { roomCallback, plainCost: 2, swampCost: 3 },
-  );
-  creep.moveByPath(searchResult.path);
 };
 
 const creepTypeExporer: CreepType = {

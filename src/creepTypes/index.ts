@@ -16,6 +16,7 @@ import neighborCleaner from './neighborCleaner';
 import neighborCollector from './neighborCollector';
 import neighborHarvester from './neighborHarvester';
 import neighborReserver from './neighborReserver';
+import scavenger from './scavenger';
 
 const CreepTypes: Partial<Record<CREEP_TYPE, CreepType>> = {
   [CREEP_TYPE.BASIC]: basic,
@@ -35,6 +36,7 @@ const CreepTypes: Partial<Record<CREEP_TYPE, CreepType>> = {
   [CREEP_TYPE.NEIGHBOR_HARVESTER]: neighborHarvester,
   [CREEP_TYPE.NEIGHBOR_RESERVER]: neighborReserver,
   [CREEP_TYPE.EXPLORER]: explorer,
+  [CREEP_TYPE.SCAVENGER]: scavenger,
   [CREEP_TYPE.CUSTOM]: custom,
 };
 

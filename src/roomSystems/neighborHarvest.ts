@@ -178,7 +178,8 @@ const neighborHarvest: RoomSystem = {
     }
 
     const roomSourcesCount = Object.keys(room.memory.scan?.sources ?? {}).length;
-    if (roomSourcesCount > 1 && closestSource.distance > 50) return;
+    // if (roomSourcesCount > 1 && closestSource.distance > 50) return;
+    if (roomSourcesCount > 1) return;
 
     const closestSourceNeighborMemory = Memory.rooms[closestSource.room];
     if (!closestSourceNeighborMemory.neighborSource) closestSourceNeighborMemory.neighborSource = {};

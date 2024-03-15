@@ -158,6 +158,7 @@ declare const enum CREEP_TYPE {
   NEIGHBOR_COLLECTOR = 'nCollector',
   NEIGHBOR_HARVESTER = 'nHarvester',
   NEIGHBOR_RESERVER = 'nReserver',
+  SCAVENGER = 'scavenger',
   TRANSFERER = 'transferer',
   UPGRADER = 'upgrader',
   UPGRADER_EMERGENCY = 'upgraderEmergency',
@@ -482,6 +483,14 @@ interface SpawnMemory {
   fixedDirs?: DirectionConstant[];
 }
 
+interface CreepMemoryMove {
+  tick: number;
+  path: string;
+  target: RoomPosition;
+  range: number;
+  pos?: string;
+}
+
 interface CreepMemory {
   type: CREEP_TYPE;
   demandId: string;
@@ -496,7 +505,7 @@ interface CreepMemory {
   sourceId?: Id<Source>; // source id (used for harvesters and basics)
   mineralId?: Id<Mineral>; // mineral id (used for miners/harvesters)
   resource?: ResourceConstant;
-  roomsPath?: string[]; // choosen way/path of rooms to move between two rooms that are not adjacent (must include source and destination)
+  move?: CreepMemoryMove; // custom movement path logic
 }
 
 interface RoomMemoryScanController {
