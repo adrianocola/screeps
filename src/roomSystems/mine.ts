@@ -19,6 +19,7 @@ const systemMine: RoomSystem = {
   interval: TICKS.TICK_20,
   name: ROOM_SYSTEMS.MINE,
   requiredFeatures: {
+    [ROOM_FEATURE.EXPANDING_FROM]: false,
     [ROOM_FEATURE.CONTROLLED]: true,
     [ROOM_FEATURE.MINERALS_HAVE_EXTRACTOR]: true,
     [ROOM_FEATURE.MINERALS_HAVE_CONTAINER]: true,

@@ -1,5 +1,11 @@
-import { getMainResourceHolder, getRoomClosestEmptyExtension, getRoomEmptySpawn, getRoomEmptyTower } from 'utils/room';
-import { moveTo, signController, transfer, withdraw } from 'utils/creep';
+import {
+  getMainResourceHolder,
+  getRoomClosestEmptyExtension,
+  getRoomEmptySpawn,
+  getRoomEmptyTower,
+  getRoomSpawn,
+} from 'utils/room';
+import { moveTo, pickup, signController, transfer, withdraw } from 'utils/creep';
 import { getBaseTower, getControllerContainer, getMineralContainer } from 'utils/blueprint';
 import { dontStandOnRoads } from 'utils/worker';
 
@@ -47,7 +53,7 @@ const collectMineralResource = (creep: Creep) => {
   return undefined;
 };
 
-const withdrawEnergy = (creep: Creep, mainResourceHolder: StructureStorage | StructureContainer) => {
+const withdrawEnergy = (creep: Creep, mainResourceHolder: StructureStorage | StructureContainer | Tombstone) => {
   if (creep.pos.isNearTo(mainResourceHolder.pos)) {
     if (mainResourceHolder.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
       // try not stand in the way of other creeps
@@ -77,6 +83,24 @@ const distributorCreepType: CreepType = {
     }
 
     if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
+      const spawn = getRoomSpawn(creep.room);
+      if (spawn) {
+        const tombstones = spawn.pos.findInRange(FIND_TOMBSTONES, 1);
+        for (const tombstone of tombstones) {
+          if (tombstone.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+            withdrawEnergy(creep, tombstone);
+            return;
+          }
+        }
+
+        const resources = spawn.pos.findInRange(FIND_DROPPED_RESOURCES, 1);
+        for (const resource of resources) {
+          if (resource.resourceType === RESOURCE_ENERGY) {
+            pickup(creep, resource);
+            return;
+          }
+        }
+      }
       withdrawEnergy(creep, mainResourceHolder);
       return;
     }

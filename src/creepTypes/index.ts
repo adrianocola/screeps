@@ -12,8 +12,8 @@ import harvesterWalker from './harvesterWalker';
 import transferer from './transferer';
 import upgrader from './upgrader';
 import upgraderEmergency from './upgraderEmergency';
-import neighborCleaner from './neighborCleaner';
 import neighborCollector from './neighborCollector';
+import neighborDefender from './neighborDefender';
 import neighborHarvester from './neighborHarvester';
 import neighborReserver from './neighborReserver';
 import scavenger from './scavenger';
@@ -31,8 +31,8 @@ const CreepTypes: Partial<Record<CREEP_TYPE, CreepType>> = {
   [CREEP_TYPE.UPGRADER_EMERGENCY]: upgraderEmergency,
   [CREEP_TYPE.CLEANER]: cleaner,
   [CREEP_TYPE.CLAIMER]: claimer,
-  [CREEP_TYPE.NEIGHBOR_CLEANER]: neighborCleaner,
   [CREEP_TYPE.NEIGHBOR_COLLECTOR]: neighborCollector,
+  [CREEP_TYPE.NEIGHBOR_DEFENDER]: neighborDefender,
   [CREEP_TYPE.NEIGHBOR_HARVESTER]: neighborHarvester,
   [CREEP_TYPE.NEIGHBOR_RESERVER]: neighborReserver,
   [CREEP_TYPE.EXPLORER]: explorer,

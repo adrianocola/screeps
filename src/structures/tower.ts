@@ -9,8 +9,16 @@ const structureTower: SystemStructure<StructureTower> = {
     const fixQueue = tower.room.memory.fix?.queue;
 
     if (defenseQueue && defenseQueue.length > 0) {
+      // attack the closest first because it does more damage
+      const closest = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+      if (closest && tower.pos.getRangeTo(closest) <= TOWER_FALLOFF_RANGE) {
+        tower.attack(closest);
+        return;
+      }
+
+      // otherwise, attack in the queue order
       for (const hostileId of defenseQueue) {
-        const hostile = getObjectById(hostileId as Id<Creep>);
+        const hostile = getObjectById(hostileId);
         if (hostile) {
           tower.attack(hostile);
           return;

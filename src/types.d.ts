@@ -154,8 +154,8 @@ declare const enum CREEP_TYPE {
   EXPLORER = 'explorer',
   HARVESTER = 'harvester',
   HARVESTER_WALKER = 'harvesterWalker',
-  NEIGHBOR_CLEANER = 'nCleaner',
   NEIGHBOR_COLLECTOR = 'nCollector',
+  NEIGHBOR_DEFENDER = 'nDefender',
   NEIGHBOR_HARVESTER = 'nHarvester',
   NEIGHBOR_RESERVER = 'nReserver',
   SCAVENGER = 'scavenger',
@@ -437,6 +437,7 @@ interface SystemSpawnOptions extends SpawnOptions {
   maxSections?: number; // overwrite the job maxSections
   sectionParts?: BodyPartsMap<number>; // part => quantity, will try to fit as many sections as possible
   fixedParts?: BodyPartConstant[]; // array of body parts to always include at the end
+  sortingWeight?: BodyPartsMap<number>; // part => weight, for sorting the body parts
 }
 
 interface BuildRequestItem {
@@ -484,6 +485,7 @@ interface SpawnMemory {
 }
 
 interface CreepMemoryMove {
+  step: number;
   tick: number;
   path: string;
   target: RoomPosition;
@@ -584,8 +586,8 @@ interface RoomMemoryBuild {
   queue: BuildQueueItem[];
 }
 
-declare interface RoomMemoryDefense {
-  queue: string[];
+interface RoomMemoryDefense {
+  queue: Id<Creep>[];
 }
 
 interface RoomMemoryFix {

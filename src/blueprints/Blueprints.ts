@@ -43,7 +43,7 @@ const Blueprints: Blueprint[] = [
       ],
       [
         { id: BLUEPRINT_STRUCTURE.SPAWN2, controller: 7, priority: 1, structure: STRUCTURE_SPAWN },
-        { id: BLUEPRINT_STRUCTURE.TERMINAL, controller: 6, priority: 10, structure: STRUCTURE_TERMINAL },
+        { id: BLUEPRINT_STRUCTURE.TERMINAL, controller: 6, priority: 7, structure: STRUCTURE_TERMINAL },
         { id: BLUEPRINT_STRUCTURE.STORAGE, controller: 4, priority: 5, structure: STRUCTURE_STORAGE },
         { id: BLUEPRINT_STRUCTURE.SPAWN1, controller: 1, priority: 1, structure: STRUCTURE_SPAWN },
         undefined,
@@ -76,7 +76,7 @@ const Blueprints: Blueprint[] = [
         {
           id: BLUEPRINT_STRUCTURE.CONTAINER3,
           controller: 3,
-          priority: 6,
+          priority: 8,
           structure: STRUCTURE_CONTAINER,
           supersededBy: BLUEPRINT_STRUCTURE.STORAGE,
         },
@@ -134,7 +134,7 @@ const Blueprints: Blueprint[] = [
         {
           id: BLUEPRINT_STRUCTURE.CONTAINER1,
           controller: 3,
-          priority: 7,
+          priority: 6,
           structure: STRUCTURE_CONTAINER,
           supersededBy: BLUEPRINT_STRUCTURE.LINK1,
         },
@@ -162,7 +162,7 @@ const Blueprints: Blueprint[] = [
         {
           id: BLUEPRINT_STRUCTURE.CONTAINER2,
           controller: 3,
-          priority: 8,
+          priority: 7,
           structure: STRUCTURE_CONTAINER,
           supersededBy: BLUEPRINT_STRUCTURE.LINK2,
         },
@@ -190,7 +190,7 @@ const Blueprints: Blueprint[] = [
         {
           id: BLUEPRINT_STRUCTURE.CONTAINER4,
           controller: 3,
-          priority: 1,
+          priority: 9,
           structure: STRUCTURE_CONTAINER,
           supersededBy: BLUEPRINT_STRUCTURE.LINK4,
         },
@@ -256,7 +256,7 @@ const Blueprints: Blueprint[] = [
     startFrom: { what: FIND_MINERALS, index: 0 },
     ignoreNearKeyPoints: true,
     ignorePaths: true,
-    schema: [[{ id: BLUEPRINT_STRUCTURE.EXTRACTOR, controller: 6, priority: 8, structure: STRUCTURE_EXTRACTOR }]],
+    schema: [[{ id: BLUEPRINT_STRUCTURE.EXTRACTOR, controller: 6, priority: 9, structure: STRUCTURE_EXTRACTOR }]],
   },
   {
     id: BLUEPRINT_ID.CONTAINER_EXTRACTOR,
@@ -274,7 +274,7 @@ const Blueprints: Blueprint[] = [
     ],
     ignoreNearKeyPoints: true,
     ignorePaths: true,
-    schema: [[{ id: BLUEPRINT_STRUCTURE.CONTAINER5, controller: 6, priority: 9, structure: STRUCTURE_CONTAINER }]],
+    schema: [[{ id: BLUEPRINT_STRUCTURE.CONTAINER5, controller: 6, priority: 10, structure: STRUCTURE_CONTAINER }]],
   },
   {
     id: BLUEPRINT_ID.EXT_PACK_1,

@@ -154,7 +154,7 @@ export const attackController = (creep: Creep, target: StructureController): Cre
   if (creep.pos.isNearTo(target)) {
     return creep.attackController(target);
   } else {
-    creep.moveTo(target, { ignoreCreeps: true, ignoreRoads: true });
+    creep.moveTo(target);
     return ERR_NOT_IN_RANGE;
   }
 };
@@ -260,4 +260,9 @@ export const recycle = (creep: Creep) => {
   } else {
     moveTo(creep, spawn);
   }
+};
+
+export const countCreepTotalResources = (creep: Creep): number => {
+  const values = Object.values(creep.store) as number[];
+  return values.reduce((acc, value) => acc + (value ?? 0), 0);
 };

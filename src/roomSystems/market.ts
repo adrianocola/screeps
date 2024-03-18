@@ -27,6 +27,7 @@ const systemMarket: RoomSystem = {
   name: ROOM_SYSTEMS.MARKET,
   requiredFeatures: {
     [ROOM_FEATURE.BASIC]: false,
+    [ROOM_FEATURE.EXPANDING_FROM]: false,
     [ROOM_FEATURE.CONTROLLED]: true,
     [ROOM_FEATURE.TERMINAL]: true,
   },

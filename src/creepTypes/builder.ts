@@ -1,5 +1,5 @@
 import { getObjectById } from 'utils/game';
-import { build, withdraw } from 'utils/creep';
+import { build, recycle, withdraw } from 'utils/creep';
 import { getRoom } from 'utils/worker';
 import { getMainResourceHolder } from 'utils/room';
 
@@ -26,7 +26,10 @@ const builderCreepType: CreepType = {
   },
   run(creep) {
     const target = getFirstConstructionSiteAvailable(creep);
-    if (!target) return;
+    if (!target) {
+      recycle(creep);
+      return;
+    }
 
     if (creep.store.getUsedCapacity() === 0) {
       const mainResourceHolder = getMainResourceHolder(creep.room);

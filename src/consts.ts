@@ -4,7 +4,7 @@ export const SIMULATOR_ROOM = 'sim';
 
 export const ROOM_SIZE = 50;
 export const OBSERVERS_MAX_DEMAND_TICKS = 100;
-export const SPAWN_MAX_DEMAND_TICKS = 500;
+export const SPAWN_MAX_DEMAND_TICKS = 300;
 export const EXPLORE_TICKS_INTERVAL = 30_000;
 export const ENERGY_HARVESTER_MAX_SECTIONS = 6;
 

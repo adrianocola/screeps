@@ -5,7 +5,9 @@ import cleanerCreepType from 'creepTypes/cleaner';
 import basicCreepType from 'creepTypes/basic';
 import { getBaseSpawnContainer, getBaseTower } from 'utils/blueprint';
 import { EXPANSION_TICKS_LIMIT, INVADER } from 'consts';
-import { getBodyPartsMap } from 'utils/creepBody';
+import { countOffensiveBodyParts, getBodyPartsMap } from 'utils/creepBody';
+import { FIGHTER_BODY_PARTS_PRIORITY } from 'utils/worker';
+import { getMainResourceHolder } from 'utils/room';
 
 const globalExpand: GlobalSystem = {
   interval: TICKS.TICK_20,
@@ -30,10 +32,13 @@ const globalExpand: GlobalSystem = {
 
     const toRoom = Game.rooms[to] as Room | undefined;
     if (toRoom && toRoom.controller?.my && toRoom.controller?.level >= 3) {
-      const spawnContainer = getBaseSpawnContainer(toRoom);
-      if (spawnContainer) {
-        expansionCheckSystem.completeExpansion();
-        return;
+      const mainResourceHolder = getMainResourceHolder(toRoom);
+      if (mainResourceHolder) {
+        const spawnContainer = getBaseSpawnContainer(toRoom);
+        if (spawnContainer) {
+          expansionCheckSystem.completeExpansion();
+          return;
+        }
       }
     }
 
@@ -46,6 +51,7 @@ const globalExpand: GlobalSystem = {
       const totalHits = structures.reduce((acc, structure) => acc + structure.hits, 0);
       const cleannerQuantity = Math.min(3, Math.ceil(totalHits / 2_000_000)) || 1;
       spawnSystem.spawn(fromRoom, cleanerCreepType.name, cleanerCreepType.name, cleannerQuantity, 50, {
+        sortingWeight: FIGHTER_BODY_PARTS_PRIORITY,
         memory: {
           type: cleanerCreepType.name,
           demandId: cleanerCreepType.name,
@@ -59,7 +65,9 @@ const globalExpand: GlobalSystem = {
 
     // check if there are too many enemies or big enemies in the room
     // TODO if enemies are detected, spawn a big warrior to help
-    const enemies = toRoom.find(FIND_HOSTILE_CREEPS, { filter: c => c.owner.username !== INVADER });
+    const enemies = toRoom.find(FIND_HOSTILE_CREEPS, {
+      filter: c => countOffensiveBodyParts(c) && c.owner.username !== INVADER,
+    });
     if (enemies.length >= 3) {
       expansionCheckSystem.cancelExpansion(`too many enemies (${enemies.length})`);
     } else {
@@ -85,8 +93,9 @@ const globalExpand: GlobalSystem = {
         spawnSystem.removeSpawn(fromRoom, claimerCreepType.name);
         Memory.global.expanding.status = EXPANSION_STATUS.GROWING;
       } else {
+        const level = fromRoom.controller?.level ?? 0;
         const ticksToEnd = toRoom.controller?.reservation?.ticksToEnd ?? 0;
-        const maxSections = ticksToEnd ? 5 : 1;
+        const maxSections = Math.max(ticksToEnd ? level - 4 : 1, 1);
         const quantity = ticksToEnd ? Math.ceil(ticksToEnd / 2_500) : 1;
         spawnSystem.spawn(fromRoom, claimerCreepType.name, claimerCreepType.name, quantity, 49, {
           maxSections,

@@ -1,4 +1,4 @@
-import { pickup, transfer, withdraw } from 'utils/creep';
+import { pickup, recycle, transfer, withdraw } from 'utils/creep';
 import { getMainResourceHolder } from 'utils/room';
 
 const transferAllResources = (creep: Creep, mainResourceHolder: StructureContainer | StructureStorage) => {
@@ -55,8 +55,10 @@ const scavengerCreepType: CreepType = {
 
     // if there is no resources to pickup, transfer all resources to mainResourceHolder
     if (creep.store.getUsedCapacity() > 0) {
-      transferAllResources(creep, mainResourceHolder);
+      if (transferAllResources(creep, mainResourceHolder)) return;
     }
+
+    recycle(creep);
   },
 };
 

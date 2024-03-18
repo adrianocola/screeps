@@ -4,15 +4,19 @@ import { ALL_DIRECTIONS } from 'consts';
 import { isSpaceBlocked } from 'utils/room';
 import { moveToUsingPath } from 'utils/path';
 
-const BODY_PARTS_PRIORITY: BodyPartsMap<number> = {
-  [TOUGH]: 1,
-  [CARRY]: 2,
-  [WORK]: 3,
-  [RANGED_ATTACK]: 4,
-  [ATTACK]: 5,
-  [CLAIM]: 6,
-  [MOVE]: 7,
-  [HEAL]: 8,
+export const BODY_PARTS_PRIORITY: BodyPartsMap<number> = {
+  [TOUGH]: 10,
+  [CARRY]: 20,
+  [WORK]: 30,
+  [ATTACK]: 40,
+  [RANGED_ATTACK]: 50,
+  [CLAIM]: 60,
+  [MOVE]: 70,
+  [HEAL]: 88,
+};
+
+export const FIGHTER_BODY_PARTS_PRIORITY: BodyPartsMap<number> = {
+  [MOVE]: (BODY_PARTS_PRIORITY[TOUGH] ?? 0) + 1,
 };
 
 export const moveRoadWeight = (weight: number) => Math.ceil(weight / 2);
@@ -57,12 +61,20 @@ export const bodyFixedCost = (fixedParts?: BodyPartConstant[]) => {
   return cost;
 };
 
-const bodyPartsSorter = (a: BodyPartConstant, b: BodyPartConstant) => {
-  return (BODY_PARTS_PRIORITY[a] || 0) < (BODY_PARTS_PRIORITY[b] || 0) ? -1 : 1;
+const defaultBodyPartsSorter = (a: BodyPartConstant, b: BodyPartConstant) => {
+  return (BODY_PARTS_PRIORITY[a] || 0) - (BODY_PARTS_PRIORITY[b] || 0);
 };
 
-// TODO: sort body parts by priority
-// TOUGH, CARRY, WORK, RANGED_ATTACK, ATTACK, CLAIM, MOVE, HEAL
+const sortBodyParts = (partsArray: BodyPartConstant[], sortingWeight?: BodyPartsMap<number>) => {
+  if (!sortingWeight) return partsArray.sort(defaultBodyPartsSorter);
+
+  const bodyPartsSorter = (a: BodyPartConstant, b: BodyPartConstant) => {
+    return (sortingWeight[a] ?? BODY_PARTS_PRIORITY[a] ?? 0) - (sortingWeight[b] ?? BODY_PARTS_PRIORITY[b] ?? 0);
+  };
+
+  return partsArray.sort(bodyPartsSorter);
+};
+
 export const buildBodyPartsArray = (
   sectionWeightMap: BodyPartsMap<number>,
   sections: number,
@@ -93,7 +105,7 @@ export const buildBodyPartsArray = (
     }
   }
 
-  return partsArray.sort(bodyPartsSorter);
+  return sortBodyParts(partsArray, options.sortingWeight);
 };
 
 export const getRoom = (creep: Creep): Room => {

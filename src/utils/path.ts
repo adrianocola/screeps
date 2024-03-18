@@ -1,17 +1,24 @@
-import { posFromIndex } from 'utils/directions';
+import { getRelativePosition, posFromIndex } from 'utils/directions';
+import { ROOM_SIZE } from 'consts';
 
-let costMatrixCacheTick = 0;
-let costMatrixCache: Record<string, CostMatrix> = {};
+const costMatrixCache: Record<string, { tick: number; cm: CostMatrix }> = {};
 const getCachedCostMatrix = (roomName: string): CostMatrix | undefined => {
-  if (Game.time !== costMatrixCacheTick) {
-    costMatrixCache = {};
-    costMatrixCacheTick = Game.time;
+  if (costMatrixCache[roomName]) {
+    // if room loaded, only cache for the current tick
+    if (Game.rooms[roomName]) {
+      if (Game.time !== costMatrixCache[roomName].tick) {
+        delete costMatrixCache[roomName];
+      }
+      // if not room loaded, cache for more ticks
+    } else if (Game.time - costMatrixCache[roomName].tick > ROOM_SIZE * 2) {
+      delete costMatrixCache[roomName];
+    }
   }
 
-  return costMatrixCache[roomName];
+  return costMatrixCache[roomName]?.cm;
 };
 const setCachedCostMatrix = (roomName: string, costMatrix: CostMatrix) => {
-  costMatrixCache[roomName] = costMatrix;
+  costMatrixCache[roomName] = { tick: Game.time, cm: costMatrix };
 };
 
 const roomCallback = (roomName: string): CostMatrix => {
@@ -62,6 +69,7 @@ const roomCallback = (roomName: string): CostMatrix => {
 const getPathString = (creep: Creep, path: RoomPosition[], reusePath: number) => {
   return path
     .slice(0, reusePath)
+    .filter(pos => pos.roomName === creep.room.name)
     .map((pos, i) => {
       const prevPos = i === 0 ? creep.pos : path[i - 1];
       return prevPos.getDirectionTo(pos);
@@ -78,8 +86,8 @@ export const moveToUsingPath = (
   if (creep.fatigue > 0) return ERR_TIRED;
   if (!reusePath) return ERR_INVALID_ARGS;
 
-  if (creep.memory.move?.tick) {
-    creep.memory.move.tick -= 1;
+  if (creep.memory.move?.step) {
+    creep.memory.move.step -= 1;
   }
 
   const targetPos = target instanceof RoomPosition ? target : target.pos;
@@ -87,7 +95,7 @@ export const moveToUsingPath = (
     ? new RoomPosition(creep.memory.move.target.x, creep.memory.move.target.y, creep.memory.move.target.roomName)
     : undefined;
 
-  if (memoryTargetPos && creep.memory.move && creep.memory.move.tick > 0 && targetPos.isEqualTo(memoryTargetPos)) {
+  if (memoryTargetPos && creep.memory.move && creep.memory.move.step > 0 && targetPos.isEqualTo(memoryTargetPos)) {
     if (!creep.memory.move.path.length) return OK;
 
     const lastPos = creep.memory.move.pos ? posFromIndex(creep.memory.move.pos) : undefined;
@@ -120,7 +128,22 @@ export const moveToUsingPath = (
     path,
     range,
     target: targetPos,
-    tick: Math.min(reusePath, path.length),
+    tick: Game.time + path.length * 2,
+    step: path.length,
   };
   return creep.move(creep.pos.getDirectionTo(searchResult.path[0]));
+};
+
+export const printPath = (creep: Creep) => {
+  if (!creep.memory.move) return;
+
+  const positions: RoomPosition[] = [];
+  let prevPos: Pos = creep.pos;
+  for (const dir of creep.memory.move.path) {
+    const dirConstant = parseInt(dir, 10) as DirectionConstant;
+    prevPos = getRelativePosition(prevPos, dirConstant);
+    if (prevPos.x < 0 || prevPos.y < 0 || prevPos.x >= ROOM_SIZE || prevPos.y >= ROOM_SIZE) break;
+    positions.push(new RoomPosition(prevPos.x, prevPos.y, creep.room.name));
+  }
+  creep.room.visual.poly(positions, { stroke: '#fff', strokeWidth: 0.15, opacity: 0.2, lineStyle: 'dashed' });
 };

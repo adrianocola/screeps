@@ -13,7 +13,7 @@ const defenderCreepType: CreepType = {
     const defenseQueue = creep.room.memory.defense?.queue;
     if (defenseQueue && defenseQueue.length > 0) {
       for (const hostileId of defenseQueue) {
-        const hostile = getObjectById(hostileId as Id<Creep>);
+        const hostile = getObjectById(hostileId);
         if (hostile) {
           attackMove(creep, hostile);
         }

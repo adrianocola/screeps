@@ -2,6 +2,10 @@ export const countBodyParts = (creep: Creep, type: BodyPartConstant) => {
   return creep.body.filter(c => c.type === type).length;
 };
 
+export const countOffensiveOrHealBodyParts = (creep: Creep) => {
+  return creep.body.filter(c => c.type === ATTACK || c.type === RANGED_ATTACK || c.type === HEAL).length;
+};
+
 export const countOffensiveBodyParts = (creep: Creep) => {
   return creep.body.filter(c => c.type === ATTACK || c.type === RANGED_ATTACK).length;
 };

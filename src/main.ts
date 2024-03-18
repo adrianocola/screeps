@@ -49,6 +49,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 });
 
+// Implementar logo lógica que limita expansão pela quantidade de CPU. E também lógica que abandona salas com 1 source
+// Não spawnar defender sew tiver outra creep de defesa na sala (caso esteja expandindo, por exemplo)
+// Collector -> Se tiver tombstone ou energy perto do main spawn, pegar e colocar no storage
+// Mudar regra do scavenger -> se for in invader com recursos, já spawnar scavenger
+
+// Manter storage ao lado do spawn. Usar ele como lugar para as screeps reciclarem (recursos caem lá)
 // Ajustar remove harvester para cancelar harvest se tiver inimigos fortes na sala (de player). Tentar só depois de um tempo
 // Ou então mandar cleaners melhores pra matar os inimigos
 // Ordenar body parts (ou intercalar, sei lá)
