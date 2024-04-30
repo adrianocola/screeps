@@ -70,7 +70,10 @@ const workerNeighborHarvester: CreepType = {
       return;
     }
 
-    if (source.energy > 0 && creep.room.controller?.reservation?.username === Memory.username) {
+    if (
+      source.energy > 0 &&
+      (creep.room.controller?.reservation?.username === Memory.username || !creep.room.controller?.reservation)
+    ) {
       if (!container || (container && container.store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
         creep.harvest(source);
       }

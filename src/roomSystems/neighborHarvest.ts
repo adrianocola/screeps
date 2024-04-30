@@ -148,19 +148,23 @@ const neighborHarvest: RoomSystem = {
       const neighborName = exities[exitKey as ExitKey]!;
       const toMyRoomExit = getOppositeExitKey(exitKey as ExitKey);
       const neighborMemory = Memory.rooms[neighborName];
+      if (!neighborMemory) continue;
       const neighborScan = neighborMemory.scan;
       const storageToExitDistance = room.memory.scan?.storage?.exitsDistances[exitKey as ExitKey] ?? 100;
 
       if (!neighborScan || !neighborName || !neighborMemory || !neighborMemory.scan) continue;
 
+      if (neighborMemory.scan.features?.[ROOM_FEATURE.EXPANDING_TO]) continue;
+      if (Game.rooms[neighborName]?.controller?.my) continue;
+
       // cant harvest those
       if (
-        neighborMemory.scan?.ownership === ROOM_OWNERSHIP.ME_CONTROLLED ||
-        neighborMemory.scan?.ownership === ROOM_OWNERSHIP.PLAYER_CONTROLLED ||
-        neighborMemory.scan?.ownership === ROOM_OWNERSHIP.PLAYER_RESERVED ||
-        neighborMemory.scan?.ownership === ROOM_OWNERSHIP.INVADER_CONTROLLED ||
-        neighborMemory.scan?.ownership === ROOM_OWNERSHIP.HIGHWAY ||
-        neighborMemory.scan?.ownership === ROOM_OWNERSHIP.NEUTRAL
+        neighborMemory.scan.ownership === ROOM_OWNERSHIP.ME_CONTROLLED ||
+        neighborMemory.scan.ownership === ROOM_OWNERSHIP.PLAYER_CONTROLLED ||
+        neighborMemory.scan.ownership === ROOM_OWNERSHIP.PLAYER_RESERVED ||
+        neighborMemory.scan.ownership === ROOM_OWNERSHIP.INVADER_CONTROLLED ||
+        neighborMemory.scan.ownership === ROOM_OWNERSHIP.HIGHWAY ||
+        neighborMemory.scan.ownership === ROOM_OWNERSHIP.NEUTRAL
       )
         continue;
 

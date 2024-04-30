@@ -1,5 +1,5 @@
-// import spawnSystem from './spawn';
-// import workerCustom from 'creepTypes/custom';
+import spawnSystem from './spawn';
+import workerCustom from 'creepTypes/custom';
 
 // specific code, to dome some very specific task
 const systemCustom: RoomSystem = {
@@ -9,20 +9,21 @@ const systemCustom: RoomSystem = {
     [ROOM_FEATURE.BASIC]: false,
   },
   run(room: Room) {
-    if (room.name !== 'W43S54') return;
+    if (room.name !== 'W46S58') return;
 
-    // spawnSystem.spawn(room, 'custom-W43S54-1', workerCustom.name, 1, 1000, {
-    //   sectionParts: {
-    //     [TOUGH]: 1,
-    //     [MOVE]: 1,
-    //   },
-    //   maxSections: 1,
-    //   memory: {
-    //     type: workerCustom.name,
-    //     demandId: 'custom-W43S54-1',
-    //     roomName: room.name,
-    //   },
-    // });
+    spawnSystem.spawn(room, 'custom-W46S58-1', workerCustom.name, 1, 1000, {
+      sectionParts: {
+        [CARRY]: 1,
+        [MOVE]: 1,
+      },
+      maxSections: 20,
+      memory: {
+        type: workerCustom.name,
+        demandId: 'custom-W46S58-1',
+        roomName: room.name,
+        workRoom: 'W46S59',
+      },
+    });
 
     // const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
     // if (constructionSites.length) return;

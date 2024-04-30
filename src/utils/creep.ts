@@ -85,7 +85,7 @@ export const pickup = (creep: Creep, target: Resource): CreepActionReturnCode | 
 
 export const withdraw = (
   creep: Creep,
-  target: StructureContainer | StructureLink | StructureStorage | StructureTerminal | Tombstone | Ruin,
+  target: AnyStoreStructure | Tombstone | Ruin,
   resourceType: ResourceConstant,
   amount?: number,
 ): ScreepsReturnCode => {
@@ -95,6 +95,15 @@ export const withdraw = (
       return ERR_NOT_ENOUGH_RESOURCES;
     }
     return creep.withdraw(target, resourceType, amount);
+  } else {
+    return moveTo(creep, target);
+  }
+};
+
+export const dismantle = (creep: Creep, target: Structure): ScreepsReturnCode => {
+  if (creep.pos.isNearTo(target)) {
+    dontStandOnRoads(creep, target, 1);
+    return creep.dismantle(target);
   } else {
     return moveTo(creep, target);
   }

@@ -2,7 +2,7 @@ import backup from './backup';
 import build from './build';
 import collect from './collect';
 import creeps from './creeps';
-import custom from './custom';
+// import custom from './custom';
 import defense from './defense';
 import distribute from './distribute';
 import explore from './explore';
@@ -33,7 +33,6 @@ interface CreepsRoomMap {
 // execution order ⬇️
 export const ALL_SYSTEMS: SystemsMap = {
   [ROOM_SYSTEMS.BUILD]: build, // must be the first, so it doesn't process the build requests the same tick they were created (the construction sites don't exist yet)
-  [ROOM_SYSTEMS.BLUEPRINT]: blueprint,
   [ROOM_SYSTEMS.BACKUP]: backup,
   [ROOM_SYSTEMS.COLLECT]: collect,
   [ROOM_SYSTEMS.DEFENSE]: defense,
@@ -46,12 +45,13 @@ export const ALL_SYSTEMS: SystemsMap = {
   [ROOM_SYSTEMS.MINE]: mine,
   [ROOM_SYSTEMS.UPGRADE]: upgrade,
   [ROOM_SYSTEMS.EXPLORE]: explore,
+  [ROOM_SYSTEMS.CREEPS]: creeps,
+  [ROOM_SYSTEMS.SPAWN]: spawn, // must happen after all other systems might have requested something to spawn
   [ROOM_SYSTEMS.SCAN]: scan,
   [ROOM_SYSTEMS.MARKET]: market,
-  [ROOM_SYSTEMS.SPAWN]: spawn, // must happen after all other systems might have requested something to spawn
-  [ROOM_SYSTEMS.CREEPS]: creeps,
   [ROOM_SYSTEMS.STRUCTURES]: structures,
-  [ROOM_SYSTEMS.CUSTOM]: custom,
+  [ROOM_SYSTEMS.BLUEPRINT]: blueprint,
+  // [ROOM_SYSTEMS.CUSTOM]: custom,
   [ROOM_SYSTEMS.VISUALS]: visuals, // must be last
 };
 
@@ -150,6 +150,7 @@ const executeRoomSystems = (room: Room, systems: SystemsMap, roomCreeps: CreepsM
       !system.requiredOwnership || system.requiredOwnership.some(ownership => ownership === roomOwnership);
 
     if (haveControllerLevel && haveRequiredFeatures && haveRequiredOwnership) {
+      if (system.canRun && !system.canRun(room)) continue;
       system.run(room, roomCreeps);
       room.memory.lastRuns[systemName as ROOM_SYSTEMS] = Game.time;
     }
@@ -169,7 +170,7 @@ const roomSystems = () => {
 
     const roomCreeps = groupedCreeps[roomId] || {};
 
-    if (!room.memory.scan) scan.run(room, roomCreeps); // force a initial scan
+    if (!room.memory.scan && scan.canRun?.(room)) scan.run(room, roomCreeps); // force a initial scan
 
     room.memory.scanPaths = shouldScanPaths(room);
 

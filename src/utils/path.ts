@@ -1,57 +1,58 @@
 import { getRelativePosition, posFromIndex } from 'utils/directions';
 import { ROOM_SIZE } from 'consts';
 
-const costMatrixCache: Record<string, { tick: number; cm: CostMatrix }> = {};
-const getCachedCostMatrix = (roomName: string): CostMatrix | undefined => {
-  if (costMatrixCache[roomName]) {
+type CostMatrixCache = Record<string, { tick: number; cm: CostMatrix }>;
+
+const costMatrixCacheMovement: CostMatrixCache = {};
+const costMatrixCacheBuildings: CostMatrixCache = {};
+
+const getCachedCostMatrix = (roomName: string, cache: CostMatrixCache): CostMatrix | undefined => {
+  if (cache[roomName]) {
     // if room loaded, only cache for the current tick
     if (Game.rooms[roomName]) {
-      if (Game.time !== costMatrixCache[roomName].tick) {
-        delete costMatrixCache[roomName];
+      if (Game.time !== cache[roomName].tick) {
+        delete cache[roomName];
       }
       // if not room loaded, cache for more ticks
-    } else if (Game.time - costMatrixCache[roomName].tick > ROOM_SIZE * 2) {
-      delete costMatrixCache[roomName];
+    } else if (Game.time - cache[roomName].tick > ROOM_SIZE * 2) {
+      delete cache[roomName];
     }
   }
 
-  return costMatrixCache[roomName]?.cm;
+  return cache[roomName]?.cm;
 };
-const setCachedCostMatrix = (roomName: string, costMatrix: CostMatrix) => {
-  costMatrixCache[roomName] = { tick: Game.time, cm: costMatrix };
+const setCachedCostMatrix = (roomName: string, costMatrix: CostMatrix, cache: CostMatrixCache) => {
+  cache[roomName] = { tick: Game.time, cm: costMatrix };
 };
 
-const roomCallback = (roomName: string): CostMatrix => {
-  const cachedCostMatrix = getCachedCostMatrix(roomName);
-  if (cachedCostMatrix) return cachedCostMatrix;
-
-  const costs = new PathFinder.CostMatrix();
-  const room = Game.rooms[roomName];
-  if (!room) return costs;
-
-  room.find(FIND_STRUCTURES).forEach(function (struct) {
-    if (struct.structureType === STRUCTURE_ROAD) {
-      costs.set(struct.pos.x, struct.pos.y, 1);
-    } else if (
-      struct.structureType !== STRUCTURE_CONTAINER &&
-      (struct.structureType !== STRUCTURE_RAMPART || !struct.my)
-    ) {
+const setStructuresCostMatrix = (room: Room, costs: CostMatrix) => {
+  room.find(FIND_STRUCTURES, { filter: s => s.structureType !== STRUCTURE_ROAD }).forEach(function (struct) {
+    if (struct.structureType !== STRUCTURE_CONTAINER && (struct.structureType !== STRUCTURE_RAMPART || !struct.my)) {
       // Can't walk through non-walkable buildings
       costs.set(struct.pos.x, struct.pos.y, 0xff);
     }
   });
+};
 
-  // Avoid my construction sites
+const setConstructionSitesCostMatrix = (room: Room, costs: CostMatrix) => {
   room.find(FIND_MY_CONSTRUCTION_SITES).forEach(function (cSite) {
     costs.set(cSite.pos.x, cSite.pos.y, 0xff);
   });
+};
 
-  // Avoid my creeps in the room
+const setRoadsCostMatrix = (room: Room, costs: CostMatrix) => {
+  room.find(FIND_STRUCTURES, { filter: s => s.structureType === STRUCTURE_ROAD }).forEach(function (struct) {
+    costs.set(struct.pos.x, struct.pos.y, 1);
+  });
+};
+
+const setMyCreepsCostMatrix = (room: Room, costs: CostMatrix) => {
   room.find(FIND_MY_CREEPS).forEach(function (creep) {
     costs.set(creep.pos.x, creep.pos.y, 0xff);
   });
+};
 
-  // Avoid hostile creeps
+const setHostileCreepsCostMatrix = (room: Room, costs: CostMatrix) => {
   const sourceKeepers = room.find(FIND_HOSTILE_CREEPS);
   for (const sourceKeeper of sourceKeepers) {
     for (let x = -3; x <= 3; x++) {
@@ -61,10 +62,43 @@ const roomCallback = (roomName: string): CostMatrix => {
     }
     costs.set(sourceKeeper.pos.x, sourceKeeper.pos.y, 0xff);
   }
+};
 
-  setCachedCostMatrix(roomName, costs);
+const roomCallbackMovement = (roomName: string): CostMatrix => {
+  const cachedCostMatrix = getCachedCostMatrix(roomName, costMatrixCacheMovement);
+  if (cachedCostMatrix) return cachedCostMatrix;
+
+  const costs = new PathFinder.CostMatrix();
+  const room = Game.rooms[roomName];
+  if (!room) return costs;
+
+  setStructuresCostMatrix(room, costs);
+  setConstructionSitesCostMatrix(room, costs);
+  setRoadsCostMatrix(room, costs);
+  setMyCreepsCostMatrix(room, costs);
+  setHostileCreepsCostMatrix(room, costs);
+
+  setCachedCostMatrix(roomName, costs, costMatrixCacheMovement);
   return costs;
 };
+
+const roomCallbackBuildings = (roomName: string): CostMatrix => {
+  const cachedCostMatrix = getCachedCostMatrix(roomName, costMatrixCacheBuildings);
+  if (cachedCostMatrix) return cachedCostMatrix;
+
+  const costs = new PathFinder.CostMatrix();
+  const room = Game.rooms[roomName];
+  if (!room) return costs;
+
+  setStructuresCostMatrix(room, costs);
+  setConstructionSitesCostMatrix(room, costs);
+  setRoadsCostMatrix(room, costs);
+
+  setCachedCostMatrix(roomName, costs, costMatrixCacheBuildings);
+  return costs;
+};
+
+const basePathFinderOptions: PathFinderOpts = { plainCost: 2, swampCost: 6 };
 
 const getPathString = (creep: Creep, path: RoomPosition[], reusePath: number) => {
   return path
@@ -109,17 +143,14 @@ export const moveToUsingPath = (
     }
   }
 
-  let searchResult = PathFinder.search(
-    creep.pos,
-    { pos: targetPos, range },
-    { roomCallback, plainCost: 2, swampCost: 6 },
-  );
+  const pathFinderOptions = { ...basePathFinderOptions, roomCallback: roomCallbackMovement };
+  let searchResult = PathFinder.search(creep.pos, { pos: targetPos, range }, pathFinderOptions);
   // if the path is incomplete, try to find a path with a larger range
   if (searchResult.incomplete) {
     searchResult = PathFinder.search(
       creep.pos,
       { pos: targetPos, range: range + 1 },
-      { roomCallback, plainCost: 2, swampCost: 6 },
+      { ...pathFinderOptions, maxOps: 5000 },
     );
   }
 
@@ -147,3 +178,15 @@ export const printPath = (creep: Creep) => {
   }
   creep.room.visual.poly(positions, { stroke: '#fff', strokeWidth: 0.15, opacity: 0.2, lineStyle: 'dashed' });
 };
+
+export const getRawPath = (pos: RoomPosition, target: RoomPosition | _HasRoomPosition, range = 1): PathFinderPath =>
+  PathFinder.search(
+    pos,
+    { pos: target instanceof RoomPosition ? target : target.pos, range },
+    {
+      ...basePathFinderOptions,
+      roomCallback: roomCallbackBuildings,
+      maxRooms: 2,
+      maxOps: 500,
+    },
+  );

@@ -41,7 +41,6 @@ const systemFix: RoomSystem = {
   interval: TICKS.TICK_20,
   name: ROOM_SYSTEMS.FIX,
   requiredFeatures: {
-    [ROOM_FEATURE.BASIC]: false,
     [ROOM_FEATURE.CONTROLLED]: true,
     [ROOM_FEATURE.HAVE_TOWERS]: true,
   },

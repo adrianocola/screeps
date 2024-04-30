@@ -1,6 +1,7 @@
-import { getExitsDistances, getIsPathPaved, getRawPath } from './scanUtils';
+import { getExitsDistances, getIsPathPaved } from './scanUtils';
 import { getBaseEntrancePos, getMineralContainer, getMineralExtractor } from 'utils/blueprint';
 import { SOURCE_KEEPER } from 'consts';
+import { getRawPath } from 'utils/path';
 
 export default (room: Room, scanPaths?: boolean): RoomMemoryScanMineral | undefined => {
   const foundMinerals: Mineral[] = room.find(FIND_MINERALS);
@@ -29,9 +30,10 @@ export default (room: Room, scanPaths?: boolean): RoomMemoryScanMineral | undefi
     exitsDistances: scanPaths ? getExitsDistances(mineral.pos) : mineralMemory?.exitsDistances ?? {},
     extractorId: extractor?.id,
     mineralId: mineral.id,
-    paved: scanPaths
-      ? getIsPathPaved(room, getRawPath(baseEntrancePos, mineral.pos, 1))
-      : mineralMemory?.paved || undefined,
+    paved:
+      scanPaths && baseEntrancePos
+        ? getIsPathPaved(room, getRawPath(baseEntrancePos, mineral.pos, 1).path)
+        : mineralMemory?.paved || undefined,
     sourceKeeper: sourceKeeper ?? undefined,
     sourceKeeperId: sourceKeeper ? sourceKeeperLairs[0].id : undefined,
     type: mineral.mineralType,

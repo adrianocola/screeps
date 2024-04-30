@@ -8,6 +8,8 @@ import { INVADER } from 'consts';
 import { countCreepTotalResources } from 'utils/creep';
 
 const scavengeResources = (room: Room) => {
+  if (!room.storage) return;
+
   let energy: number = 0;
   const tombstones = room.find(FIND_TOMBSTONES);
   const maxSections = 10;
@@ -75,8 +77,6 @@ const systemDefense: RoomSystem = {
         }
       }
     } else {
-      spawnSystem.removeSpawn(room, scavengeCreepType.name);
-
       // if there was a queue, it means that some enemy might have died and have some resources to scavenge
       if (room.memory.defense?.queue.length) {
         scavengeResources(room);

@@ -6,7 +6,7 @@ import { getLevelRate } from 'utils/controller';
 import { CONTROLLER_TICKS_TO_DOWNGRADE_EMERGENCY } from 'consts';
 
 const MAX_WORK_PARTS_LVL8 = 15;
-const WORK_PARTS_WEIGHT = 5;
+const WORK_PARTS_WEIGHT = 3;
 
 const getDesiredNumberOfUpgraders = (room: Room): number => {
   let levelRate = 0.5;
@@ -78,7 +78,7 @@ const systemUpgrade: RoomSystem = {
 
     spawnSystem.spawn(room, workerUpgrader.name, workerUpgrader.name, desired, 140, {
       forRoads: memoryController?.paved,
-      maxSections: roomLevel === 8 ? Math.ceil(MAX_WORK_PARTS_LVL8 / WORK_PARTS_WEIGHT) : 5, // because lvl8 controllers are limited to 15 per tick,
+      maxSections: roomLevel === 8 ? Math.ceil(MAX_WORK_PARTS_LVL8 / WORK_PARTS_WEIGHT) : 10, // because lvl8 controllers are limited to 15 per tick,
       sectionParts: {
         [WORK]: WORK_PARTS_WEIGHT,
         [MOVE]: 2,

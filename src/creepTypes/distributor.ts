@@ -6,7 +6,7 @@ import {
   getRoomSpawn,
 } from 'utils/room';
 import { moveTo, pickup, signController, transfer, withdraw } from 'utils/creep';
-import { getBaseTower, getControllerContainer, getMineralContainer } from 'utils/blueprint';
+import { getBaseTower, getControllerContainer, getMineralContainer, getSpawn1, getSpawn2 } from 'utils/blueprint';
 import { dontStandOnRoads } from 'utils/worker';
 
 const isAlmostDyingAndTransferEnerggy = (creep: Creep, mainResourceHolder: StructureStorage | StructureContainer) => {
@@ -106,12 +106,27 @@ const distributorCreepType: CreepType = {
     }
 
     // if next to the main source and have some space, grab some energy (can continue moving)
-    if (
-      creep.store.getFreeCapacity(RESOURCE_ENERGY) !== 0 &&
-      creep.pos.isNearTo(mainResourceHolder.pos) &&
-      mainResourceHolder.store.getUsedCapacity(RESOURCE_ENERGY) !== 0
-    ) {
-      creep.withdraw(mainResourceHolder, RESOURCE_ENERGY);
+    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) !== 0) {
+      const spawn1 = getSpawn1(creep.room);
+      const spawn2 = getSpawn2(creep.room);
+      const tower = getBaseTower(creep.room);
+      const termn = creep.room.terminal;
+      if (
+        creep.pos.isNearTo(mainResourceHolder.pos) &&
+        mainResourceHolder.store.getUsedCapacity(RESOURCE_ENERGY) !== 0
+      ) {
+        creep.withdraw(mainResourceHolder, RESOURCE_ENERGY);
+      } else if (creep.room.memory.scan?.features?.[ROOM_FEATURE.STORAGE_HAVE_LINK]) {
+        if (spawn1 && creep.pos.isNearTo(spawn1.pos) && spawn1.store.getUsedCapacity(RESOURCE_ENERGY) !== 0) {
+          creep.withdraw(spawn1, RESOURCE_ENERGY);
+        } else if (spawn2 && creep.pos.isNearTo(spawn2.pos) && spawn2.store.getUsedCapacity(RESOURCE_ENERGY) !== 0) {
+          creep.withdraw(spawn2, RESOURCE_ENERGY);
+        } else if (tower && creep.pos.isNearTo(tower.pos) && tower.store.getUsedCapacity(RESOURCE_ENERGY) !== 0) {
+          creep.withdraw(tower, RESOURCE_ENERGY);
+        } else if (termn && creep.pos.isNearTo(termn.pos) && termn.store.getUsedCapacity(RESOURCE_ENERGY) !== 0) {
+          creep.withdraw(termn, RESOURCE_ENERGY);
+        }
+      }
     }
 
     let target: StructureExtension | StructureLink | StructureContainer | StructureTower | StructureSpawn | undefined;

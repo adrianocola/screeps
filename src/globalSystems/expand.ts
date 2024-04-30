@@ -31,24 +31,24 @@ const globalExpand: GlobalSystem = {
     }
 
     const toRoom = Game.rooms[to] as Room | undefined;
-    if (toRoom && toRoom.controller?.my && toRoom.controller?.level >= 3) {
-      const mainResourceHolder = getMainResourceHolder(toRoom);
-      if (mainResourceHolder) {
-        const spawnContainer = getBaseSpawnContainer(toRoom);
-        if (spawnContainer) {
-          expansionCheckSystem.completeExpansion();
-          return;
-        }
-      }
+    if (toRoom && toRoom.controller?.my && toRoom.controller?.level >= 4) {
+      expansionCheckSystem.completeExpansion();
+      return;
     }
 
     // always keeps a cleaner around, to prevent invaders and keep the room loaded
     const structures = toRoom?.find(FIND_HOSTILE_STRUCTURES) ?? [];
+    const structuresWithoutEnergy = structures.filter(structure => {
+      const storeStructure = structure as AnyStoreStructure;
+      if (!storeStructure.store) return true;
+
+      return !storeStructure.store.getUsedCapacity(RESOURCE_ENERGY);
+    });
     const mainTower = toRoom ? getBaseTower(toRoom) : undefined;
     if (mainTower) {
       spawnSystem.removeSpawn(fromRoom, cleanerCreepType.name);
     } else {
-      const totalHits = structures.reduce((acc, structure) => acc + structure.hits, 0);
+      const totalHits = structuresWithoutEnergy.reduce((acc, structure) => acc + structure.hits, 0);
       const cleannerQuantity = Math.min(3, Math.ceil(totalHits / 2_000_000)) || 1;
       spawnSystem.spawn(fromRoom, cleanerCreepType.name, cleanerCreepType.name, cleannerQuantity, 50, {
         sortingWeight: FIGHTER_BODY_PARTS_PRIORITY,
@@ -83,7 +83,7 @@ const globalExpand: GlobalSystem = {
     }
 
     if (status === EXPANSION_STATUS.CLEANNING) {
-      if (!structures.length) {
+      if (structuresWithoutEnergy.length <= 5) {
         Memory.global.expanding.status = EXPANSION_STATUS.CLAIMING;
         spawnSystem.removeSpawn(fromRoom, cleanerCreepType.name);
       }
@@ -114,7 +114,8 @@ const globalExpand: GlobalSystem = {
         for (const sourceId in toRoomMemory.scan.sources) {
           const sourceData = toRoomMemory.scan.sources[sourceId];
           const demandId = `${basicCreepType.name}-E-${sourceData.index}`;
-          spawnSystem.spawn(fromRoom, demandId, basicCreepType.name, 1, 48, {
+          const quantity = Math.min(Math.ceil(Math.abs(sourceData.controllerDistance) / 30), 3);
+          spawnSystem.spawn(fromRoom, demandId, basicCreepType.name, quantity, 48, {
             maxSections: 10,
             memory: {
               demandId,

@@ -1,7 +1,7 @@
 import drawBlueprint from './drawBlueprint';
 
 const systemBVisuals: RoomSystem = {
-  interval: TICKS.TICK_1,
+  interval: TICKS.ALWAYS,
   name: ROOM_SYSTEMS.VISUALS,
   requiredFeatures: {
     [ROOM_FEATURE.CONTROLLED]: true,

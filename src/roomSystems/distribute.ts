@@ -16,7 +16,6 @@ const systemDistribute: RoomSystem = {
   interval: TICKS.TICK_20,
   name: ROOM_SYSTEMS.DISTRIBUTE,
   requiredFeatures: {
-    [ROOM_FEATURE.BASIC]: false,
     [ROOM_FEATURE.CONTROLLED]: true,
     [ROOM_FEATURE.SPAWN_HAVE_CONTAINER]: true,
   },
@@ -25,8 +24,19 @@ const systemDistribute: RoomSystem = {
 
     const level = room.controller?.level || 1;
     const maxSections = MAX_PARTS_PER_LEVEL[level];
+    let quantity = 1;
 
-    spawnSystem.spawn(room, workerDistributor.name, workerDistributor.name, 1, 7, {
+    // if don't have link and controller is far away from storage, spawn 2
+    if (
+      !room.memory.scan?.features?.[ROOM_FEATURE.STORAGE_HAVE_LINK] &&
+      !room.memory.scan?.features?.[ROOM_FEATURE.BASIC]
+    ) {
+      if ((room.memory.scan?.controller?.storageDistance || 0) > 20) {
+        quantity = 2;
+      }
+    }
+
+    spawnSystem.spawn(room, workerDistributor.name, workerDistributor.name, quantity, 7, {
       essential: true,
       sectionParts: {
         [CARRY]: 2,

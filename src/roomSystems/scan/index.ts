@@ -6,7 +6,7 @@ import scanSources from './scanSources';
 import scanRoomScore from './scanRoomScore';
 import { getBaseSpawn } from 'utils/blueprint';
 import scanStorage from 'roomSystems/scan/scanStorage';
-import { SIMULATOR_ROOM } from 'consts';
+import { MIN_SCAN_BUCKET_CPU, SIMULATOR_ROOM } from 'consts';
 
 export const MAPPED_STRUCTURES: StructureMap<boolean> = {
   [STRUCTURE_TOWER]: true,
@@ -17,12 +17,19 @@ export const MAPPED_STRUCTURES: StructureMap<boolean> = {
   [STRUCTURE_OBSERVER]: true,
 };
 
-const systeScan: RoomSystem = {
+const systemScan: RoomSystem = {
   interval: TICKS.TICK_1000,
   name: ROOM_SYSTEMS.SCAN,
+  canRun: () => {
+    // already ran a scan this tick (of any room)
+    if (Memory.global.lastScan === Game.time) return false;
+    // not enough CPU to scan
+    if (Game.cpu.bucket < MIN_SCAN_BUCKET_CPU) return false;
+
+    return true;
+  },
   run(room) {
-    // already ran the scan this tick (can happen if this is a new room)
-    if (room.memory.scan?.tick === Game.time) return;
+    Memory.global.lastScan = Game.time;
 
     const counts: StructureMap<number> = {};
 
@@ -49,7 +56,7 @@ const systeScan: RoomSystem = {
     const sources = scanSources(room, spawn, scanPaths);
     const mineral = scanMineral(room, scanPaths);
 
-    if (room.name !== SIMULATOR_ROOM) console.log('SCAN', room.name);
+    if (room.name !== SIMULATOR_ROOM) console.log('SCAN', room.name, Game.cpu.bucket);
     room.memory.scan = {
       tick: Game.time,
       counts,
@@ -69,4 +76,4 @@ const systeScan: RoomSystem = {
   },
 };
 
-export default systeScan;
+export default systemScan;

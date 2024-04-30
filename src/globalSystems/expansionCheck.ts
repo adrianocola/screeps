@@ -71,6 +71,7 @@ const globalExpansionCheck: ExpansionCheckGlobalSystem = {
 
       if (bestNeighbourScore < minScore) continue;
       if (bestNeighbourScore < bestResult.score) continue;
+      if (Memory.global.expansionIgnoreRooms?.includes(bestNeighbour.name)) continue;
 
       const distance = Game.map.getRoomLinearDistance(elegibleFromRoom.name, bestNeighbour.name);
       if (bestNeighbourScore === bestResult.score && distance > bestResult.distance) continue;

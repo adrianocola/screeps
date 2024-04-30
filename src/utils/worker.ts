@@ -3,6 +3,7 @@ import { randomArrayElement, shuffleArray } from 'utils/random';
 import { ALL_DIRECTIONS } from 'consts';
 import { isSpaceBlocked } from 'utils/room';
 import { moveToUsingPath } from 'utils/path';
+import { transfer } from 'utils/creep';
 
 export const BODY_PARTS_PRIORITY: BodyPartsMap<number> = {
   [TOUGH]: 10,
@@ -164,4 +165,14 @@ export const dontStandOnRoads = (creep: Creep, target: RoomPosition | { pos: Roo
     }
     creep.moveTo(freePos);
   }
+};
+
+export const transferAllResources = (creep: Creep, mainResourceHolder: StructureContainer | StructureStorage) => {
+  const resources = Object.keys(creep.store);
+  for (const resource of resources) {
+    transfer(creep, mainResourceHolder, resource as ResourceConstant);
+    return true;
+  }
+
+  return false;
 };

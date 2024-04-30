@@ -1,6 +1,7 @@
 import { SPAWN_MAX_DEMAND_TICKS } from 'consts';
 import CreepTypes from 'creepTypes';
 import { bodyFixedCost, bodySectionCost, buildBodyPartsArray, maxBodySections } from 'utils/worker';
+import { removeSpawn } from 'utils/room';
 
 const sortByPriority = (a: SpawnDemandItem, b: SpawnDemandItem) => a.priority - b.priority;
 
@@ -18,7 +19,7 @@ const systemSpawn: SystemSpawn = {
     room.memory.spawn.demand[id] = { id, quantity, workerType, priority, opts, at: Game.time };
   },
   removeSpawn(room, id) {
-    delete room.memory.spawn?.demand[id];
+    removeSpawn(room, id);
   },
   doSpawn(room: Room, spawn: StructureSpawn, item: SpawnDemandItem, energyAvailable: number): number | undefined {
     const worker = CreepTypes[item.workerType];

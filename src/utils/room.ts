@@ -192,3 +192,7 @@ export const findFreeSpaceAround = (room: Room, target: Pos): Pos | undefined =>
 
   return undefined;
 };
+
+export const removeSpawn = (room: Room, id: string) => {
+  delete room.memory.spawn?.demand[id];
+};

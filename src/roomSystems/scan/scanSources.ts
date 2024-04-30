@@ -1,13 +1,8 @@
-import {
-  findSingleStructureInRange,
-  getExitsDistances,
-  getIsPathPaved,
-  getRawPath,
-  rawPathDistance,
-} from './scanUtils';
+import { findSingleStructureInRange, getExitsDistances, getIsPathPaved } from './scanUtils';
 import { getBaseEntrancePos, getSourceContainer, getSourceLink } from 'utils/blueprint';
 import { getRelativePosition } from 'utils/directions';
 import { ALL_DIRECTIONS, SOURCE_KEEPER } from 'consts';
+import { getRawPath } from 'utils/path';
 
 export const OBJECT_WEIGHT: { [K in SLOT_TYPE]: number } = {
   [SLOT_TYPE.CONTAINER]: 1, // nice
@@ -23,7 +18,7 @@ export const OBJECT_WEIGHT: { [K in SLOT_TYPE]: number } = {
 const getNextSourceDistance = (source: Source, nextSource: Source): number => {
   if (source === nextSource) return -1;
 
-  return rawPathDistance(source.pos, nextSource);
+  return getRawPath(source.pos, nextSource).cost;
 };
 
 const getSlots = (source: Source) => {
@@ -98,10 +93,15 @@ export default (room: Room, spawn?: StructureSpawn, scanPaths?: boolean) => {
       slotsAvailable,
       sourceKeeper,
       sourceKeeperId: sourceKeeper ? sourceKeeperLairs[0].id : undefined,
-      spawnDistance: scanPaths ? rawPathDistance(source.pos, spawn) : sourceMemory?.spawnDistance ?? -1,
-      paved: scanPaths
-        ? getIsPathPaved(room, getRawPath(baseEntrancePos, source.pos, 1))
-        : sourceMemory?.paved || undefined,
+      spawnDistance: scanPaths && spawn ? getRawPath(source.pos, spawn).cost : sourceMemory?.spawnDistance ?? -1,
+      controllerDistance:
+        scanPaths && room.controller
+          ? getRawPath(source.pos, room.controller).cost
+          : sourceMemory?.controllerDistance ?? -1,
+      paved:
+        scanPaths && baseEntrancePos
+          ? getIsPathPaved(room, getRawPath(baseEntrancePos, source.pos, 1).path)
+          : sourceMemory?.paved || undefined,
       sourceContainerId: sourceContainer?.id,
       nextSourceDistance: scanPaths
         ? getNextSourceDistance(source, nextSource)

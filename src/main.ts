@@ -33,11 +33,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  // const exploreRooms = Object.values(Memory.rooms)
-  //   .sort((a, b) => (b.scan?.score ?? -10000) - (a.scan?.score ?? -10000))
-  //   .slice(0, 5);
-  // console.log('EXPAND ROOMS:', exploreRooms.map(r => `${r.name}: ${r.scan?.score ?? -10000}`).join('; '));
-
   roomSystems();
   globalSystems();
 
@@ -45,16 +40,36 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log('DURATION:', Date.now() - start);
     if (!Game.rooms.sim.memory.visuals) Game.rooms.sim.memory.visuals = { blueprint: true };
   } else {
-    console.log(Game.cpu.getUsed());
+    console.log(Game.cpu.getUsed().toFixed(2));
   }
 });
 
+// Revisar calculo de blueprint:
+//    Se usar maxCount grande (100+) está demorando muito.
+//    O que está pesando sãos os cálculos de path. Ver se é possível excluir localizações ruins antes de fazer esses cálculos
+//    Talvez só executar se bucket estiver cheio?
+// Arrumar erro:
+//    Script execution timed out: CPU time limit reached
+//    at fromWorldPosition (<runtime>:20366:31)
+//    at search (<runtime>:20432:29)
+// Criar um outro sistema de status de sala que não dependa de scan (tipo se está expandindo)
+// Melhorar lógica de movimentação entre salas pra evitar salas de outros players.
+//   - Melhorar tb a movimentaçõa DENTRO da sala, já que as vezes o creep pode sair para outra sala e voltar por outro caminha (rota menor), ver sala shard3/W46S59
 // Implementar logo lógica que limita expansão pela quantidade de CPU. E também lógica que abandona salas com 1 source
 // Não spawnar defender sew tiver outra creep de defesa na sala (caso esteja expandindo, por exemplo)
 // Collector -> Se tiver tombstone ou energy perto do main spawn, pegar e colocar no storage
 // Mudar regra do scavenger -> se for in invader com recursos, já spawnar scavenger
+// Ao expandir, verificar se caminho entre as salas é seguro (não passar por salas de outros players)
+// Considerar ignorar outras creeps ao se movimentar dentro da sala (pelo menos para distributor e collector)
+// no lvl7, fazer uma road entre os 2 sources (para sala com 2 sources). Ajuda muito o harvesterWalker.
+// mover lógica de scavenger de dentro de defense. É meio estranho estar lá.
+// considerar construir extensions antes de roads, pois se tiver roads na pedra demora muito pra fazer (e as extensions produzem creeps melhores, principalemente em lvls mais baixos)
+// Em vez de executar lógica inteira da sala, executar cada sistema de cada sala antes de seguir para o próximo sistema
+//   - Isso garante que os sistemas mais importantes serão executados em todas salas (caso alguma sala consuma muita CPU ou crash)
+// Depois de terminar de construir uma road na room, setar scanPaths=true para que próximo scan avalie "paved"
 
 // Manter storage ao lado do spawn. Usar ele como lugar para as screeps reciclarem (recursos caem lá)
+//     Fazer distributor pegar recurso de lá primeiro (se tiver ou se passar por lá)
 // Ajustar remove harvester para cancelar harvest se tiver inimigos fortes na sala (de player). Tentar só depois de um tempo
 // Ou então mandar cleaners melhores pra matar os inimigos
 // Ordenar body parts (ou intercalar, sei lá)
@@ -73,7 +88,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
 // - Parar upgrade de controller (upgraders vão pra cima dos inimigos pra atrasar eles)
 // - Ativar só alguns sistemas se tiver inimigos
 
-// CONTINUAR AQUI!
 //  - Ao detectar que uma construção foi concluída, verificar e atualizar blueprint (colocar o id da strutura do blueprint no request de build?)
 //  - Usar energia das expansions mais pertas do Spawn central (uma ordem de EXT_PACK deve resolver)
 //  - Verificar o que acontece com o blueprint se não couber base em um sala (provavelmente zerar score da sala pra não ser escolhida pra expandir)

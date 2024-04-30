@@ -32,7 +32,7 @@ class BlueprintScanner {
     this.room = Game.rooms[roomName];
     this.buildingCostMatrix = new PathFinder.CostMatrix();
     this.buildingsAndPathsCostMatrix = new PathFinder.CostMatrix();
-    this.pathFindingCostMatrix = BlueprintScanner.getWalkablePathCostMatrix(this.room);
+    this.pathFindingCostMatrix = BlueprintScanner.getWalkablePathCostMatrix(this.room, true);
     this.terrain = new Room.Terrain(roomName);
     this.results = {};
 
@@ -88,7 +88,7 @@ class BlueprintScanner {
     };
   }
 
-  public static getWalkablePathCostMatrix = (room: Room) => {
+  public static getWalkablePathCostMatrix = (room: Room, ignoreStructures = false) => {
     const costMatrix = new PathFinder.CostMatrix();
 
     const terrain = room.getTerrain();
@@ -108,7 +108,9 @@ class BlueprintScanner {
     const sources = room.find(FIND_SOURCES);
     const minerals = room.find(FIND_MINERALS);
     const roads = room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_ROAD } });
-    const structures = room.find(FIND_STRUCTURES, { filter: s => s.structureType !== STRUCTURE_ROAD });
+    const structures = ignoreStructures
+      ? []
+      : room.find(FIND_STRUCTURES, { filter: s => s.structureType !== STRUCTURE_ROAD });
 
     for (const source of sources) {
       costMatrix.set(source.pos.x, source.pos.y, 0xff);
@@ -205,6 +207,21 @@ class BlueprintScanner {
     return costs;
   }
 
+  public static getRelativeStructurePos = (
+    blueprint: Blueprint,
+    blueprintStructure: BLUEPRINT_STRUCTURE,
+  ): Pos | undefined => {
+    for (let y = 0; y < blueprint.height; y++) {
+      for (let x = 0; x < blueprint.width; x++) {
+        if (blueprint.schema[y][x]?.id === blueprintStructure) {
+          return { x, y };
+        }
+      }
+    }
+
+    return undefined;
+  };
+
   private isNearKeyPoint(pos: Pos, ignoreNearKeyPoints?: boolean) {
     if (ignoreNearKeyPoints) return false;
 
@@ -277,14 +294,11 @@ class BlueprintScanner {
         scannedPositions[posIndex] = true;
         if (!checkIsValidBuildablePos(scanPos)) continue;
 
-        // if maxRange is higher than 0, we should stop scanning when we find a wall (right now, maxRange = 0 only for extractors)
-        if (maxRange > 0) {
-          const code = this.terrain.get(scanPos.x, scanPos.y);
-          if (code === TERRAIN_MASK_WALL) {
-            if (foundSpace) continue;
-          } else {
-            foundSpace = true;
-          }
+        const code = this.terrain.get(scanPos.x, scanPos.y);
+        if (code === TERRAIN_MASK_WALL) {
+          if (foundSpace) continue;
+        } else {
+          foundSpace = true;
         }
 
         if (foundSpace && range >= minRange && callback(scanPos)) {
@@ -316,12 +330,25 @@ class BlueprintScanner {
 
   private getPossibleBlueprintPositions(pos: Pos, blueprint: Blueprint) {
     const minRange = blueprint.minRange ?? 2;
-    const maxRange = blueprint.maxRange ?? 50;
-    const maxCount = blueprint.maxCount ?? 200;
+    const maxRange = blueprint.maxRange ?? 25;
+    const maxCount = blueprint.maxCount ?? 10;
     const possiblePositions: BlueprintScanResult[] = [];
     const costMatrix = blueprint.ignorePaths ? this.buildingCostMatrix : this.buildingsAndPathsCostMatrix;
     const directions = blueprint.dir ? BASE_DIRECTIONS : [RIGHT];
     const is1x1 = blueprint.width === 1 && blueprint.height === 1;
+
+    if (blueprint.useStartFromPos) {
+      return [
+        {
+          x: pos.x,
+          y: pos.y,
+          totalCost: 0,
+          dir: TOP,
+          blueprint,
+          costs: [],
+        },
+      ];
+    }
 
     this.radialScan(pos, minRange, maxRange, testPos => {
       if (costMatrix.get(testPos.x, testPos.y) === 0xff || this.isNearKeyPoint(testPos, blueprint.ignoreNearKeyPoints))
@@ -401,21 +428,6 @@ class BlueprintScanner {
     return undefined;
   }
 
-  private getRelativeStructurePos = (
-    blueprint: Blueprint,
-    blueprintStructure: BLUEPRINT_STRUCTURE,
-  ): Pos | undefined => {
-    for (let y = 0; y < blueprint.height; y++) {
-      for (let x = 0; x < blueprint.width; x++) {
-        if (blueprint.schema[y][x]?.id === blueprintStructure) {
-          return { x, y };
-        }
-      }
-    }
-
-    return undefined;
-  };
-
   private scanBaseBlueprint(baseSpawn?: StructureSpawn) {
     const baseBlueprint = BlueprintsMap[BLUEPRINT_ID.BASE];
     if (!baseBlueprint) throw new Error('No base blueprint found');
@@ -426,7 +438,7 @@ class BlueprintScanner {
       };
       for (const dir of BASE_DIRECTIONS) {
         const blueprintToDir = BlueprintScanner.blueprintToDirection(baseBlueprint, dir);
-        const spawn1Pos = this.getRelativeStructurePos(blueprintToDir, BLUEPRINT_STRUCTURE.SPAWN1);
+        const spawn1Pos = BlueprintScanner.getRelativeStructurePos(blueprintToDir, BLUEPRINT_STRUCTURE.SPAWN1);
         if (!spawn1Pos) throw new Error('No spawn1 position found');
 
         const initialPos = { x: baseSpawn.pos.x - spawn1Pos.x, y: baseSpawn.pos.y - spawn1Pos.y };
@@ -471,6 +483,9 @@ class BlueprintScanner {
     if (!bestPosition) {
       const possiblePositions = this.getPossibleBlueprintPositions(pos, blueprint);
       bestPosition = this.getBestBlueprintPosition(possiblePositions);
+      if (blueprint.id === BLUEPRINT_ID.EXTRACTOR) {
+        console.log('BEST EXTRACTOR POS', bestPosition?.x, bestPosition?.y);
+      }
     }
 
     if (bestPosition) {

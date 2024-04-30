@@ -159,6 +159,7 @@ declare const enum CREEP_TYPE {
   NEIGHBOR_HARVESTER = 'nHarvester',
   NEIGHBOR_RESERVER = 'nReserver',
   SCAVENGER = 'scavenger',
+  STEALER = 'stealer',
   TRANSFERER = 'transferer',
   UPGRADER = 'upgrader',
   UPGRADER_EMERGENCY = 'upgraderEmergency',
@@ -343,6 +344,7 @@ interface RoomSystem {
   requiredFeatures?: Partial<Record<ROOM_FEATURE, boolean>>;
   requiredOwnership?: ROOM_OWNERSHIP[]; // the room must have some of the listed ownership
   run: (room: Room, roomCreeps: { [index: string]: Creep[] }) => void;
+  canRun?: (room: Room) => boolean; // if the room can run the system (don't update lastRun time if false)
 }
 
 interface SpawnDemandItem {
@@ -413,6 +415,7 @@ interface Blueprint {
   closeTo?: CloseTo[]; // search for a place close to something
   ignoreNearKeyPoints?: boolean; // if being next to key points should be ignored when finding the structure location
   ignorePaths?: boolean; // if paths should be ignored when finding the structure location
+  useStartFromPos?: boolean; // if should use the startPos found as the blueprint position (used for extractor only)
   entrance?: Pos; // must be relative to the blueprint. Paths will be calculated from this point
   label?: string; // 1 letter to show in the blueprint entrance
 }
@@ -458,6 +461,17 @@ interface FixQueueItem {
   rank: number;
 }
 
+interface SquadCreep {
+  type: string;
+  id?: Id<Creep>;
+}
+
+interface Squad {
+  type: 'line';
+  creeps: SquadCreep[];
+  status: 'spawning' | 'moving' | 'attacking' | 'retreating';
+}
+
 /**
  * MEMORY
  */
@@ -470,12 +484,50 @@ interface Memory {
   global: GlobalMemory;
 }
 
+interface GlobalMemoryInvasionStrategy {
+  tick: number;
+  name: string;
+  hits: number; // number of hits done
+  heal: number; // number of healing done
+  duration?: number; // ticks the strategy was active
+}
+
+interface GlobalMemoryInvasionStrategyDefuseLine extends GlobalMemoryInvasionStrategy {
+  name: 'defuseLine';
+}
+
+interface GlobalMemoryInvasion {
+  room: string;
+  tick: number;
+  phase:
+    | 'prep' // checktarget room entrances, my rooms that will help, etc
+    | 'scout' // scout the room, with a creep (get tower positions, ramparts, etc). Also try to discover the towerTarget logic they are using
+    | 'deplete' // try to make the towers use all their energy
+    | 'invade' // break into walls and ramparts
+    | 'defuse' // destroy towers, creeps and spawns
+    | 'clean' // destroy remaining buildings (minus storage and terminal, can contain resources)
+    | 'done';
+  result?: 'success' | 'failure';
+  from?: string[];
+  towers?: { id: Id<StructureTower>; pos: Pos }[];
+  towerTarget?:
+    | 'closest' // always attack the closest target
+    | 'first' // always attack the first target and lock on it
+    | 'healer' // always attack the creep with the most healing parts
+    | 'attacker'; // always attack the creep with the most attack/ranged attack parts
+  strategy?: GlobalMemoryInvasionStrategy;
+  prevStrategies: GlobalMemoryInvasionStrategy[];
+}
+
 interface GlobalMemory {
   minerals: Partial<Record<MineralConstant, number>>;
   lastRuns: { [index: string]: number };
   expansionCountdown: number;
+  expansionIgnoreRooms?: string[];
   expanding?: { from: string; to: string; tick: number; score: number; status: EXPANSION_STATUS };
   forceRun?: { [index: string]: boolean };
+  invasion?: GlobalMemoryInvasion;
+  lastScan?: number; // the tick the last scan was made (to avoid making 2 scan in the same tick)
   duration: number;
 }
 
@@ -502,11 +554,14 @@ interface CreepMemory {
   targetPos?: Pos;
   containerId?: Id<StructureStorage | StructureContainer | StructureLink>;
   task?: TRANSFERER_TASKS;
+  working?: boolean;
   harvested?: boolean; // used to control if harvesterWalker already harvested this source
   sourceIndex?: number;
   sourceId?: Id<Source>; // source id (used for harvesters and basics)
   mineralId?: Id<Mineral>; // mineral id (used for miners/harvesters)
   resource?: ResourceConstant;
+  reached?: boolean; // if reached the target
+  upgrading?: boolean; // if upgrading the controller
   move?: CreepMemoryMove; // custom movement path logic
 }
 
@@ -534,6 +589,7 @@ declare interface RoomMemoryScanSource {
   sourceKeeper: boolean;
   sourceKeeperId?: string;
   spawnDistance: number;
+  controllerDistance: number;
   sourceContainerId?: Id<StructureContainer>;
   sourceLinkId?: Id<StructureLink>;
   paved?: boolean;

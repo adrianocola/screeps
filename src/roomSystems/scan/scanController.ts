@@ -1,5 +1,6 @@
-import { getExitsDistances, getIsPathPaved, getRawPath } from './scanUtils';
+import { getExitsDistances, getIsPathPaved } from './scanUtils';
 import { getBaseEntrancePos, getControllerContainer, getControllerLink } from 'utils/blueprint';
+import { getRawPath } from 'utils/path';
 
 export default (room: Room, scanPaths?: boolean): RoomMemoryScanController | undefined => {
   if (!room.controller) return undefined;
@@ -12,8 +13,8 @@ export default (room: Room, scanPaths?: boolean): RoomMemoryScanController | und
     const baseEntrancePos = getBaseEntrancePos(room);
     if (baseEntrancePos) {
       const containerToControllerPath = getRawPath(baseEntrancePos, room.controller, 1);
-      paved = getIsPathPaved(room, containerToControllerPath);
-      storageDistance = containerToControllerPath.length;
+      paved = getIsPathPaved(room, containerToControllerPath.path);
+      storageDistance = containerToControllerPath.path.length;
     }
   }
 

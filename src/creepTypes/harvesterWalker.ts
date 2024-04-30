@@ -53,7 +53,9 @@ const harvesterWalkerCreepType: CreepType = {
     const targetHaveSpace = sourceStorage.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
     const creepUsedCapacity = creep.store.getUsedCapacity(RESOURCE_ENERGY);
 
-    if (!creep.pos.isNearTo(source.pos)) {
+    if (!creep.pos.isNearTo(sourceStorage.pos)) {
+      moveTo(creep, sourceStorage.pos, { range: 1 });
+    } else if (!creep.pos.isNearTo(source.pos)) {
       moveTo(creep, source.pos, { range: 1 });
     } else if (source.energy > 0) {
       if (harvest(creep, source) === OK) {

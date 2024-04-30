@@ -1,29 +1,17 @@
-export const rawPathDistance = (pos: RoomPosition, target?: RoomPosition | _HasRoomPosition): number => {
-  if (!target) return -1;
-
-  return pos.findPathTo(target, { ignoreCreeps: true }).length;
-};
-
-export const getRawPath = (pos?: RoomPosition, target?: RoomPosition | _HasRoomPosition, range = 0): PathStep[] => {
-  if (!pos || !target) return [];
-
-  return pos.findPathTo(target, { ignoreCreeps: true, range });
-};
+import { getRawPath } from 'utils/path';
 
 export const getIsPathPaved = (room: Room, pathSteps: PathStep[] | RoomPosition[]): boolean => {
-  for (const step of pathSteps) {
+  return pathSteps.every(step => {
     const structures = room.lookForAt(LOOK_STRUCTURES, step.x, step.y);
-    if (!structures.find(s => s.structureType === STRUCTURE_ROAD)) return false;
-  }
-
-  return true;
+    return !!structures.find(s => s.structureType === STRUCTURE_ROAD);
+  });
 };
 
 export const getExitDistance = (pos: RoomPosition, exit: ExitConstant): number | undefined => {
   const closestExist = pos.findClosestByRange(exit);
   if (!closestExist) return undefined;
 
-  return rawPathDistance(pos, closestExist);
+  return getRawPath(pos, closestExist).cost;
 };
 
 export const getExitsDistances = (pos: RoomPosition): ExitMap<number> => {

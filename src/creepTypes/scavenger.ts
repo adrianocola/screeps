@@ -1,15 +1,6 @@
-import { pickup, recycle, transfer, withdraw } from 'utils/creep';
-import { getMainResourceHolder } from 'utils/room';
-
-const transferAllResources = (creep: Creep, mainResourceHolder: StructureContainer | StructureStorage) => {
-  const resources = Object.keys(creep.store);
-  for (const resource of resources) {
-    transfer(creep, mainResourceHolder, resource as ResourceConstant);
-    return true;
-  }
-
-  return false;
-};
+import { pickup, recycle, withdraw } from 'utils/creep';
+import { getMainResourceHolder, removeSpawn } from 'utils/room';
+import { transferAllResources } from 'utils/worker';
 
 const scavengerCreepType: CreepType = {
   name: CREEP_TYPE.SCAVENGER,
@@ -59,6 +50,7 @@ const scavengerCreepType: CreepType = {
     }
 
     recycle(creep);
+    removeSpawn(creep.room, creep.memory.demandId);
   },
 };
 
